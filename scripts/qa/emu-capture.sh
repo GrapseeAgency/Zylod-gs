@@ -111,6 +111,52 @@
 # in screenshots/admin-login-check.txt (admin-session-verified=no +
 # admin-failure-reason=<verbatim>) — the three shots are captured EITHER
 # WAY (the gate state is honest evidence, exactly like the guest path).
+# t249-f DETERMINISTIC SESSION INJECTION (this change): artifact 13000480338
+# proved UI typing NEVER lands in the Compose fields (admin-email-
+# registered=no AND typed-email-registered=no) — the authed evidence shots
+# (18, 25/26/27) can no longer depend on it. The session is now established
+# deterministically:
+#   1. REAL session from the REAL backend: POST /api/auth/login
+#      {email,password} -> {success,token,...} (route.ts:167-186; token is a
+#      top-level field, 96 hex chars, src/lib/auth.ts:39; sessions live 7
+#      days, auth.ts:7). Seeded creds from scripts/qa/seed-marketplace.mjs:
+#      buyer1@zylod.bd / admin market@zylod.bd, shared password Passw0rd!23.
+#   2. Write it through the app's OWN session writer. SessionManager.kt:35-38
+#      reads auth_token from ZylodApp.securePrefs — an
+#      EncryptedSharedPreferences store (ZylodApp.kt:47-58, file
+#      "zylod_secure", AES256_SIV keys + AES256_GCM values, AndroidKeyStore
+#      master key). A host-side plaintext XML write into that file is
+#      IMPOSSIBLE (and actively harmful: AEADBadTagException makes ZylodApp
+#      delete + recreate the store). The app-sanctioned writer is
+#      WebAppBridge.setAuthToken (bridge/WebAppBridge.kt:135-171,
+#      @JavascriptInterface, installed as window.ZylodNativeBridge —
+#      NativeWebViewPool.kt:329): it writes exactly what SessionManager reads
+#      on cold start. Delivery: CDP Runtime.evaluate in the app's own
+#      WebView (debug build -> WebView remote debugging is enabled by
+#      default for debuggable apps; no app-code change, no adb root needed),
+#      evaluating ZylodNativeBridge.setAuthToken('<token>') on a short
+#      Tier-3 page (zylod://privacy-policy — same page capture 25 uses).
+#   3. Cold start: am force-stop -> monkey relaunch -> ensure_home, so the
+#      verdict proves the token SURVIVED a process restart (the exact thing
+#      the gated shots need).
+#   Fallback chain: CDP bridge injection IS the mechanism (adb-root /
+#   run-as prefs writes are reserved for read-only evidence here — dump_
+#   *_prefs — because of the encrypted store). If any injection step fails,
+#   the role records injection-method=none + a verbatim failure reason and
+#   the run degrades to the previous behavior (UI-login verdict / honest
+#   gate shots). Strict verification:
+#   - buyer: zylod://buyer-orders settle-poll — the gate marker "Sign in to
+#     see your orders" (OrdersScreen.kt:425) must be ABSENT; the authed
+#     marker "No orders yet" (OrdersScreen.kt:376; the seeded buyer has no
+#     orders) present -> buyer-session-verified=yes (buyer-session-check.txt).
+#   - admin: injected UNCONDITIONALLY after the kept UI attempt (it replaces
+#     whatever session the UI left), verified by (a) the populated dashboard
+#     marker "Platform overview"/"Recent activity" (AdminDashboardScreen.kt
+#     :331/:188) or (b) pid logcat AFTER a logcat -c showing ZylodAdmin
+#     "fetch admin dashboard" with NO "not an admin session" line
+#     (AdminDashboardViewModel.kt:86/:101) — admin-session-verified=yes only
+#     when the injection steps ALL succeeded AND (a) or (b) holds.
+#   Passwords are NEVER printed (length-only, matching the existing style).
 set -u
 mkdir -p screenshots
 
@@ -486,6 +532,302 @@ dismiss_email_dialog () {
 app_pid () {
   timeout 10 adb shell pidof com.zylod.wholesale.debug 2>/dev/null | tr -d '\r' | awk '{print $1}' || true
 }
+
+# ── t249-f DETERMINISTIC SESSION INJECTION ─────────────────────────────────
+# Host-side API base for the REAL backend (host loopback — the same server
+# the app reaches as http://10.0.2.2:3000; every existing curl in this
+# script already uses 127.0.0.1:3000). Injection globals are reset per call.
+HOST_API_BASE="http://127.0.0.1:3000"
+INJECTION_WEB_DEEPLINK="zylod://privacy-policy" # short Tier-3 page -> guarantees a live WebView (the bridge host)
+INJECTION_METHOD="none"
+INJECTION_REASON="not attempted"
+
+# t249-f (1): REAL login against the served backend. Request/response
+# contract copied verbatim from src/app/api/auth/login/route.ts: POST JSON
+# {email, password} -> 200 {success:true, token, requires2FA:false, user:{...}}
+# (token is a TOP-LEVEL field, route.ts:167-182). Sets TOKEN + API_LOGIN_REASON.
+# The password is never echoed; the reason carries a token LENGTH only.
+api_login_token () { # email password
+  TOKEN=""
+  API_LOGIN_REASON="curl failed"
+  local resp
+  resp=$(timeout 20 curl -s -X POST "$HOST_API_BASE/api/auth/login" \
+    -H 'Content-Type: application/json' \
+    -d "{\"email\":\"$1\",\"password\":\"$2\"}" 2>/dev/null || true)
+  if [ -z "$resp" ]; then
+    API_LOGIN_REASON="login API returned an empty response"
+    return 1
+  fi
+  TOKEN=$(printf '%s' "$resp" | python3 -c "import json,sys
+try:
+    d = json.load(sys.stdin)
+except Exception:
+    sys.exit(0)
+t = d.get('token')
+if isinstance(t, str) and t:
+    print(t)" 2>/dev/null || true)
+  if [ -z "$TOKEN" ]; then
+    API_LOGIN_REASON="login API gave no token (non-200 or bad credentials; response $(printf '%s' "$resp" | wc -c) bytes)"
+    return 1
+  fi
+  API_LOGIN_REASON="ok (token ${#TOKEN} chars)"
+  return 0
+}
+
+# t249-f (2a): pick the WebView page target's webSocketDebuggerUrl from the
+# devtools HTTP endpoint (after `adb forward tcp:9222 localabstract:...`).
+# Prefers the SPA page (origin 10.0.2.2:3000), falls back to any page target
+# (the bridge object is installed on every shell page — NativeWebViewPool
+# adds the JS interface at WebView creation, before loadUrl). Prints the URL
+# or nothing; never fatal.
+cdp_list_page_wsurl () {
+  timeout 10 curl -s http://127.0.0.1:9222/json/list > /tmp/cdp-list.json 2>/dev/null || true
+  [ -s /tmp/cdp-list.json ] || return 1
+  python3 - /tmp/cdp-list.json <<'PYEOF'
+import json, sys
+try:
+    targets = json.load(open(sys.argv[1], encoding="utf-8", errors="ignore"))
+except Exception:
+    sys.exit(0)
+if not isinstance(targets, list):
+    sys.exit(0)
+pages = [t for t in targets if isinstance(t, dict) and t.get("type") == "page"]
+spa = [t for t in pages if "10.0.2.2:3000" in (t.get("url") or "")]
+pick = spa or pages
+if pick:
+    ws = pick[0].get("webSocketDebuggerUrl") or ""
+    if ws:
+        print(ws)
+PYEOF
+}
+
+# t249-f (2b): ONE CDP Runtime.evaluate over a raw WebSocket — python3
+# stdlib only (socket + the RFC6455 handshake + one masked text frame), no
+# external deps. Prints the eval result value, or a WS-* failure marker with
+# a non-zero exit. The expression must be self-contained JS.
+cdp_eval () { # wsurl expression [timeout_seconds]
+  python3 - "$1" "$2" "${3:-15}" <<'PYEOF'
+import base64, json, os, socket, struct, sys, time
+from urllib.parse import urlparse
+wsurl, expr = sys.argv[1], sys.argv[2]
+limit = float(sys.argv[3]) if len(sys.argv) > 3 else 15.0
+u = urlparse(wsurl)
+host, port, path = u.hostname or "127.0.0.1", u.port or 9222, u.path or "/"
+try:
+    s = socket.create_connection((host, port), timeout=limit)
+except OSError:
+    print("WS-CONNECT-FAILED"); sys.exit(1)
+s.settimeout(limit)
+key = base64.b64encode(os.urandom(16)).decode()
+req = (f"GET {path} HTTP/1.1\r\nHost: {host}:{port}\r\nUpgrade: websocket\r\n"
+       f"Connection: Upgrade\r\nSec-WebSocket-Key: {key}\r\nSec-WebSocket-Version: 13\r\n\r\n")
+s.sendall(req.encode())
+buf = b""
+try:
+    while b"\r\n\r\n" not in buf:
+        chunk = s.recv(4096)
+        if not chunk:
+            break
+        buf += chunk
+except OSError:
+    print("WS-HANDSHAKE-FAILED"); sys.exit(1)
+if b" 101 " not in buf.split(b"\r\n", 1)[0]:
+    print("WS-UPGRADE-FAILED"); sys.exit(1)
+rest = buf.split(b"\r\n\r\n", 1)[1]
+payload = json.dumps({"id": 1, "method": "Runtime.evaluate",
+                      "params": {"expression": expr, "returnByValue": True}}).encode()
+mask = os.urandom(4)
+head = b"\x81"
+n = len(payload)
+if n < 126:
+    head += bytes([0x80 | n])
+elif n < 65536:
+    head += bytes([0x80 | 126]) + struct.pack(">H", n)
+else:
+    head += bytes([0x80 | 127]) + struct.pack(">Q", n)
+s.sendall(head + mask + bytes(b ^ mask[i % 4] for i, b in enumerate(payload)))
+
+def recv_exact(k):
+    global rest
+    while len(rest) < k:
+        chunk = s.recv(65536)
+        if not chunk:
+            raise OSError("eof")
+        rest += chunk
+    out, rest = rest[:k], rest[k:]
+    return out
+
+deadline = time.time() + limit
+reply = None
+while time.time() < deadline:
+    try:
+        b1, b2 = recv_exact(2)
+    except (OSError, socket.timeout):
+        break
+    opcode = b1 & 0x0F
+    ln = b2 & 0x7F
+    if ln == 126:
+        try:
+            ln = struct.unpack(">H", recv_exact(2))[0]
+        except OSError:
+            break
+    elif ln == 127:
+        try:
+            ln = struct.unpack(">Q", recv_exact(8))[0]
+        except OSError:
+            break
+    try:
+        data = recv_exact(ln) if ln else b""
+    except OSError:
+        break
+    if opcode == 0x8:
+        break
+    if opcode in (0x9, 0xA):
+        continue  # ping/pong — nothing to answer within a one-shot eval
+    try:
+        msg = json.loads(data.decode("utf-8", "ignore"))
+    except Exception:
+        continue
+    if isinstance(msg, dict) and msg.get("id") == 1:
+        reply = msg
+        break
+s.close()
+if reply is None:
+    print("WS-EVAL-NO-RESPONSE"); sys.exit(2)
+result = reply.get("result") or {}
+if result.get("exceptionDetails"):
+    print("WS-EVAL-EXCEPTION"); sys.exit(3)
+val = result.get("result", {}).get("value")
+# Strings print raw (the caller string-compares the contract value
+# "zylod-inject-ok"); anything else prints as JSON for the evidence line.
+print(val if isinstance(val, str) else json.dumps(val))
+PYEOF
+}
+
+# t249-f (2c+3): the full deterministic session injection.
+#   1. REAL login via the backend API (api_login_token).
+#   2. ensure_home + open the short Tier-3 page (a live shell WebView that
+#      carries window.ZylodNativeBridge).
+#   3. CDP Runtime.evaluate -> ZylodNativeBridge.setAuthToken('<token>') —
+#      the app itself writes auth_token into its OWN EncryptedSharedPreferences
+#      store (the only writer that can produce a readable ciphertext; a
+#      host-side plaintext prefs write is impossible against that store).
+#   4. Prove the write: secure prefs file present via run-as.
+#   5. Cold start: force-stop -> logcat -c (clean buffer for the role's
+#      post-relaunch verification) -> monkey relaunch -> ensure_home.
+# Evidence lands in $4 (injection-method / api-login / bridge-eval /
+# prefs-written / failure-reason — passwords length-only). Returns 0 when
+# every step succeeded (INJECTION_REASON="ok"); 1 otherwise with the verbatim
+# reason. Never fatal to the run (callers degrade to the honest gate path).
+inject_session () { # email password role evidence_file diag_prefix
+  local email="$1" password="$2" role="$3" evfile="$4" diag="$5"
+  INJECTION_METHOD="none"
+  INJECTION_REASON="not attempted"
+  local pid candidates sock wsurl evalout prefs_list attempt
+  {
+    echo "=== $role session injection $(date -u '+%Y-%m-%dT%H:%M:%SZ') ==="
+    echo "$role-credentials-source=scripts/qa/seed-marketplace.mjs (password length $(printf '%s' "$password" | wc -c), never printed)"
+  } >> "$evfile" 2>/dev/null || true
+  # (1) real login
+  if ! api_login_token "$email" "$password"; then
+    INJECTION_REASON="api-login failed: $API_LOGIN_REASON"
+    echo "injection-method=none" >> "$evfile" 2>/dev/null || true
+    echo "api-login=err" >> "$evfile" 2>/dev/null || true
+    echo "$role-failure-reason=$INJECTION_REASON" >> "$evfile" 2>/dev/null || true
+    echo "::warning::inject_session($role): $INJECTION_REASON"
+    return 1
+  fi
+  echo "api-login=ok" >> "$evfile" 2>/dev/null || true
+  echo "api-login-detail=$API_LOGIN_REASON" >> "$evfile" 2>/dev/null || true
+  case "$TOKEN" in
+    *[!A-Za-z0-9._-]*|'')
+      INJECTION_REASON="login token has an unexpected shape (length ${#TOKEN}, refused for safe JS embedding)"
+      echo "injection-method=none" >> "$evfile" 2>/dev/null || true
+      echo "prefs-written=no" >> "$evfile" 2>/dev/null || true
+      echo "$role-failure-reason=$INJECTION_REASON" >> "$evfile" 2>/dev/null || true
+      echo "::warning::inject_session($role): $INJECTION_REASON"
+      return 1
+      ;;
+  esac
+  # (2) a live shell WebView — home first (deep links fired off-home queue),
+  # then the short Tier-3 privacy-policy page.
+  ensure_home || echo "::warning::inject_session($role): ensure_home failed — the WebView deeplink may queue; CDP below will fail with its own reason"
+  adbt 15 am start -a android.intent.action.VIEW -d "$INJECTION_WEB_DEEPLINK" com.zylod.wholesale.debug >/dev/null 2>&1
+  sleep 12
+  # (3) the app's WebView devtools socket (debug build -> remote debugging on)
+  pid=$(app_pid)
+  candidates=$(timeout 10 adb shell cat /proc/net/unix 2>/dev/null | tr -d '\r' | grep -o 'webview_devtools_remote[A-Za-z0-9_]*' | sort -u || true)
+  sock=""
+  if [ -n "$pid" ]; then
+    sock=$(printf '%s\n' "$candidates" | grep "^webview_devtools_remote_${pid}$" || true)
+  fi
+  [ -n "$sock" ] || sock=$(printf '%s\n' "$candidates" | grep -v '^$' | head -1 || true)
+  if [ -z "$sock" ]; then
+    INJECTION_REASON="no WebView devtools socket in /proc/net/unix (pid=${pid:-none} — WebView not up or remote debugging unavailable)"
+    echo "injection-method=none" >> "$evfile" 2>/dev/null || true
+    echo "prefs-written=no" >> "$evfile" 2>/dev/null || true
+    echo "$role-failure-reason=$INJECTION_REASON" >> "$evfile" 2>/dev/null || true
+    echo "::warning::inject_session($role): $INJECTION_REASON"
+    cap "screenshots/$diag-inject-webview-missing.png"
+    return 1
+  fi
+  # (3b) forward + list + eval, 3 attempts (the SPA document can still be
+  # loading when the first /json/list lands).
+  evalout=""
+  for attempt in 1 2 3; do
+    timeout 10 adb forward tcp:9222 "localabstract:$sock" >/dev/null 2>&1 || true
+    wsurl=$(cdp_list_page_wsurl || true)
+    if [ -n "$wsurl" ]; then
+      evalout=$(cdp_eval "$wsurl" "(function(){try{if (window.ZylodNativeBridge && typeof window.ZylodNativeBridge.setAuthToken==='function'){window.ZylodNativeBridge.setAuthToken('$TOKEN');return 'zylod-inject-ok';}return 'zylod-bridge-missing';}catch(e){return 'zylod-inject-err:'+e;}})()" 15 || true)
+      [ "$evalout" = "zylod-inject-ok" ] && break
+    else
+      evalout="no-page-target"
+    fi
+    sleep 5
+  done
+  echo "bridge-eval=$evalout" >> "$evfile" 2>/dev/null || true
+  if [ "$evalout" != "zylod-inject-ok" ]; then
+    INJECTION_REASON="CDP Runtime.evaluate did not return zylod-inject-ok (got: ${evalout:-empty}; socket=$sock)"
+    echo "injection-method=none" >> "$evfile" 2>/dev/null || true
+    echo "prefs-written=no" >> "$evfile" 2>/dev/null || true
+    echo "$role-failure-reason=$INJECTION_REASON" >> "$evfile" 2>/dev/null || true
+    echo "::warning::inject_session($role): $INJECTION_REASON"
+    cap "screenshots/$diag-inject-bridge-failed.png"
+    timeout 10 adb forward --remove tcp:9222 >/dev/null 2>&1 || true
+    return 1
+  fi
+  INJECTION_METHOD="cdp-webview-bridge"
+  # (4) let SharedPreferences.apply() flush, then prove the store file exists
+  sleep 3
+  timeout 10 adb forward --remove tcp:9222 >/dev/null 2>&1 || true
+  prefs_list=$(timeout 15 adb shell run-as com.zylod.wholesale.debug ls shared_prefs 2>/dev/null | tr -d '\r' || true)
+  if printf '%s\n' "$prefs_list" | grep -q '^zylod_secure.xml$'; then
+    echo "prefs-written=yes" >> "$evfile" 2>/dev/null || true
+    echo "secure-prefs-file=shared_prefs/zylod_secure.xml present (values encrypted by the app itself — content unreadable by design)" >> "$evfile" 2>/dev/null || true
+  else
+    INJECTION_REASON="shared_prefs/zylod_secure.xml missing after the bridge write (run-as ls saw: ${prefs_list:-nothing})"
+    echo "prefs-written=no" >> "$evfile" 2>/dev/null || true
+    echo "$role-failure-reason=$INJECTION_REASON" >> "$evfile" 2>/dev/null || true
+    echo "::warning::inject_session($role): $INJECTION_REASON"
+    return 1
+  fi
+  # (5) cold start so the verdict proves the token SURVIVED a restart
+  adbt 15 am force-stop com.zylod.wholesale.debug >/dev/null 2>&1 || true
+  adbt 10 logcat -c >/dev/null 2>&1 || true
+  adbt 20 monkey -p com.zylod.wholesale.debug -c android.intent.category.LAUNCHER 1 >/dev/null 2>&1 || true
+  sleep 10
+  if ! ensure_home; then
+    INJECTION_REASON="post-relaunch ensure_home failed — home never mounted (role deeplinks would queue)"
+    echo "$role-failure-reason=$INJECTION_REASON" >> "$evfile" 2>/dev/null || true
+    echo "::warning::inject_session($role): $INJECTION_REASON"
+    return 1
+  fi
+  INJECTION_REASON="ok"
+  echo "injection-method=$INJECTION_METHOD" >> "$evfile" 2>/dev/null || true
+  echo "inject_session($role): session injected ✓ (method=$INJECTION_METHOD) — cold start on home"
+  return 0
+}
+
 
 # t241: login evidence — REAL shared_prefs dump. t239's
 # `run-as ... sh -c 'cat shared_prefs/*.xml'` relied on a glob that never
@@ -1219,8 +1561,24 @@ if login_buyer; then
   AUTHED=1
 fi
 
+# t249-f BUYER SESSION INJECTION — the deterministic auth establishment.
+# login_buyer above is KEPT (its typed-text proof + decision-time dumps are
+# the UI-path evidence), but when it fails to verify, the authed suite no
+# longer degrades to guest shots: a REAL session is established via the
+# backend's login API + the app's own bridge writer, then proven on a cold
+# start. This also covers the t249-f wire-in for capture 18 below (which
+# runs its own strict settle-poll verdict into buyer-session-check.txt).
+BUYER_INJECTED=0
+if [ "$AUTHED" -eq 0 ] && ! budget_stop; then
+  log "t249-f: buyer UI login failed — DETERMINISTIC SESSION INJECTION (real /api/auth/login -> ZylodNativeBridge.setAuthToken via the app's WebView/CDP -> cold start)"
+  if inject_session "buyer1@zylod.bd" "Passw0rd!23" "buyer" "screenshots/buyer-session-check.txt" "buyer"; then
+    BUYER_INJECTED=1
+    AUTHED=1
+  fi
+fi
+
 if [ "$AUTHED" -eq 1 ]; then
-  log "t238: authed deep-link suite (seeded buyer session) — ensure_home before EVERY link"
+  log "t238: authed deep-link suite (seeded buyer session; t249-f injection used: $BUYER_INJECTED)"
 else
   log "t238: deep-link suite (GUEST fallback — gated captures will show the sign-in gate)"
 fi
@@ -1323,7 +1681,62 @@ guarded_deeplink "15-admin-dashboard" 10 "zylod://admin-dashboard"
 # wallet page as zylod://wallet above.
 guarded_deeplink "16-applink-wallet" 8 "https://zylod.com/?page=wallet"
 guarded_deeplink "17-profile" 10 "zylod://profile"
-guarded_deeplink "18-orders-authed" 10 "zylod://buyer-orders"
+# t249-f: 18-orders-authed with a STRICT signed-in verdict (replaces the
+# blind guarded_deeplink). Needles verified in OrdersScreen.kt:
+#   gate   — "Sign in to see your orders" (:425) renders ONLY when
+#            SessionManager.token() == null (OrdersViewModel gate state);
+#   authed — "No orders yet" (:376) — the OrdersEmpty state; the seeded
+#            buyer has no orders, so this is the expected signed-in screen.
+# Verdict: settled AND gate ABSENT -> buyer-session-verified=yes. The poll
+# terminates as soon as EITHER marker shows (never a bare-spinner capture).
+if budget_stop; then
+  echo "capture 18: SKIPPED — capture budget exhausted"
+  {
+    echo "=== 18-orders-authed $(date -u '+%Y-%m-%dT%H:%M:%SZ') ==="
+    echo "buyer-session-verified=no"
+    echo "buyer-failure-reason=capture budget exhausted before capture 18"
+  } >> screenshots/buyer-session-check.txt 2>/dev/null || true
+elif ensure_home; then
+  echo "capture 18: ensure_home=0 — firing zylod://buyer-orders with a strict signed-in settle-poll"
+  adbt 15 am start -a android.intent.action.VIEW -d "zylod://buyer-orders" com.zylod.wholesale.debug >/dev/null 2>&1
+  ORDERS_SETTLED=0
+  for i in 1 2 3 4 5; do
+    sleep 5
+    if any_text_on_screen "No orders yet" "Sign in to see your orders"; then
+      ORDERS_SETTLED=1
+      break
+    fi
+  done
+  BUYER_GATE=no
+  if any_text_on_screen "Sign in to see your orders"; then
+    BUYER_GATE=yes
+  fi
+  cap "screenshots/18-orders-authed.png"
+  {
+    echo "=== 18-orders-authed verdict $(date -u '+%Y-%m-%dT%H:%M:%SZ') ==="
+    echo "buyer-injection-method=$(grep '^injection-method=' screenshots/buyer-session-check.txt 2>/dev/null | tail -1 | cut -d= -f2 || true)"
+    echo "buyer-orders-settled=$ORDERS_SETTLED"
+    echo "buyer-orders-gate-marker=$BUYER_GATE"
+    if [ "$ORDERS_SETTLED" -eq 1 ] && [ "$BUYER_GATE" = "no" ]; then
+      echo "buyer-session-verified=yes"
+    else
+      echo "buyer-session-verified=no"
+      if [ "$BUYER_GATE" = "yes" ]; then
+        echo "buyer-failure-reason=orders gate still shown after the deeplink (session not established on cold start; see buyer-session-check.txt injection lines above)"
+      else
+        echo "buyer-failure-reason=orders screen never settled within 25s (neither the gate marker nor 'No orders yet' appeared)"
+      fi
+    fi
+  } >> screenshots/buyer-session-check.txt 2>/dev/null || true
+else
+  echo "capture 18: SKIPPED — ensure_home=1 (zylod://buyer-orders fired off-home would queue)"
+  echo "::warning::capture 18-orders-authed skipped: ensure_home failed (queue desync guard)"
+  {
+    echo "=== 18-orders-authed $(date -u '+%Y-%m-%dT%H:%M:%SZ') ==="
+    echo "buyer-session-verified=no"
+    echo "buyer-failure-reason=ensure_home failed — the buyer-orders deeplink was skipped (queue desync guard)"
+  } >> screenshots/buyer-session-check.txt 2>/dev/null || true
+fi
 # t248: the two typed admin surfaces — moderation + operations queues.
 guarded_deeplink "19-admin-users" 10 "zylod://admin-users"
 guarded_deeplink "20-admin-orders" 10 "zylod://admin-orders"
@@ -1338,6 +1751,9 @@ if budget_stop; then
   {
     echo "admin-session-verified=no"
     echo "admin-failure-reason=capture budget exhausted before the admin segment"
+    echo "injection-method=none"
+    echo "api-login=err"
+    echo "prefs-written=no"
   } >> screenshots/admin-login-check.txt 2>/dev/null || true
 else
   sign_out_current_session || true
@@ -1345,9 +1761,36 @@ else
     ADMIN_AUTHED=1
   fi
   if [ "$ADMIN_AUTHED" -eq 1 ]; then
-    log "t249: admin session verified ✓ — authed admin dashboard/users/orders captures"
+    log "t249: admin UI-login path verified ✓ (kept as evidence; the t249-f injection below is still the authoritative step)"
   else
-    log "t249: admin session NOT verified — capturing the three admin surfaces anyway (honest gate shots; reason in admin-login-check.txt)"
+    log "t249: admin session NOT verified via UI — capturing the three admin surfaces anyway (honest gate shots; reason in admin-login-check.txt)"
+  fi
+  # t249-f UNCONDITIONAL ADMIN SESSION INJECTION — the authoritative step.
+  # Whatever the kept UI attempt left behind (admin / buyer / guest), a REAL
+  # admin session is established through the backend's login API + the app's
+  # own bridge writer and proven on a cold start. Strictness contract: the
+  # admin-session-verified verdict written at capture 25 below is yes ONLY
+  # when every injection step succeeded AND the post-relaunch evidence agrees.
+  ADMIN_INJECTED=0
+  ADMIN_REASON="not attempted"
+  if budget_stop; then
+    ADMIN_REASON="capture budget exhausted before the admin injection"
+    {
+      echo "injection-method=none"
+      echo "api-login=err"
+      echo "prefs-written=no"
+      echo "admin-failure-reason=$ADMIN_REASON"
+    } >> screenshots/admin-login-check.txt 2>/dev/null || true
+  elif inject_session "market@zylod.bd" "Passw0rd!23" "admin" "screenshots/admin-login-check.txt" "admin"; then
+    ADMIN_INJECTED=1
+    ADMIN_REASON="$INJECTION_REASON"
+  else
+    ADMIN_REASON="$INJECTION_REASON"
+  fi
+  if [ "$ADMIN_INJECTED" -eq 1 ]; then
+    log "t249-f: admin session injected ✓ (cdp-webview-bridge, cold start on home) — authed admin dashboard/users/orders captures"
+  else
+    log "t249-f: admin session injection FAILED ($ADMIN_REASON) — the three admin captures will honestly show the gate (non-fatal)"
   fi
   # 25 — deals-style settle-poll (t239 pattern): the dashboard either renders
   # authed KPI content ("Platform overview" / "Recent activity",
@@ -1357,8 +1800,14 @@ else
   # in admin-login-check.txt (admin-dashboard-content-verified).
   if budget_stop; then
     echo "capture 25: SKIPPED — capture budget exhausted"
+    {
+      echo "admin-logcat-no401=no"
+      echo "admin-dashboard-marker=no"
+      echo "admin-session-verified=no"
+      echo "admin-failure-reason=capture budget exhausted before capture 25 (injection result: injected=$ADMIN_INJECTED, $ADMIN_REASON)"
+    } >> screenshots/admin-login-check.txt 2>/dev/null || true
   elif ensure_home; then
-    echo "capture 25: ensure_home=0 — firing zylod://admin-dashboard (admin session verified: $ADMIN_AUTHED)"
+    echo "capture 25: ensure_home=0 — firing zylod://admin-dashboard (admin UI-login verdict: $ADMIN_AUTHED, t249-f injection used: $ADMIN_INJECTED)"
     adbt 15 am start -a android.intent.action.VIEW -d "zylod://admin-dashboard" com.zylod.wholesale.debug >/dev/null 2>&1
     ADMIN_DASH_SETTLED=0
     for i in 1 2 3 4; do
@@ -1377,9 +1826,54 @@ else
       echo "admin-dashboard-content-verified=no" >> screenshots/admin-login-check.txt 2>/dev/null || true
     fi
     cap "screenshots/25-admin-dashboard-authed.png"
+    # t249-f STRICT ADMIN SESSION VERDICT (kills the old false positive: a
+    # "Sign out" match on a leftover buyer session could previously read as
+    # an admin session). admin-session-verified=yes ONLY when
+    #   (i)  every injection step succeeded (ADMIN_INJECTED=1) AND
+    #   (ii) after the injection's logcat -c + cold relaunch, the
+    #        post-deeplink pid logcat shows a ZylodAdmin "fetch admin
+    #        dashboard" line with NO "not an admin session" line
+    #        (AdminDashboardViewModel.kt:86/:101 — any 401/403 gate logs it)
+    #        OR the settle-poll found the populated dashboard markers
+    #        ("Platform overview"/"Recent activity").
+    ADMIN_DASH_MARKER=no
+    if [ "$ADMIN_DASH_SETTLED" -eq 1 ] && any_text_on_screen "Platform overview" "Recent activity"; then
+      ADMIN_DASH_MARKER=yes
+    fi
+    ADMIN_LOGCAT_NO401=no
+    # preserve the UI-attempt logcat (login_admin's decision-time dump) before
+    # the post-injection dump overwrites admin-logcat.txt
+    cp screenshots/admin-logcat.txt screenshots/admin-logcat-ui-attempt.txt 2>/dev/null || true
+    dump_admin_logcat
+    if grep -q "fetch admin dashboard" screenshots/admin-logcat.txt 2>/dev/null \
+      && ! grep -q "not an admin session" screenshots/admin-logcat.txt 2>/dev/null; then
+      ADMIN_LOGCAT_NO401=yes
+    fi
+    ADMIN_SESSION_VERIFIED=no
+    if [ "$ADMIN_INJECTED" -eq 1 ] && { [ "$ADMIN_LOGCAT_NO401" = "yes" ] || [ "$ADMIN_DASH_MARKER" = "yes" ]; }; then
+      ADMIN_SESSION_VERIFIED=yes
+    fi
+    {
+      echo "admin-logcat-no401=$ADMIN_LOGCAT_NO401"
+      echo "admin-dashboard-marker=$ADMIN_DASH_MARKER"
+      echo "admin-session-verified=$ADMIN_SESSION_VERIFIED"
+      if [ "$ADMIN_SESSION_VERIFIED" = "no" ]; then
+        if [ "$ADMIN_INJECTED" -ne 1 ]; then
+          echo "admin-failure-reason=injection did not complete ($ADMIN_REASON) — verified stays no even when the gate markers match"
+        elif [ "$ADMIN_LOGCAT_NO401" = "no" ] && [ "$ADMIN_DASH_MARKER" = "no" ]; then
+          echo "admin-failure-reason=post-relaunch evidence disagrees: ZylodAdmin 401/403 line present (or no fetch line) AND no populated dashboard marker — see admin-logcat.txt / 25-admin-dashboard-authed.png"
+        fi
+      fi
+    } >> screenshots/admin-login-check.txt 2>/dev/null || true
   else
     echo "capture 25: SKIPPED — ensure_home=1 (zylod://admin-dashboard fired off-home would queue)"
     echo "::warning::capture 25-admin-dashboard-authed skipped: ensure_home failed (queue desync guard)"
+    {
+      echo "admin-logcat-no401=no"
+      echo "admin-dashboard-marker=no"
+      echo "admin-session-verified=no"
+      echo "admin-failure-reason=ensure_home failed — the admin-dashboard deeplink was skipped (queue desync guard; injected=$ADMIN_INJECTED, $ADMIN_REASON)"
+    } >> screenshots/admin-login-check.txt 2>/dev/null || true
   fi
   # 26/27 — 12s settle (users/orders load over the local server;
   # guarded_deeplink enforces the HOME_ROUTE queue-drain guard before each
