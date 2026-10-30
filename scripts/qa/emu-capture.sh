@@ -168,6 +168,7 @@
 # release builds never see the src/debug source set) handling
 #   am broadcast -a com.zylod.wholesale.DEBUG_SET_SESSION
 #     --es token <opaque> --es user_json <login user JSON> --es user_type <role>
+# t249-h: sent EXPLICITLY (-n com.zylod.wholesale.debug/com.zylod.wholesale.debug.DebugSessionReceiver — the installed DEBUG appId carries applicationIdSuffix ".debug") — Android 8+ background limits drop IMPLICIT broadcasts to manifest-declared receivers (t249-g CI: "Broadcast completed: result=0" ack with ZERO ZylodDebugSession lines), plus a dumpsys receiver-registered=yes|no evidence key.
 # The receiver writes the session through the app's OWN SessionManager
 # .setSession(token, userJson) — exactly what a real login does
 # (LoginScreen.kt:289-291) — so the EncryptedSharedPreferences store
@@ -903,7 +904,7 @@ broadcast_inject_session () { # email password role evidence_file
   local email="$1" password="$2" role="$3" evfile="$4"
   BROADCAST_REASON="not attempted"
   API_LOGIN_USER_JSON=""
-  local bcast_out logline user_json_sq poll
+  local bcast_out logline user_json_sq poll receiver_reg receiver_reg_val
   {
     echo "=== $role session injection (t249-g debug-broadcast) $(date -u '+%Y-%m-%dT%H:%M:%SZ') ==="
     echo "$role-credentials-source=scripts/qa/seed-marketplace.mjs (password length $(printf '%s' "$password" | wc -c), never printed)"
@@ -957,12 +958,29 @@ try:
 except Exception:
     pass" 2>/dev/null || true)
     echo "user-json-passed=yes ($(printf '%s' "$API_LOGIN_USER_JSON" | wc -c) bytes)" >> "$evfile" 2>/dev/null || true
-    bcast_out=$(adbt 20 am broadcast -a com.zylod.wholesale.DEBUG_SET_SESSION --es token "$TOKEN" --es user_json "$user_json_sq" --es user_type "$role" 2>&1 || true)
+    bcast_out=$(adbt 20 am broadcast -a com.zylod.wholesale.DEBUG_SET_SESSION -n com.zylod.wholesale.debug/com.zylod.wholesale.debug.DebugSessionReceiver --es token "$TOKEN" --es user_json "$user_json_sq" --es user_type "$role" 2>&1 || true)
   else
     echo "user-json-passed=no (receiver builds its minimal fallback)" >> "$evfile" 2>/dev/null || true
-    bcast_out=$(adbt 20 am broadcast -a com.zylod.wholesale.DEBUG_SET_SESSION --es token "$TOKEN" --es user_type "$role" 2>&1 || true)
+    bcast_out=$(adbt 20 am broadcast -a com.zylod.wholesale.DEBUG_SET_SESSION -n com.zylod.wholesale.debug/com.zylod.wholesale.debug.DebugSessionReceiver --es token "$TOKEN" --es user_type "$role" 2>&1 || true)
   fi
   echo "broadcast-ack=$(printf '%s' "$bcast_out" | grep -m1 'Broadcast completed' || true)" >> "$evfile" 2>/dev/null || true
+  # t249-h registration proof — dumpsys of the INSTALLED debug package (the
+  # debug build's applicationId is com.zylod.wholesale.debug via
+  # applicationIdSuffix ".debug"; dumping com.zylod.wholesale would query a
+  # package that is not on the emulator and always read "no"). The merged
+  # manifest must list DebugSessionReceiver there; receiver-registered=no
+  # goes verbatim into the failure-reason line if delivery then fails.
+  receiver_reg=$(adbt 15 dumpsys package com.zylod.wholesale.debug 2>/dev/null | grep -c DebugSessionReceiver | tr -d '[:space:]' || true)
+  case "$receiver_reg" in ''|*[!0-9]*) receiver_reg=0 ;; esac
+  if [ "$receiver_reg" -gt 0 ]; then
+    receiver_reg_val=yes
+    echo "receiver-registered=yes" >> "$evfile" 2>/dev/null || true
+    echo "receiver-registered-detail=$receiver_reg DebugSessionReceiver reference(s) in dumpsys package com.zylod.wholesale.debug" >> "$evfile" 2>/dev/null || true
+  else
+    receiver_reg_val=no
+    echo "receiver-registered=no" >> "$evfile" 2>/dev/null || true
+    echo "receiver-registered-detail=dumpsys package com.zylod.wholesale.debug lists no DebugSessionReceiver" >> "$evfile" 2>/dev/null || true
+  fi
   # (4) delivery proof — the receiver's own log line (up to 15s). Clean the
   # buffer FIRST so a previous role's ZylodDebugSession line cannot
   # false-match this role's poll.
@@ -973,7 +991,7 @@ except Exception:
     [ -n "$logline" ] && break
   done
   if [ -z "$logline" ]; then
-    BROADCAST_REASON="no ZylodDebugSession 'session injected user_type=$role' line within 15s — receiver not registered, app stopped, or the write failed (broadcast ack: $(printf '%s' "$bcast_out" | grep -m1 'Broadcast completed' || echo none))"
+    BROADCAST_REASON="no ZylodDebugSession 'session injected user_type=$role' line within 15s — receiver-registered=$receiver_reg_val (t249-h dumpsys), receiver not registered, app stopped, or the write failed (broadcast ack: $(printf '%s' "$bcast_out" | grep -m1 'Broadcast completed' || echo none))"
     echo "injection-method=none" >> "$evfile" 2>/dev/null || true
     echo "broadcast-delivered=no" >> "$evfile" 2>/dev/null || true
     echo "session-user-type=$role" >> "$evfile" 2>/dev/null || true
