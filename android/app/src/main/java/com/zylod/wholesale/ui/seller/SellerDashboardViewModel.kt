@@ -106,7 +106,7 @@ class SellerDashboardViewModel(private val appContext: Context) : ViewModel() {
                 return
             }
             val body = dashResponse.body()
-            val content = body?.takeIf { it.success }?.data?.toDomain()
+            val content = body?.takeIf { it.success }?.toDomain()
             if (content == null) {
                 degrade("Could not load your seller dashboard")
                 return
@@ -142,7 +142,7 @@ class SellerDashboardViewModel(private val appContext: Context) : ViewModel() {
             return
         }
         val cached = withContext(Dispatchers.IO) { SellerDashboardCacheStore.read(appContext) }
-        val data = cached?.data?.toDomain()
+        val data = cached?.toDomain()
         if (data != null) {
             _state.value = SellerDashboardUiState(loading = false, content = data, offline = true)
         } else {

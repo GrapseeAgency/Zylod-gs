@@ -2,6 +2,7 @@ package com.zylod.wholesale.data.api
 
 import androidx.compose.runtime.Immutable
 import kotlinx.serialization.Serializable
+import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query
@@ -28,11 +29,11 @@ interface WalletApi {
 
     /** GET /api/wallet — find-or-create wallet with its 5 most recent transactions. */
     @GET("api/wallet")
-    suspend fun overview(): ApiEnvelope<WalletOverviewDto>
+    suspend fun overview(): Response<ApiEnvelope<WalletOverviewDto>>
 
     /** GET /api/wallet/balance — available/escrow/inflow/outflow aggregate breakdown. */
     @GET("api/wallet/balance")
-    suspend fun balance(): ApiEnvelope<WalletBalanceDto>
+    suspend fun balance(): Response<ApiEnvelope<WalletBalanceDto>>
 
     /**
      * GET /api/wallet/transactions — history, newest first
@@ -44,11 +45,11 @@ interface WalletApi {
         @Query("search") search: String? = null,
         @Query("page") page: Int = 1,
         @Query("limit") limit: Int = 20,
-    ): ApiEnvelope<WalletTransactionsDataDto>
+    ): Response<ApiEnvelope<WalletTransactionsDataDto>>
 
     /** GET /api/wallet/transactions/{id} — one transaction, server-verified owner. */
     @GET("api/wallet/transactions/{id}")
-    suspend fun transaction(@Path("id") id: String): ApiEnvelope<WalletTransactionDetailDto>
+    suspend fun transaction(@Path("id") id: String): Response<ApiEnvelope<WalletTransactionDetailDto>>
 }
 
 /** data of GET /api/wallet (wallet/route.ts:60-78). */
