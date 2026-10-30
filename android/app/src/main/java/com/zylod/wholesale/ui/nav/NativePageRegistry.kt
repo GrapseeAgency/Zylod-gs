@@ -59,7 +59,7 @@ object NativePageRegistry {
     /**
      * The registry itself. Hand-written cores (home/cart/orders/deals/search/
      * categories/profile/notifications/wishlist) + one generated screen per
-     * remaining pageId. Auth suite pageIds (welcome/login/register-*/otp/…)
+     * remaining pageId. Auth suite pageIds (welcome/login/register-/otp/…)
      * and product-detail resolve through RouteOwnership's dedicated rows
      * BEFORE this table — they are parameterized native routes, not entries.
      */
