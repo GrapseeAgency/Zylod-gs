@@ -220,4 +220,7 @@ object ApiClient {
 
     fun couponsApi(baseUrl: String): CouponsApi =
         cachedApi(baseUrl, "coupons") { it.create(CouponsApi::class.java) }
+
+    fun rfqApi(baseUrl: String): RfqApi =
+        cachedApi(baseUrl, "rfq") { it.create(RfqApi::class.java) }
 }

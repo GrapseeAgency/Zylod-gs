@@ -115,6 +115,44 @@ interface AdminApi {
         @Query("status") status: String = "all",
         @Query("limit") limit: Int = 5,
     ): Response<ApiEnvelope<List<AdminReportDto>>>
+
+    /**
+     * t250 — GET api/admin/rfqs (admin/rfqs/route.ts, verified): the RFQ
+     * review queue for pageId "admin-rfq". Query params status
+     * (open|quoted|awarded|closed|expired), page, limit (server clamp ≤ 50;
+     * the native rail asks 20). Response: { success, data: [...], stats,
+     * pagination } — stats AND pagination are TOP-LEVEL siblings of data,
+     * which [ApiEnvelope] cannot carry (no stats slot), so this endpoint is
+     * typed on the dedicated [AdminRfqsEnvelope] (the AdminOrdersPageDto
+     * precedent: a dedicated envelope whenever the handler's shape drifts
+     * from the shared one).
+     */
+    @GET("api/admin/rfqs")
+    suspend fun rfqs(
+        @Query("status") status: String? = null,
+        @Query("page") page: Int = 1,
+        @Query("limit") limit: Int = 20,
+    ): Response<AdminRfqsEnvelope>
+
+    /**
+     * t250 — GET api/admin/rfqs/{id}: the detail payload (items WITHOUT
+     * rfqId, quotes WITH supplier.displayName — the admin projection, not
+     * the buyer one). Plain shared envelope: no pagination, no extra keys.
+     */
+    @GET("api/admin/rfqs/{id}")
+    suspend fun rfqDetail(@Path("id") id: String): Response<ApiEnvelope<AdminRfqDetailDto>>
+
+    /**
+     * t250 — PATCH api/admin/rfqs/{id} (the close action): body EXACTLY
+     * { status: "closed" } (strict destructuring — the only accepted value,
+     * and only from status open|quoted, else 409 "Cannot close an RFQ with
+     * status \"<status>\""). 200 → { success, data: <the raw updated row> }.
+     */
+    @PATCH("api/admin/rfqs/{id}")
+    suspend fun closeRfq(
+        @Path("id") id: String,
+        @Body body: AdminRfqCloseRequest,
+    ): Response<ApiEnvelope<AdminRfqCloseDataDto>>
 }
 
 /* ─── GET api/admin/dashboard ────────────────────────────────────────────── */
@@ -455,4 +493,155 @@ data class AdminReportedEntityDto(
     val type: String? = null,
     val status: String? = null,
     val rating: Double? = null,
+)
+
+/* ─── t250 · GET/PATCH api/admin/rfqs ────────────────────────────────────── */
+
+/**
+ * Dedicated envelope for GET api/admin/rfqs (verified handler shape):
+ * { success, data: [...], stats, pagination } — stats AND pagination are
+ * TOP-LEVEL siblings of data. The shared [ApiEnvelope] has no stats slot,
+ * so this endpoint gets its own @Serializable envelope (lenient Json drops
+ * nothing here — every carried key is typed).
+ */
+@Serializable
+data class AdminRfqsEnvelope(
+    val success: Boolean = false,
+    val data: List<AdminRfqRowDto> = emptyList(),
+    val stats: AdminRfqStatsDto? = null,
+    val pagination: Pagination? = null,
+    val error: String? = null,
+)
+
+/**
+ * The handler's per-status counts block — the review screen's chip row
+ * (Open n · Quoted n · Awarded n · Closed n · Expired n · Total n).
+ */
+@Immutable
+@Serializable
+data class AdminRfqStatsDto(
+    val open: Int = 0,
+    val quoted: Int = 0,
+    val awarded: Int = 0,
+    val closed: Int = 0,
+    val expired: Int = 0,
+    val total: Int = 0,
+)
+
+/**
+ * One admin RFQ review row: the real rfq columns plus the buyer brief, the
+ * item/quote counts and the bestQuote min/max aggregate.
+ */
+@Immutable
+@Serializable
+data class AdminRfqRowDto(
+    val id: String? = null,
+    val title: String? = null,
+    val status: String? = null,
+    val quantity: Double? = null,
+    val unit: String? = null,
+    val targetPrice: Double? = null,
+    val deliveryCity: String? = null,
+    val deadline: String? = null,
+    val createdAt: String? = null,
+    val buyer: AdminRfqBuyerDto? = null,
+    val itemCount: Int = 0,
+    val quoteCount: Int = 0,
+    val bestQuote: AdminRfqBestQuoteDto? = null,
+) {
+    /** Stable identity for LazyColumn keys (rfq id, hash fallback). */
+    val stableKey: String
+        get() = id?.takeIf(String::isNotBlank) ?: "admin-rfq-${hashCode()}"
+}
+
+/** Buyer brief embedded in each admin RFQ row/detail (displayName only). */
+@Immutable
+@Serializable
+data class AdminRfqBuyerDto(
+    val displayName: String? = null,
+)
+
+/** bestQuote aggregate: min/max of the RFQ's quote totals (either nullable). */
+@Immutable
+@Serializable
+data class AdminRfqBestQuoteDto(
+    val min: Double? = null,
+    val max: Double? = null,
+)
+
+/**
+ * The admin detail payload — the admin projection (verified): items WITHOUT
+ * rfqId, quotes WITH supplier{displayName}, no embedded raw quote array
+ * truncation and no conversion fields (the buyer surface owns those).
+ */
+@Immutable
+@Serializable
+data class AdminRfqDetailDto(
+    val id: String? = null,
+    val buyerId: String? = null,
+    val title: String? = null,
+    val description: String? = null,
+    val categorySlug: String? = null,
+    val quantity: Double? = null,
+    val unit: String? = null,
+    val targetPrice: Double? = null,
+    val deliveryCity: String? = null,
+    val deadline: String? = null,
+    val status: String? = null,
+    val createdAt: String? = null,
+    val updatedAt: String? = null,
+    val buyer: AdminRfqBuyerDto? = null,
+    val items: List<AdminRfqItemDto> = emptyList(),
+    val quotes: List<AdminRfqDetailQuoteDto> = emptyList(),
+)
+
+/** One line item in the admin detail (admin projection — NO rfqId). */
+@Immutable
+@Serializable
+data class AdminRfqItemDto(
+    val id: String? = null,
+    val productName: String? = null,
+    val specifications: String? = null,
+    val quantity: Double? = null,
+    val unit: String? = null,
+    val targetPrice: Double? = null,
+) {
+    val stableKey: String
+        get() = id?.takeIf(String::isNotBlank) ?: "item-${hashCode()}"
+}
+
+/** One quote in the admin detail — totals/days/status + supplier brief. */
+@Immutable
+@Serializable
+data class AdminRfqDetailQuoteDto(
+    val id: String? = null,
+    val pricePerUnit: Double? = null,
+    val totalPrice: Double? = null,
+    val deliveryDays: Int? = null,
+    val message: String? = null,
+    val status: String? = null,
+    val createdAt: String? = null,
+    val supplier: AdminRfqBuyerDto? = null,
+) {
+    val stableKey: String
+        get() = id?.takeIf(String::isNotBlank) ?: "aquote-${hashCode()}"
+}
+
+/** Close request — the handler destructures EXACTLY { status: "closed" }. */
+@Immutable
+@Serializable
+data class AdminRfqCloseRequest(
+    val status: String = "closed",
+)
+
+/**
+ * Close success data — the raw updated rfq row, truncated to the fields the
+ * native close flow needs (identity + the new status + updatedAt).
+ */
+@Immutable
+@Serializable
+data class AdminRfqCloseDataDto(
+    val id: String? = null,
+    val status: String? = null,
+    val updatedAt: String? = null,
 )

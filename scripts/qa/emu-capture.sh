@@ -107,7 +107,12 @@
 # admin's email, with admin-scoped evidence files so nothing from the buyer
 # login is clobbered) → captures 25-admin-dashboard-authed (settle-polled,
 # t239 deals pattern), 26-admin-users-authed and 27-admin-orders-authed
-# (12s settle each). Admin login failure is NON-FATAL and honestly recorded
+# (12s settle each). t250 extends the segment with 28-admin-rfq-authed (the
+# typed AdminRfqScreen: stats chips + review queue + close action) and
+# 29-rfq-list-authed (the typed buyer RfqListScreen), the latter preceded by
+# a t249-k-style buyer session re-injection (the admin captures' 401s would
+# otherwise clear the buyer session via the SessionAuthenticator). Admin
+# login failure is NON-FATAL and honestly recorded
 # in screenshots/admin-login-check.txt (admin-session-verified=no +
 # admin-failure-reason=<verbatim>) — the three shots are captured EITHER
 # WAY (the gate state is honest evidence, exactly like the guest path).
@@ -215,7 +220,11 @@ adbt () { timeout "${1:-20}" adb shell "${@:2}" || true; }
 # native admin sign-in (~2 min happy path, worst ~4 min with the retry
 # rounds) + three 12s-settle admin captures; still far under the workflow's
 # 60-minute job ceiling, and every skipped capture degrades non-fatally).
-budget_left () { [ $((2100 - SECONDS)) -gt 10 ]; }
+# (t250: raised to 2220s — two more authed captures join the segment:
+# 28-admin-rfq-authed + 29-rfq-list-authed, each a 12s settle plus the
+# buyer session re-injection before 29 (~20s worst case); still far under
+# the 60-minute job ceiling, and every skipped capture degrades non-fatally).
+budget_left () { [ $((2220 - SECONDS)) -gt 10 ]; }
 budget_stop () {
   if [ "$BUDGET_EXHAUSTED" -eq 0 ] && ! budget_left; then
     BUDGET_EXHAUSTED=1
@@ -2131,6 +2140,29 @@ else
   # link). Budget-guarded + non-fatal like every capture above.
   guarded_deeplink "26-admin-users-authed" 12 "zylod://admin-users"
   guarded_deeplink "27-admin-orders-authed" 12 "zylod://admin-orders"
+  # t250: 28-admin-rfq-authed — the new typed AdminRfqScreen (stats chip
+  # row + review queue + close action). Same 12s settle + queue-drain guard
+  # as 26/27.
+  guarded_deeplink "28-admin-rfq-authed" 12 "zylod://admin-rfq"
+  # t250: RE-INJECT the buyer session immediately before capture 29. The
+  # admin captures above run with the ADMIN session, and the t249-k finding
+  # applies verbatim: mid-flow 401s trigger the app's SessionAuthenticator
+  # logout (401 → refresh → retry → LOGOUT) and clear the persisted session
+  # — so the exact same broadcast_inject_session runs AGAIN here, swapping
+  # the admin session for a freshly committed BUYER one on a cold-started
+  # home seconds before the 29-rfq-list-authed deeplink (evidence appends
+  # to buyer-session-check.txt; this run's keys are the authoritative ones
+  # for 29). Non-fatal: on failure the marker below records it and capture
+  # 29 keeps its honest sign-in gate verdict.
+  BUYER_REQ_RFLIST=no
+  if ! budget_stop; then
+    log "t250: re-injecting the buyer session immediately before capture 29 (mid-flow 401s from the seller/admin deeplinks trigger the SessionAuthenticator logout that clears it)"
+    if broadcast_inject_session "buyer1@zylod.bd" "Passw0rd!23" "buyer" "screenshots/buyer-session-check.txt"; then
+      BUYER_REQ_RFLIST=yes
+    fi
+  fi
+  echo "buyer-rfqlist-reinjection=$BUYER_REQ_RFLIST" >> screenshots/buyer-session-check.txt 2>/dev/null || true
+  guarded_deeplink "29-rfq-list-authed" 12 "zylod://rfq-list"
 fi
 
 log "Screen inventory"
