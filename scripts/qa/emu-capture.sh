@@ -93,6 +93,24 @@
 #      unconditionally → strict verify → ONE full retry round (fresh mount
 #      → retype → re-tap; 04c captured unconditionally on every attempt) →
 #      token prefs + auth logcat at decision time. Guest path never fatal.
+#
+# t249 AUTHED ADMIN SEGMENT (after capture 20-admin-orders): artifact
+# 12997027265 proved 15-admin-dashboard / 19-admin-users / 20-admin-orders
+# render the native admin screens but inside the "Admin account required"
+# gate — the session had NO admin (the seeded buyer is userType=buyer). The
+# CI serve path already seeds a REAL admin through the same register rails
+# (scripts/qa/seed-marketplace.mjs registers it as the FIRST account on the
+# empty CI database, so the admin-bootstrap gate (adminCount == 0) admits
+# it): market@zylod.bd, userType "admin". After 20-admin-orders the new
+# segment: sign_out_current_session (clears the buyer session the authed
+# suite left) → login_admin (the t244 state machine, typing the seeded
+# admin's email, with admin-scoped evidence files so nothing from the buyer
+# login is clobbered) → captures 25-admin-dashboard-authed (settle-polled,
+# t239 deals pattern), 26-admin-users-authed and 27-admin-orders-authed
+# (12s settle each). Admin login failure is NON-FATAL and honestly recorded
+# in screenshots/admin-login-check.txt (admin-session-verified=no +
+# admin-failure-reason=<verbatim>) — the three shots are captured EITHER
+# WAY (the gate state is honest evidence, exactly like the guest path).
 set -u
 mkdir -p screenshots
 
@@ -114,7 +132,11 @@ adbt () { timeout "${1:-20}" adb shell "${@:2}" || true; }
 
 # t240 GLOBAL BUDGET: 30 minutes of wall clock for the capture blocks
 # (t248: raised to 1900s — two more admin captures, ~20s each, must fit).
-budget_left () { [ $((1900 - SECONDS)) -gt 10 ]; }
+# (t249: raised to 2100s — the authed-admin segment adds buyer sign-out +
+# native admin sign-in (~2 min happy path, worst ~4 min with the retry
+# rounds) + three 12s-settle admin captures; still far under the workflow's
+# 60-minute job ceiling, and every skipped capture degrades non-fatally).
+budget_left () { [ $((2100 - SECONDS)) -gt 10 ]; }
 budget_stop () {
   if [ "$BUDGET_EXHAUSTED" -eq 0 ] && ! budget_left; then
     BUDGET_EXHAUSTED=1
@@ -350,6 +372,41 @@ print(f"typed-password-registered={pass_ok}")
 PYEOF
 }
 
+# t249 ADMIN TYPED-TEXT PROOF: check_typed_text for the admin segment — the
+# identical dump/pull/parse shape, but the email needle is the SEEDED
+# ADMIN's address (market@zylod.bd, registered by scripts/qa/
+# seed-marketplace.mjs) and the verdict lands in
+# screenshots/admin-login-check.txt with admin-prefixed keys
+# (admin-email-registered / admin-password-registered). The password is
+# checked by LENGTH only — never printed, here or in the evidence file.
+# Appends exactly two lines per call (email line first) so tail -2 is always
+# the newest pair. Never fatal: a missing dump or a parse hiccup just
+# records "no". Field order assumption is the same one edittext_center
+# documents (1st = email, 2nd = password).
+check_admin_typed_text () {
+  adbt 20 uiautomator dump /sdcard/ui.xml > /dev/null 2>&1
+  timeout 15 adb pull /sdcard/ui.xml /tmp/ui.xml > /dev/null 2>&1 || true
+  python3 - /tmp/ui.xml >> screenshots/admin-login-check.txt 2>/dev/null <<'PYEOF'
+import re, sys
+email_ok, pass_ok = "no", "no"
+try:
+    xml = open(sys.argv[1], encoding="utf-8", errors="ignore").read()
+except OSError:
+    xml = ""
+fields = []
+for n in re.findall(r"<node\b[^>]*>", xml):
+    if 'class="android.widget.EditText"' in n:
+        m = re.search(r'\btext="([^"]*)"', n)
+        fields.append(m.group(1) if m else "")
+if len(fields) >= 1 and "market@zylod.bd" in fields[0]:
+    email_ok = "yes"
+if len(fields) >= 2 and len(fields[1]) > 0:
+    pass_ok = "yes"
+print(f"admin-email-registered={email_ok}")
+print(f"admin-password-registered={pass_ok}")
+PYEOF
+}
+
 # t238: close the soft keyboard if it is showing (BACK dismisses the IME
 # before it pops a route) so it cannot cover the next EditText tap.
 hide_ime () {
@@ -474,6 +531,41 @@ dump_login_logcat () {
   grep -E "ZylodAuth|ZylodDeals|login|Login" /tmp/llog.txt > screenshots/login-logcat.txt 2>/dev/null || true
   wc -l screenshots/login-logcat.txt || true
   tail -400 /tmp/llog.txt > screenshots/login-logcat-full-pid.txt 2>/dev/null || true
+}
+
+# t249: ADMIN-SCOPED copies of dump_login_prefs / dump_login_logcat — same
+# shape and conventions, but SEPARATE output files (admin-prefs.txt,
+# admin-logcat.txt, admin-logcat-full-pid.txt) so the buyer login's
+# decision-time evidence captured by login_buyer is never overwritten.
+# dump_admin_logcat additionally greps the ZylodAdmin tag (the admin view-
+# models' Log tag, AdminUsersViewModel.kt:360 et al). Never fatal.
+dump_admin_prefs () {
+  {
+    echo "=== shared_prefs — admin segment ($(date -u '+%Y-%m-%dT%H:%M:%SZ')) ==="
+    PREFS_FILES=$(timeout 15 adb shell run-as com.zylod.wholesale.debug ls shared_prefs 2>/dev/null | tr -d '\r' || true)
+    echo "$PREFS_FILES"
+    for xml in $PREFS_FILES; do
+      case "$xml" in
+        *.xml)
+          echo "===== shared_prefs/$xml ====="
+          timeout 15 adb shell run-as com.zylod.wholesale.debug cat "shared_prefs/$xml" 2>/dev/null | head -80 || true
+          ;;
+      esac
+    done
+  } > screenshots/admin-prefs.txt 2>&1 || true
+}
+
+dump_admin_logcat () {
+  local PID
+  PID=$(app_pid)
+  if [ -n "$PID" ]; then
+    timeout 20 adb logcat -d --pid="$PID" > /tmp/allog.txt 2>/dev/null || true
+  else
+    timeout 20 adb logcat -d > /tmp/allog.txt 2>/dev/null || true
+  fi
+  grep -E "ZylodAuth|ZylodDeals|ZylodAdmin|login|Login" /tmp/allog.txt > screenshots/admin-logcat.txt 2>/dev/null || true
+  wc -l screenshots/admin-logcat.txt || true
+  tail -400 /tmp/allog.txt > screenshots/admin-logcat-full-pid.txt 2>/dev/null || true
 }
 
 # t241: deals logcat (ZylodDeals), same --pid scoping as the login evidence
@@ -620,12 +712,52 @@ fresh_login_mount () {
   login_screen_ok
 }
 
+# t249: clear the buyer session the authed suite left over, so the admin
+# segment can sign in as the seeded admin. The Profile screen is the only
+# surface with a "Sign out" control (ProfileScreen.kt:151,
+# onClick = vm::signOut — no confirmation dialog): tap the bottom-bar
+# Profile tab; when the bar is unreachable (a fullscreen route hides it)
+# recover via ensure_home first. Already-guest (the buyer login failed
+# earlier in this run) → verified no-op. Best-effort: every step non-fatal;
+# a stuck session only means login_admin honestly reports an unverified
+# admin session and the three admin captures show the gate.
+sign_out_current_session () {
+  tap_tab "Profile" || true
+  sleep 6
+  if ! ui_has_text "Sign out"; then
+    if ensure_home; then
+      tap_tab "Profile" || true
+      sleep 6
+    fi
+  fi
+  if ! ui_has_text "Sign out"; then
+    echo "sign_out_current_session: no 'Sign out' visible — already guest (or the Profile gate); nothing to clear"
+    return 0
+  fi
+  tap_clickable_text "Sign out" || true
+  sleep 6
+  if ui_has_text "Sign out"; then
+    echo "::warning::sign_out_current_session: 'Sign out' STILL visible after the tap — session may persist; login_admin will report the honest outcome"
+    return 1
+  fi
+  echo "sign_out_current_session: session cleared ✓ (the next Profile tap opens the native login via the guest policy)"
+  return 0
+}
+
 # t244: verdict of the LATEST check_typed_text run — it appends exactly two
 # lines per call (email line first) to screenshots/login-typed-check.txt, so
 # tail -2 is always the newest pair. Exit 0 iff typed-email-registered=yes.
 # Never fatal (missing file / grep miss reads as "no").
 typed_email_ok () {
   tail -2 screenshots/login-typed-check.txt 2>/dev/null | grep -q "^typed-email-registered=yes$"
+}
+
+# t249: verdict of the LATEST check_admin_typed_text run — same tail -2
+# contract as typed_email_ok (the admin variant appends exactly two lines
+# per call, admin-email-registered first). Never fatal (missing file /
+# grep miss reads as "no").
+admin_typed_email_ok () {
+  tail -2 screenshots/admin-login-check.txt 2>/dev/null | grep -q "^admin-email-registered=yes$"
 }
 
 # t244: type BOTH login fields, each after its OWN fresh dump — the first
@@ -635,7 +767,12 @@ typed_email_ok () {
 # documents). Cadence per the t244 spec: tap → sleep 1 → input text →
 # hide_ime (→ sleep 1 before the next dump). Never fatal: a missing field
 # only warns; check_typed_text records what actually landed.
-login_type_fields () {
+# t249: optional $1 = the email to type (default stays the seeded buyer);
+# the admin segment passes the seeded admin's address. The password is the
+# one shared seeded password seed-marketplace.mjs registers every account
+# with (same string the buyer flow below already types).
+login_type_fields () { # [email]
+  local email="${1:-buyer1@zylod.bd}"
   adbt 20 uiautomator dump /sdcard/ui.xml > /dev/null 2>&1
   timeout 15 adb pull /sdcard/ui.xml /tmp/ui.xml > /dev/null 2>&1 || true
   local c
@@ -643,7 +780,7 @@ login_type_fields () {
   if [ -n "$c" ]; then
     adbt 20 input tap $c
     sleep 1
-    adbt 20 input text "buyer1@zylod.bd"
+    adbt 20 input text "$email"
     hide_ime
     sleep 1
   else
@@ -785,6 +922,124 @@ login_buyer () {
     return 0
   fi
   echo "::warning::login_buyer: AUTH NOT VERIFIED after the retry round — continuing as guest; downstream gated captures will show the login gate (acceptable, non-fatal)"
+  return 1
+}
+
+# t249: sign in the SEEDED ADMIN (scripts/qa/seed-marketplace.mjs registers
+# it through the real /api/auth/register rails as the FIRST account on the
+# empty CI database — the admin-bootstrap gate (adminCount == 0) admits it:
+# market@zylod.bd, the shared seeded password, userType "admin") on the SAME
+# native login screen login_buyer uses, then verify the session. Mirrors the
+# t244 state machine exactly (clean mount → per-field typing with fresh
+# dumps → typed proof → submit → sleep 14 → unconditional diagnostic →
+# strict verify → ONE full retry round → decision-time evidence), with
+# three admin-specific differences:
+#   1. the typed email is the seeded admin's (passed to login_type_fields),
+#      proven by check_admin_typed_text into screenshots/admin-login-check.txt
+#      (admin-email-registered / admin-password-registered);
+#   2. evidence files are ADMIN-SCOPED (admin-prefs.txt, admin-logcat.txt,
+#      admin-logcat-full-pid.txt) so the buyer's decision-time dumps
+#      survive;
+#   3. the verdict + a verbatim failure reason land in
+#      screenshots/admin-login-check.txt (admin-session-verified=yes/no,
+#      admin-failure-reason=...).
+# Returns 0 when the admin session is verified, 1 otherwise (the caller
+# still captures the three admin surfaces — they will honestly show the
+# gate; never fatal).
+login_admin () {
+  local attempt i mounted=0 verified=0 typed="no" reason="unknown"
+  for attempt in 1 2; do
+    if fresh_login_mount; then
+      mounted=1
+      break
+    fi
+    echo "login_admin: fresh mount attempt $attempt — main login form NOT verified"
+  done
+  if [ "$mounted" -eq 0 ]; then
+    echo "::warning::login_admin: NOT on the login screen after 2 fresh mounts — capturing screenshots/27z-admin-login-screen-wrong.png and skipping the admin sign-in (non-fatal)"
+    cap screenshots/27z-admin-login-screen-wrong.png
+    {
+      echo "admin-session-verified=no"
+      echo "admin-failure-reason=login screen never mounted (login_screen_ok failed after 2 fresh mounts — see 27z-admin-login-screen-wrong.png)"
+    } >> screenshots/admin-login-check.txt 2>/dev/null || true
+    return 1
+  fi
+  # (b)+(c) type both fields with the ADMIN email (fresh dump per field),
+  # then (d) the typed proof into screenshots/admin-login-check.txt.
+  login_type_fields "market@zylod.bd"
+  check_admin_typed_text
+  if admin_typed_email_ok; then typed="yes"; fi
+  # (e) admin-email-registered=no → ONE retype round; still no → submit
+  # ANYWAY (the empty-submit ZylodAuth log line disambiguates tap-miss vs
+  # typing-fail).
+  if [ "$typed" != "yes" ]; then
+    echo "::warning::login_admin: admin-email-registered=no — ONE retype round (fresh mount + fresh per-field dumps)"
+    if fresh_login_mount; then
+      login_type_fields "market@zylod.bd"
+    else
+      echo "::warning::login_admin: retype round skipped — fresh mount still cannot verify the login form (submit below proceeds for diagnostics)"
+    fi
+    check_admin_typed_text
+    if admin_typed_email_ok; then
+      typed="yes"
+    else
+      reason="typed admin email never landed in the login form (admin-email-registered=no after the retype round)"
+      echo "::warning::login_admin: admin-email STILL no — submitting ANYWAY (empty submit still emits a ZylodAuth log line iff the button works)"
+    fi
+  fi
+  # (f) submit — tap_clickable_text falls back to tap_text internally when
+  # no clickable "Login" node exists.
+  tap_clickable_text "Login"
+  echo "admin: submit tapped (typed= $typed)"
+  echo "admin-login-submitted=yes" >> screenshots/admin-login-check.txt 2>/dev/null || true
+  # (g) settle, then the post-tap diagnostic — UNCONDITIONAL.
+  sleep 14
+  cap screenshots/27z-after-admin-login-tap.png
+  # (h) strict verify (the same signed-in needles as login_buyer — the only
+  # credentials submitted in this segment are the admin's, so a verified
+  # session IS the admin session); on fail ONE full retry round.
+  for i in 1 2 3; do
+    if login_verify_ok; then
+      verified=1
+      break
+    fi
+    sleep 5
+  done
+  if [ "$verified" -eq 0 ]; then
+    echo "::warning::login_admin: admin session NOT verified after the first submit — ONE retry round: fresh mount → retype → re-tap Login"
+    if fresh_login_mount; then
+      login_type_fields "market@zylod.bd"
+    else
+      echo "::warning::login_admin: retry retype skipped — fresh mount cannot verify the login form (re-tap below still runs)"
+    fi
+    tap_clickable_text "Login"
+    echo "admin: submit re-tapped (retry round, typed= $typed)"
+    sleep 14
+    cap screenshots/27z-after-admin-login-retry.png
+    for i in 1 2 3; do
+      if login_verify_ok; then
+        verified=1
+        break
+      fi
+      sleep 5
+    done
+  fi
+  # (i) decision-time evidence either way (admin-scoped; never fatal).
+  dump_admin_prefs
+  dump_admin_logcat
+  if [ "$verified" -eq 1 ]; then
+    echo "login_admin: admin session verified ✓ (strict verify: Sign out, or home without login-screen signals)"
+    echo "admin-session-verified=yes" >> screenshots/admin-login-check.txt 2>/dev/null || true
+    return 0
+  fi
+  if [ "$typed" = "yes" ]; then
+    reason="submit fired but no signed-in state was verified (login_verify_ok failed after submit + retry — see 27z-after-admin-login-retry.png and admin-logcat.txt)"
+  fi
+  {
+    echo "admin-session-verified=no"
+    echo "admin-failure-reason=$reason"
+  } >> screenshots/admin-login-check.txt 2>/dev/null || true
+  echo "::warning::login_admin: admin session NOT verified — the three admin captures will honestly show the gate (non-fatal)"
   return 1
 }
 
@@ -1072,6 +1327,66 @@ guarded_deeplink "18-orders-authed" 10 "zylod://buyer-orders"
 # t248: the two typed admin surfaces — moderation + operations queues.
 guarded_deeplink "19-admin-users" 10 "zylod://admin-users"
 guarded_deeplink "20-admin-orders" 10 "zylod://admin-orders"
+
+log "t249: AUTHED ADMIN segment — buyer sign-out, seeded-admin sign-in (market@zylod.bd from scripts/qa/seed-marketplace.mjs), three authed admin captures"
+{
+  echo "=== t249 admin segment start $(date -u '+%Y-%m-%dT%H:%M:%SZ') ==="
+  echo "admin-email-typed-target=market@zylod.bd"
+} >> screenshots/admin-login-check.txt 2>/dev/null || true
+ADMIN_AUTHED=0
+if budget_stop; then
+  {
+    echo "admin-session-verified=no"
+    echo "admin-failure-reason=capture budget exhausted before the admin segment"
+  } >> screenshots/admin-login-check.txt 2>/dev/null || true
+else
+  sign_out_current_session || true
+  if login_admin; then
+    ADMIN_AUTHED=1
+  fi
+  if [ "$ADMIN_AUTHED" -eq 1 ]; then
+    log "t249: admin session verified ✓ — authed admin dashboard/users/orders captures"
+  else
+    log "t249: admin session NOT verified — capturing the three admin surfaces anyway (honest gate shots; reason in admin-login-check.txt)"
+  fi
+  # 25 — deals-style settle-poll (t239 pattern): the dashboard either renders
+  # authed KPI content ("Platform overview" / "Recent activity",
+  # AdminDashboardScreen.kt:331/188) or the honest admin gate ("Admin
+  # account required", :813). ANY of the three means the screen finished
+  # deciding — never a bare spinner. The authed-vs-gate verdict is recorded
+  # in admin-login-check.txt (admin-dashboard-content-verified).
+  if budget_stop; then
+    echo "capture 25: SKIPPED — capture budget exhausted"
+  elif ensure_home; then
+    echo "capture 25: ensure_home=0 — firing zylod://admin-dashboard (admin session verified: $ADMIN_AUTHED)"
+    adbt 15 am start -a android.intent.action.VIEW -d "zylod://admin-dashboard" com.zylod.wholesale.debug >/dev/null 2>&1
+    ADMIN_DASH_SETTLED=0
+    for i in 1 2 3 4; do
+      sleep 5
+      if any_text_on_screen "Platform overview" "Recent activity" "Admin account required"; then
+        ADMIN_DASH_SETTLED=1
+        break
+      fi
+    done
+    if [ "$ADMIN_DASH_SETTLED" -eq 0 ]; then
+      echo "::warning::capture 25: admin dashboard content not detected within 20s — capturing current state anyway"
+    fi
+    if [ "$ADMIN_DASH_SETTLED" -eq 1 ] && any_text_on_screen "Platform overview" "Recent activity"; then
+      echo "admin-dashboard-content-verified=yes" >> screenshots/admin-login-check.txt 2>/dev/null || true
+    else
+      echo "admin-dashboard-content-verified=no" >> screenshots/admin-login-check.txt 2>/dev/null || true
+    fi
+    cap "screenshots/25-admin-dashboard-authed.png"
+  else
+    echo "capture 25: SKIPPED — ensure_home=1 (zylod://admin-dashboard fired off-home would queue)"
+    echo "::warning::capture 25-admin-dashboard-authed skipped: ensure_home failed (queue desync guard)"
+  fi
+  # 26/27 — 12s settle (users/orders load over the local server;
+  # guarded_deeplink enforces the HOME_ROUTE queue-drain guard before each
+  # link). Budget-guarded + non-fatal like every capture above.
+  guarded_deeplink "26-admin-users-authed" 12 "zylod://admin-users"
+  guarded_deeplink "27-admin-orders-authed" 12 "zylod://admin-orders"
+fi
 
 log "Screen inventory"
 ls -la screenshots/ || true
