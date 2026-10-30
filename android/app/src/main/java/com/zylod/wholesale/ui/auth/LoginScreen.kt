@@ -1,6 +1,7 @@
 package com.zylod.wholesale.ui.auth
 
 import android.content.Context
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -157,6 +158,10 @@ class LoginViewModel(private val appContext: Context) : ViewModel() {
     }
 
     fun submit(emailOrPhone: String, password: String, captchaAnswer: String) {
+        // t242: proof-of-life at the submit boundary — if this line is absent
+        // from logcat, the tap never reached the ViewModel. Presence + length
+        // only; the password is NEVER logged.
+        Log.i("ZylodAuth", "login submit emailPresent=${emailOrPhone.isNotBlank()} emailLen=${emailOrPhone.trim().length}")
         if (emailOrPhone.isBlank() || password.isBlank()) {
             _state.update { it.copy(error = "Please enter your email/phone and password") }
             return
@@ -193,13 +198,18 @@ class LoginViewModel(private val appContext: Context) : ViewModel() {
                 else LoginRequest(phone = emailOrPhone.trim(), password = password)
                 val response = api().login(request)
                 if (!response.isSuccessful) {
-                    handleAuthFailure(response.code(), parseErrorBody(response.errorBody()))
+                    // t242: parse ONCE (errorBody is single-read) and log the
+                    // server-side message at the network boundary.
+                    val err = parseErrorBody(response.errorBody())
+                    Log.w("ZylodAuth", "login failed: ${err.error ?: "HTTP ${response.code()}"}")
+                    handleAuthFailure(response.code(), err)
                     _state.update { it.copy(loading = false) }
                     return@launch
                 }
                 val data = response.body() ?: LoginResponse()
                 AuthRateLimit.reset(appContext)
                 if (data.requires2FA && data.userId != null) {
+                    Log.i("ZylodAuth", "login http=${response.code()} tokenStored=false (2FA required)")
                     _state.update {
                         it.copy(loading = false, toast = "Security verification required — enter your two-factor code to continue.", twoFactorUserId = data.userId)
                     }
@@ -209,12 +219,15 @@ class LoginViewModel(private val appContext: Context) : ViewModel() {
                 val token = data.token
                 if (user != null && token != null) {
                     completeLogin(token, user, "Welcome back! You have been logged in successfully.")
+                    Log.i("ZylodAuth", "login http=${response.code()} tokenStored=true")
                 } else {
+                    Log.i("ZylodAuth", "login http=${response.code()} tokenStored=false")
                     _state.update { it.copy(loading = false, error = "Login succeeded but no session was returned") }
                 }
             } catch (ce: CancellationException) {
                 throw ce
             } catch (e: Exception) {
+                Log.w("ZylodAuth", "login failed: ${e.message}")
                 _state.update { it.copy(loading = false, error = "Network error. Please check your connection and try again.") }
             }
         }
@@ -364,6 +377,14 @@ fun LoginScreen(
     }
     LaunchedEffect(state.toast) {
         state.toast?.let { snackbar.showSnackbar(it); vm.consumeToast() }
+    }
+    // t242: login failures must never be silent — ZylodButton forces
+    // `enabled && !loading`, so a tap on a stuck/loading button no-ops
+    // without any visual feedback. Every submit() failure path already
+    // sets state.error (inline ErrorBanner); the same message now also
+    // surfaces on the screen's SnackbarHost.
+    LaunchedEffect(state.error) {
+        state.error?.let { snackbar.showSnackbar(it) }
     }
     // t229h: the lockout countdown MOVED into [LockoutBanner]. The former
     // screen-level ticker decremented a local variable nobody rendered —

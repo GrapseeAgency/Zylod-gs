@@ -65,13 +65,22 @@ class DealsViewModel(private val appContext: Context) : ViewModel() {
     private var flashTotalPages = 0
     private var dailyTotalPages = 0
 
-    /** Entry pull / retry (OrdersScreen t208 parity: called on EVERY entry). */
+    /**
+     * Entry pull / retry (OrdersScreen t208 parity: called on EVERY entry).
+     * t242: the guard must NOT key on the initial `loading = true` — the
+     * state STARTS loading with zero rows, so the old
+     * `if (loading || loadingMore) return` no-oped the FIRST refresh call
+     * and the screen spun forever with zero network requests. Only a
+     * refresh already in flight WITH data on screen is a no-op (t216
+     * silent-refresh convention: never blank visible data behind a spinner
+     * — the fetch replaces it in place).
+     */
     fun refresh() {
-        if (_state.value.loading || _state.value.loadingMore) return
-        // t216 silent-refresh convention: with data already on screen, never
-        // blank it behind a spinner — refresh replaces it in place.
-        val hasData = _state.value.flashDeals.isNotEmpty() || _state.value.dailyDeals.isNotEmpty()
-        _state.value = _state.value.copy(loading = !hasData, offline = false, error = null)
+        val s = _state.value
+        val hasData = s.flashDeals.isNotEmpty() || s.dailyDeals.isNotEmpty()
+        if (s.loadingMore) return
+        if (s.loading && hasData) return // a refresh already in flight with data on screen
+        _state.value = s.copy(loading = !hasData, offline = false, error = null)
         viewModelScope.launch { fetch(pageNumber = 1, replace = true) }
     }
 
@@ -86,17 +95,21 @@ class DealsViewModel(private val appContext: Context) : ViewModel() {
 
     private suspend fun fetch(pageNumber: Int, replace: Boolean) {
         try {
+            // t242 instrumentation — CI proves app-vs-server with ZylodDeals.
+            Log.i("ZylodDeals", "fetch page=$pageNumber replace=$replace")
             val base = baseUrl ?: ServerConfig.resolve(appContext).also { baseUrl = it }
             val response = ApiClient.dealsApi(base).deals(type = "all", page = pageNumber, limit = PAGE_LIMIT)
             if (!response.isSuccessful) {
                 val message = parseErrorBody(response.errorBody()).error
                     ?.takeIf(String::isNotBlank)
                     ?: "Could not load deals (HTTP ${response.code()})"
+                Log.w("ZylodDeals", "deals error: $message")
                 degrade(message)
                 return
             }
             val body = response.body()
             val data = body?.takeIf { it.success }?.data
+            Log.i("ZylodDeals", "deals http=${response.code()} flash=${data?.flashDeals?.size ?: -1} daily=${data?.dailyDeals?.size ?: -1}")
             if (data == null) {
                 degrade("Could not load deals")
                 return
@@ -120,7 +133,8 @@ class DealsViewModel(private val appContext: Context) : ViewModel() {
             persistCache(dedupedFlash, dedupedDaily, body.pagination)
         } catch (ce: CancellationException) {
             throw ce
-        } catch (_: Exception) {
+        } catch (e: Exception) {
+            Log.w("ZylodDeals", "fetch failed: ${e.message}")
             degrade("Network error while loading deals. Check your connection and retry.")
         }
     }

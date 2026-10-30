@@ -31,6 +31,19 @@
 #   3. 10-deals / 22-hot-deals captured BARE SPINNERS — both settle-poll 25s
 #      for card-level deal strings and dump deals logcat + server deals JSON
 #      on timeout (server-empty vs app-bug is visible in the artifact).
+#
+# t242 FIXES (submit-tap precision + typed-text proof):
+#   1. login_buyer submits via tap_clickable_text — uiautomator dump → python
+#      parse → first node whose text/content-desc contains the target AND
+#      clickable="true" AND bounds valid → tap its center, FALL BACK to
+#      tap_text when none matches. tap_text's first-text-match could hit a
+#      same-named NON-clickable Text (page title / dialog heading) and the
+#      submit no-oped silently — zero auth requests issued.
+#   2. TYPED-TEXT PROOF: after typing, a fresh dump checks the EditText text
+#      attrs — email must contain buyer1@zylod.bd, password must be
+#      non-empty (length only, NEVER printed) — and appends
+#      typed-email-registered=yes/no + typed-password-registered=yes/no to
+#      screenshots/login-typed-check.txt (never fatal).
 set -u
 mkdir -p screenshots
 
@@ -88,6 +101,80 @@ tap_text () {
     timeout 20 adb shell input tap $bounds && echo "tapped '$text' at $bounds"
   else
     echo "::warning::text '$text' not found on screen"
+  fi
+}
+
+# t242: tap a BUTTON by its visible text — the tap must land on a CLICKABLE
+# node. uiautomator dump → python parse → first node whose text (or
+# content-desc) contains the target AND clickable="true" AND bounds valid →
+# tap its center; no such node → fall back to the t187 tap_text (first text
+# match, clickable or not). Needed because tap_text's first-text-match can
+# hit a same-named NON-clickable Text (page title, dialog heading — e.g.
+# "Sign in with your email" when probing "Sign in") and the submit tap
+# no-oped silently: zero auth requests, spinner forever. Same dump/pull/
+# timeout conventions as tap_text; never fatal.
+tap_clickable_text () {
+  local text="$1"
+  adbt 20 uiautomator dump /sdcard/ui.xml > /dev/null 2>&1
+  timeout 15 adb pull /sdcard/ui.xml ui.xml > /dev/null 2>&1 || true
+  local bounds
+  bounds=$(python3 - "$text" ui.xml <<'PYEOF'
+import re, sys
+try:
+    xml = open(sys.argv[2], encoding="utf-8", errors="ignore").read()
+except OSError:
+    sys.exit(0)
+target = sys.argv[1]
+nodes = re.findall(r"<node\b[^>]*>", xml)
+clickables = []
+for n in nodes:
+    if 'clickable="true"' not in n:
+        continue
+    m = re.search(r'\bbounds="\[(\d+),(\d+)\]\[(\d+),(\d+)\]"', n)
+    if not m:
+        continue
+    l, t, r, b = (int(x) for x in m.groups())
+    if r - l <= 0 or b - t <= 0:
+        continue  # degenerate bounds are never valid tap targets
+    hay = " ".join(re.findall(r'\b(?:text|content-desc)="([^"]*)"', n))
+    clickables.append((hay, l, t, r, b))
+# 1) a clickable node whose OWN text/content-desc contains the target.
+for hay, l, t, r, b in clickables:
+    if target in hay:
+        print(f"{(l + r) // 2} {(t + b) // 2}")
+        sys.exit(0)
+# 2) Compose may keep the label on a NON-clickable Text child inside the
+#    clickable Button: use the matching text node's center only when a
+#    clickable node actually CONTAINS that point — innermost (smallest
+#    area) clickable wins. A same-named title OUTSIDE any clickable is
+#    skipped, so the button further down still matches.
+for n in nodes:
+    hay = " ".join(re.findall(r'\b(?:text|content-desc)="([^"]*)"', n))
+    if target not in hay:
+        continue
+    m = re.search(r'\bbounds="\[(\d+),(\d+)\]\[(\d+),(\d+)\]"', n)
+    if not m:
+        continue
+    l, t, r, b = (int(x) for x in m.groups())
+    cx, cy = (l + r) // 2, (t + b) // 2
+    best = None
+    for hay2, cl, ct, cr, cb in clickables:
+        if cl <= cx <= cr and ct <= cy <= cb:
+            area = (cr - cl) * (cb - ct)
+            if best is None or area < best[0]:
+                best = (area, cl, ct, cr, cb)
+    if best is not None:
+        _, cl, ct, cr, cb = best
+        print(f"{(cl + cr) // 2} {(ct + cb) // 2}")
+        sys.exit(0)
+sys.exit(0)
+PYEOF
+)
+  if [ -n "$bounds" ]; then
+    timeout 20 adb shell input tap $bounds && echo "tapped clickable '$text' at $bounds"
+  else
+    echo "tap_clickable_text: no clickable '$text' node — falling back to tap_text"
+    tap_text "$text"
   fi
 }
 
@@ -177,6 +264,39 @@ hits = [
 ]
 if len(hits) >= idx:
     print(f"{hits[idx - 1][0]} {hits[idx - 1][1]}")
+PYEOF
+}
+
+# t242 TYPED-TEXT PROOF: fresh dump — did the typed text actually land in the
+# login form's EditTexts? #1's text attr must contain the seeded address,
+# #2's must be non-empty (checked by LENGTH only — the password itself is
+# NEVER printed, here or in the evidence file). Appends
+#   typed-email-registered=yes/no
+#   typed-password-registered=yes/no
+# to screenshots/login-typed-check.txt. Never fatal: a missing dump or a
+# parse hiccup just records "no". Field order assumption is the same one
+# edittext_center documents (1st = email, 2nd = password).
+check_typed_text () {
+  adbt 20 uiautomator dump /sdcard/ui.xml > /dev/null 2>&1
+  timeout 15 adb pull /sdcard/ui.xml /tmp/ui.xml > /dev/null 2>&1 || true
+  python3 - /tmp/ui.xml >> screenshots/login-typed-check.txt 2>/dev/null <<'PYEOF'
+import re, sys
+email_ok, pass_ok = "no", "no"
+try:
+    xml = open(sys.argv[1], encoding="utf-8", errors="ignore").read()
+except OSError:
+    xml = ""
+fields = []
+for n in re.findall(r"<node\b[^>]*>", xml):
+    if 'class="android.widget.EditText"' in n:
+        m = re.search(r'\btext="([^"]*)"', n)
+        fields.append(m.group(1) if m else "")
+if len(fields) >= 1 and "buyer1@zylod.bd" in fields[0]:
+    email_ok = "yes"
+if len(fields) >= 2 and len(fields[1]) > 0:
+    pass_ok = "yes"
+print(f"typed-email-registered={email_ok}")
+print(f"typed-password-registered={pass_ok}")
 PYEOF
 }
 
@@ -367,11 +487,18 @@ login_buyer () {
   else
     echo "::warning::login: no password EditText found on the login screen"
   fi
+  # t242 TYPED-TEXT PROOF: both fields typed — record what the UI actually
+  # holds BEFORE submitting (evidence only; never fatal, never prints the
+  # password).
+  check_typed_text
   # Submit: the native form's button is labelled "Login" (ZylodButton).
+  # t242: tap_clickable_text — the tap must land on the CLICKABLE node;
+  # tap_text's first-text-match could hit a same-named non-clickable label
+  # and no-op with zero auth requests (falls back to tap_text).
   if ui_has_text "Login"; then
-    tap_text "Login"
+    tap_clickable_text "Login"
   elif ui_has_text "Sign in"; then
-    tap_text "Sign in"
+    tap_clickable_text "Sign in"
   else
     echo "::warning::login: no Login/Sign-in button found on screen"
   fi
@@ -412,9 +539,9 @@ login_buyer () {
       sleep 2
       hide_ime
       if ui_has_text "Login"; then
-        tap_text "Login"
+        tap_clickable_text "Login"
       elif ui_has_text "Sign in"; then
-        tap_text "Sign in"
+        tap_clickable_text "Sign in"
       else
         echo "::warning::login retry: no Login/Sign-in button found on screen"
       fi
