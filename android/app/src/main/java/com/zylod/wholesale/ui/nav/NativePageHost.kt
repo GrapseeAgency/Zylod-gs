@@ -23,9 +23,9 @@ fun NativePageHost(
     val entry = NativePageRegistry.entryFor(pageId)
     if (entry != null) {
         entry.content(
-            onBack = if (entry.tabLike) null else onBack,
-            openPage = openPage,
-            query = query,
+            if (entry.tabLike) null else onBack,
+            openPage,
+            query,
         )
     } else {
         com.zylod.wholesale.ui.web.WebScreen(pageId = pageId, query = query)

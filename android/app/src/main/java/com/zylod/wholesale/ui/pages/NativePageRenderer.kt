@@ -328,7 +328,10 @@ private fun CardThumbnail(card: NativePageCard) {
         contentAlignment = Alignment.Center,
     ) {
         if (url != null) {
-            val placeholder = remember { ColorPainter(MaterialTheme.colorScheme.surfaceVariant) }
+            // colorScheme is a @Composable getter — read it OUTSIDE remember
+            // (composable calls are not allowed in remember's calculation lambda).
+            val placeholderColor = MaterialTheme.colorScheme.surfaceVariant
+            val placeholder = remember(placeholderColor) { ColorPainter(placeholderColor) }
             AsyncImage(
                 model = remember(url) {
                     ImageRequest.Builder(context).data(url).crossfade(200).build()

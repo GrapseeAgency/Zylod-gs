@@ -1,8 +1,16 @@
 package com.zylod.wholesale.ui.nav
 
 import androidx.compose.runtime.Composable
+import com.zylod.wholesale.ui.cart.CartPageMeta
+import com.zylod.wholesale.ui.categories.CategoriesPageMeta
+import com.zylod.wholesale.ui.deals.DealsPageMeta
+import com.zylod.wholesale.ui.home.HomePageMeta
+import com.zylod.wholesale.ui.notifications.NotificationsPageMeta
 import com.zylod.wholesale.ui.pages.NativePageMeta
+import com.zylod.wholesale.ui.profile.ProfilePageMeta
+import com.zylod.wholesale.ui.search.SearchPageMeta
 import com.zylod.wholesale.ui.screens.*
+import com.zylod.wholesale.ui.wishlist.WishlistPageMeta
 
 /**
  * t233 — THE Kotlin page registry: EVERY pageId the web SPA serves

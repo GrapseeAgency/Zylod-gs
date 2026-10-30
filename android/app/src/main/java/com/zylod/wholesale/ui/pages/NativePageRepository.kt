@@ -47,13 +47,15 @@ object NativePageRepository {
                 .url(url)
                 .header("User-Agent", "ZylodNative/${BuildConfig.VERSION_NAME}")
                 .build()
-            val payload = withContext(Dispatchers.IO) {
+            // Explicit Pair type: without it the lambda's branches (Pair vs bare
+            // String?) unify to Serializable? and the destructuring below fails.
+            val payload: Pair<String?, String?> = withContext(Dispatchers.IO) {
                 ApiClient.okHttpClient().newCall(request).execute().use { response ->
                     val body = response.body?.string()
                     if (!response.isSuccessful) {
-                        return@withContext null to "Server error (HTTP ${response.code()}) while loading ${meta.title}."
+                        return@withContext null to "Server error (HTTP ${response.code}) while loading ${meta.title}."
                     }
-                    body
+                    body to null
                 }
             }
             val (body, error) = payload

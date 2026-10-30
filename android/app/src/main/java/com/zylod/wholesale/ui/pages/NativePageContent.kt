@@ -58,9 +58,14 @@ object NativePageContent {
     }
 
     /** Human source line shown under the page title (provenance, honest). */
-    fun sourceLine(meta: NativePageMeta): String = when {
-        meta.endpoint == null -> "Curated native page — ${meta.category}"
-        else -> "Live from ${meta.endpoint.substringBefore('?')} · ${meta.category}"
+    fun sourceLine(meta: NativePageMeta): String {
+        // Local val: meta.endpoint is an abstract (custom-getter) property, so a
+        // null-check on it can never smart-cast — snapshot it first.
+        val endpoint = meta.endpoint
+        return when {
+            endpoint == null -> "Curated native page — ${meta.category}"
+            else -> "Live from ${endpoint.substringBefore('?')} · ${meta.category}"
+        }
     }
 
     // ── Live payload parsing ────────────────────────────────────────────

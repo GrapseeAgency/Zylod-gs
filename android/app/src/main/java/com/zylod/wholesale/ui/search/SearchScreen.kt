@@ -264,7 +264,9 @@ private fun SearchResultCard(product: ProductDto, openPage: (pageId: String, que
                 contentAlignment = Alignment.Center,
             ) {
                 if (url != null) {
-                    val placeholder = remember { ColorPainter(MaterialTheme.colorScheme.surfaceVariant) }
+                    // colorScheme is a @Composable getter — read it OUTSIDE remember.
+                    val placeholderColor = MaterialTheme.colorScheme.surfaceVariant
+                    val placeholder = remember(placeholderColor) { ColorPainter(placeholderColor) }
                     AsyncImage(
                         model = remember(url) { ImageRequest.Builder(context).data(url).crossfade(200).build() },
                         contentDescription = product.name,
