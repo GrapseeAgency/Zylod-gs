@@ -157,6 +157,35 @@
 #     (AdminDashboardViewModel.kt:86/:101) — admin-session-verified=yes only
 #     when the injection steps ALL succeeded AND (a) or (b) holds.
 #   Passwords are NEVER printed (length-only, matching the existing style).
+#
+# t249-g BROADCAST-RECEIVER DELIVERY (this change) — REPLACES the t249-f CDP
+# WebView-bridge delivery, which failed TWICE in CI: no webview_devtools_*
+# socket ever appeared in /proc/net/unix, so Runtime.evaluate had no target
+# and the token never reached the app (UI typing never lands in the Compose
+# fields either). New mechanism: a DEBUG-VARIANT-ONLY broadcast receiver
+# (android/app/src/debug/java/com/zylod/wholesale/debug/
+# DebugSessionReceiver.kt — pure Kotlin, compiled ONLY into assembleDebug;
+# release builds never see the src/debug source set) handling
+#   am broadcast -a com.zylod.wholesale.DEBUG_SET_SESSION
+#     --es token <opaque> --es user_json <login user JSON> --es user_type <role>
+# The receiver writes the session through the app's OWN SessionManager
+# .setSession(token, userJson) — exactly what a real login does
+# (LoginScreen.kt:289-291) — so the EncryptedSharedPreferences store
+# ("zylod_secure") stays self-consistent: the app produces its own ciphertext
+# (a host-side plaintext write is impossible against that store — AEAD).
+# ORDER MATTERS: a manifest-declared receiver is not delivered to a STOPPED
+# app, so ensure_home runs FIRST (the app launched long before the injection
+# blocks), then the broadcast fires, then the receiver's ZylodDebugSession
+# logcat line is polled (up to 15s) as delivery proof (logcat -c right
+# before the broadcast keeps the poll unambiguous across roles), then
+# force-stop → logcat -c → relaunch → ensure_home proves the session
+# SURVIVED a cold start. The old CDP inject_session() stays in the file for
+# reference but is NEVER called. Evidence keys: injection-method=
+# debug-broadcast-receiver, api-login=ok|err, broadcast-delivered=yes|no,
+# session-user-type=<role> (+ failure-reason / broadcast-log). Admin
+# verification additionally treats BOTH http=401 AND http=403 in the
+# ZylodAdmin logcat as failure (403 = authenticated non-admin). Passwords
+# and tokens are NEVER printed (lengths only).
 set -u
 mkdir -p screenshots
 
@@ -545,11 +574,15 @@ INJECTION_REASON="not attempted"
 # t249-f (1): REAL login against the served backend. Request/response
 # contract copied verbatim from src/app/api/auth/login/route.ts: POST JSON
 # {email, password} -> 200 {success:true, token, requires2FA:false, user:{...}}
-# (token is a TOP-LEVEL field, route.ts:167-182). Sets TOKEN + API_LOGIN_REASON.
+# (token is a TOP-LEVEL field, route.ts:167-182). Sets TOKEN +
+# API_LOGIN_REASON + API_LOGIN_USER_JSON (t249-g: the response's user object
+# as compact ASCII-safe JSON — the broadcast receiver re-parses it with the
+# app's own serializer and stores the profile exactly like a real login).
 # The password is never echoed; the reason carries a token LENGTH only.
 api_login_token () { # email password
   TOKEN=""
   API_LOGIN_REASON="curl failed"
+  API_LOGIN_USER_JSON=""
   local resp
   resp=$(timeout 20 curl -s -X POST "$HOST_API_BASE/api/auth/login" \
     -H 'Content-Type: application/json' \
@@ -570,6 +603,17 @@ if isinstance(t, str) and t:
     API_LOGIN_REASON="login API gave no token (non-200 or bad credentials; response $(printf '%s' "$resp" | wc -c) bytes)"
     return 1
   fi
+  # t249-g: the login response's user object (route.ts:171-181) for the
+  # broadcast receiver. Compact separators + ensure_ascii so it survives the
+  # adb-shell round-trip untouched. Contains no secrets (id/email/etc only).
+  API_LOGIN_USER_JSON=$(printf '%s' "$resp" | python3 -c "import json,sys
+try:
+    d = json.load(sys.stdin)
+except Exception:
+    sys.exit(0)
+u = d.get('user')
+if isinstance(u, dict) and isinstance(u.get('id'), str) and u.get('id'):
+    print(json.dumps(u, separators=(',', ':'), ensure_ascii=True))" 2>/dev/null || true)
   API_LOGIN_REASON="ok (token ${#TOKEN} chars)"
   return 0
 }
@@ -825,6 +869,135 @@ inject_session () { # email password role evidence_file diag_prefix
   INJECTION_REASON="ok"
   echo "injection-method=$INJECTION_METHOD" >> "$evfile" 2>/dev/null || true
   echo "inject_session($role): session injected ✓ (method=$INJECTION_METHOD) — cold start on home"
+  return 0
+}
+
+# t249-g (replaces inject_session's CDP delivery — that function stays above
+# for reference but is NEVER called): the deterministic session injection,
+# broadcast-receiver edition.
+#   1. REAL login via the backend API (api_login_token, reused verbatim:
+#      token is a TOP-LEVEL field, route.ts:167-182) — the response's user
+#      JSON rides along (API_LOGIN_USER_JSON) and is passed to the receiver,
+#      which re-parses it with the app's own serializer and stores the
+#      profile exactly like a real login (SessionManager.setSession).
+#   2. ensure_home FIRST — a manifest-declared receiver is not delivered to
+#      a STOPPED app; the process must be alive (it is: the app launched at
+#      the top of this script and has been used since).
+#   3. am broadcast -a com.zylod.wholesale.DEBUG_SET_SESSION --es token ...
+#      --es user_json ... --es user_type ... (adbt wrapper). The user JSON is
+#      POSIX-shlex-quoted so the adb-shell remote re-split cannot mangle it
+#      (adb joins argv; the device shell strips the quotes back off).
+#   4. Delivery proof: poll logcat for the receiver's ZylodDebugSession
+#      "session injected user_type=<role>" line (up to 15s). The receiver
+#      NEVER logs the token (length only). The buffer is cleared right
+#      before the broadcast so a previous role's line cannot false-match.
+#   5. Cold start: am force-stop -> logcat -c (clean buffer for the role's
+#      post-relaunch verification) -> monkey relaunch -> ensure_home — the
+#      verdict proves the session SURVIVED a process restart.
+# Evidence lands in $4: injection-method / api-login / broadcast-delivered /
+# broadcast-log / session-user-type / failure-reason — passwords and tokens
+# NEVER printed (lengths only). Returns 0 when every step succeeded
+# (BROADCAST_REASON="ok"); 1 otherwise with the verbatim reason. Never fatal
+# to the run (callers degrade to the honest gate path).
+broadcast_inject_session () { # email password role evidence_file
+  local email="$1" password="$2" role="$3" evfile="$4"
+  BROADCAST_REASON="not attempted"
+  API_LOGIN_USER_JSON=""
+  local bcast_out logline user_json_sq poll
+  {
+    echo "=== $role session injection (t249-g debug-broadcast) $(date -u '+%Y-%m-%dT%H:%M:%SZ') ==="
+    echo "$role-credentials-source=scripts/qa/seed-marketplace.mjs (password length $(printf '%s' "$password" | wc -c), never printed)"
+  } >> "$evfile" 2>/dev/null || true
+  # (1) real login — TOKEN + the login response's user JSON.
+  if ! api_login_token "$email" "$password"; then
+    BROADCAST_REASON="api-login failed: $API_LOGIN_REASON"
+    echo "injection-method=none" >> "$evfile" 2>/dev/null || true
+    echo "api-login=err" >> "$evfile" 2>/dev/null || true
+    echo "broadcast-delivered=no" >> "$evfile" 2>/dev/null || true
+    echo "session-user-type=$role" >> "$evfile" 2>/dev/null || true
+    echo "$role-failure-reason=$BROADCAST_REASON" >> "$evfile" 2>/dev/null || true
+    echo "::warning::broadcast_inject_session($role): $BROADCAST_REASON"
+    return 1
+  fi
+  echo "api-login=ok" >> "$evfile" 2>/dev/null || true
+  echo "api-login-detail=$API_LOGIN_REASON" >> "$evfile" 2>/dev/null || true
+  # The token is embedded in a remote shell command — refuse any character
+  # outside the opaque-token alphabet (same shape gate as the CDP path).
+  case "$TOKEN" in
+    *[!A-Za-z0-9._-]*|'')
+      BROADCAST_REASON="login token has an unexpected shape (length ${#TOKEN}, refused for safe shell embedding)"
+      echo "injection-method=none" >> "$evfile" 2>/dev/null || true
+      echo "broadcast-delivered=no" >> "$evfile" 2>/dev/null || true
+      echo "session-user-type=$role" >> "$evfile" 2>/dev/null || true
+      echo "$role-failure-reason=$BROADCAST_REASON" >> "$evfile" 2>/dev/null || true
+      echo "::warning::broadcast_inject_session($role): $BROADCAST_REASON"
+      return 1
+      ;;
+  esac
+  # (2) the process must be ALIVE to receive a manifest broadcast — home
+  # first (also the state every later deeplink needs).
+  if ! ensure_home; then
+    BROADCAST_REASON="ensure_home failed before the broadcast — a stopped app does not receive manifest broadcasts and later deeplinks would queue"
+    echo "injection-method=none" >> "$evfile" 2>/dev/null || true
+    echo "broadcast-delivered=no" >> "$evfile" 2>/dev/null || true
+    echo "session-user-type=$role" >> "$evfile" 2>/dev/null || true
+    echo "$role-failure-reason=$BROADCAST_REASON" >> "$evfile" 2>/dev/null || true
+    echo "::warning::broadcast_inject_session($role): $BROADCAST_REASON"
+    return 1
+  fi
+  # (3) the broadcast. user_json is shlex-quoted for the adb remote shell
+  # (bare JSON would lose its quotes to the device's re-splitting shell).
+  # Omitted entirely when the login response had no user object — the
+  # receiver then degrades per its own contract.
+  logline=""
+  if [ -n "$API_LOGIN_USER_JSON" ]; then
+    user_json_sq=$(printf '%s' "$API_LOGIN_USER_JSON" | python3 -c "import shlex,sys
+try:
+    print(shlex.quote(sys.stdin.read()))
+except Exception:
+    pass" 2>/dev/null || true)
+    echo "user-json-passed=yes ($(printf '%s' "$API_LOGIN_USER_JSON" | wc -c) bytes)" >> "$evfile" 2>/dev/null || true
+    bcast_out=$(adbt 20 am broadcast -a com.zylod.wholesale.DEBUG_SET_SESSION --es token "$TOKEN" --es user_json "$user_json_sq" --es user_type "$role" 2>&1 || true)
+  else
+    echo "user-json-passed=no (receiver builds its minimal fallback)" >> "$evfile" 2>/dev/null || true
+    bcast_out=$(adbt 20 am broadcast -a com.zylod.wholesale.DEBUG_SET_SESSION --es token "$TOKEN" --es user_type "$role" 2>&1 || true)
+  fi
+  echo "broadcast-ack=$(printf '%s' "$bcast_out" | grep -m1 'Broadcast completed' || true)" >> "$evfile" 2>/dev/null || true
+  # (4) delivery proof — the receiver's own log line (up to 15s). Clean the
+  # buffer FIRST so a previous role's ZylodDebugSession line cannot
+  # false-match this role's poll.
+  adbt 10 logcat -c >/dev/null 2>&1 || true
+  for poll in 1 2 3 4 5; do
+    sleep 2
+    logline=$(timeout 10 adb logcat -d -s ZylodDebugSession 2>/dev/null | grep -m1 "session injected user_type=$role" | tr -d '\r' || true)
+    [ -n "$logline" ] && break
+  done
+  if [ -z "$logline" ]; then
+    BROADCAST_REASON="no ZylodDebugSession 'session injected user_type=$role' line within 15s — receiver not registered, app stopped, or the write failed (broadcast ack: $(printf '%s' "$bcast_out" | grep -m1 'Broadcast completed' || echo none))"
+    echo "injection-method=none" >> "$evfile" 2>/dev/null || true
+    echo "broadcast-delivered=no" >> "$evfile" 2>/dev/null || true
+    echo "session-user-type=$role" >> "$evfile" 2>/dev/null || true
+    echo "$role-failure-reason=$BROADCAST_REASON" >> "$evfile" 2>/dev/null || true
+    echo "::warning::broadcast_inject_session($role): $BROADCAST_REASON"
+    return 1
+  fi
+  echo "broadcast-delivered=yes" >> "$evfile" 2>/dev/null || true
+  echo "broadcast-log=$logline" >> "$evfile" 2>/dev/null || true
+  echo "session-user-type=$role" >> "$evfile" 2>/dev/null || true
+  # (5) cold start so the verdict proves the session SURVIVED a restart
+  adbt 15 am force-stop com.zylod.wholesale.debug >/dev/null 2>&1 || true
+  adbt 10 logcat -c >/dev/null 2>&1 || true
+  adbt 20 monkey -p com.zylod.wholesale.debug -c android.intent.category.LAUNCHER 1 >/dev/null 2>&1 || true
+  sleep 10
+  if ! ensure_home; then
+    BROADCAST_REASON="post-relaunch ensure_home failed — home never mounted (role deeplinks would queue; the session itself was persisted)"
+    echo "$role-failure-reason=$BROADCAST_REASON" >> "$evfile" 2>/dev/null || true
+    echo "::warning::broadcast_inject_session($role): $BROADCAST_REASON"
+    return 1
+  fi
+  BROADCAST_REASON="ok"
+  echo "injection-method=debug-broadcast-receiver" >> "$evfile" 2>/dev/null || true
+  echo "broadcast_inject_session($role): session injected ✓ (method=debug-broadcast-receiver) — cold start on home"
   return 0
 }
 
@@ -1561,24 +1734,27 @@ if login_buyer; then
   AUTHED=1
 fi
 
-# t249-f BUYER SESSION INJECTION — the deterministic auth establishment.
+# t249-g BUYER SESSION INJECTION — the deterministic auth establishment.
 # login_buyer above is KEPT (its typed-text proof + decision-time dumps are
 # the UI-path evidence), but when it fails to verify, the authed suite no
 # longer degrades to guest shots: a REAL session is established via the
-# backend's login API + the app's own bridge writer, then proven on a cold
-# start. This also covers the t249-f wire-in for capture 18 below (which
-# runs its own strict settle-poll verdict into buyer-session-check.txt).
+# backend's login API + the app's OWN debug-broadcast receiver
+# (com.zylod.wholesale.DEBUG_SET_SESSION -> SessionManager.setSession — the
+# exact writer a real login uses), then proven on a cold start. This also
+# covers the t249-g wire-in for capture 18 below (which runs its own strict
+# settle-poll verdict into buyer-session-check.txt; buyer-injection-method
+# is derived there from the injection-method= lines written here).
 BUYER_INJECTED=0
 if [ "$AUTHED" -eq 0 ] && ! budget_stop; then
-  log "t249-f: buyer UI login failed — DETERMINISTIC SESSION INJECTION (real /api/auth/login -> ZylodNativeBridge.setAuthToken via the app's WebView/CDP -> cold start)"
-  if inject_session "buyer1@zylod.bd" "Passw0rd!23" "buyer" "screenshots/buyer-session-check.txt" "buyer"; then
+  log "t249-g: buyer UI login failed — DETERMINISTIC SESSION INJECTION (real /api/auth/login -> DEBUG_SET_SESSION broadcast -> SessionManager.setSession -> cold start)"
+  if broadcast_inject_session "buyer1@zylod.bd" "Passw0rd!23" "buyer" "screenshots/buyer-session-check.txt"; then
     BUYER_INJECTED=1
     AUTHED=1
   fi
 fi
 
 if [ "$AUTHED" -eq 1 ]; then
-  log "t238: authed deep-link suite (seeded buyer session; t249-f injection used: $BUYER_INJECTED)"
+  log "t238: authed deep-link suite (seeded buyer session; t249-g injection used: $BUYER_INJECTED)"
 else
   log "t238: deep-link suite (GUEST fallback — gated captures will show the sign-in gate)"
 fi
@@ -1753,7 +1929,7 @@ if budget_stop; then
     echo "admin-failure-reason=capture budget exhausted before the admin segment"
     echo "injection-method=none"
     echo "api-login=err"
-    echo "prefs-written=no"
+    echo "broadcast-delivered=no"
   } >> screenshots/admin-login-check.txt 2>/dev/null || true
 else
   sign_out_current_session || true
@@ -1761,16 +1937,18 @@ else
     ADMIN_AUTHED=1
   fi
   if [ "$ADMIN_AUTHED" -eq 1 ]; then
-    log "t249: admin UI-login path verified ✓ (kept as evidence; the t249-f injection below is still the authoritative step)"
+    log "t249: admin UI-login path verified ✓ (kept as evidence; the t249-g broadcast injection below is still the authoritative step)"
   else
     log "t249: admin session NOT verified via UI — capturing the three admin surfaces anyway (honest gate shots; reason in admin-login-check.txt)"
   fi
-  # t249-f UNCONDITIONAL ADMIN SESSION INJECTION — the authoritative step.
+  # t249-g UNCONDITIONAL ADMIN SESSION INJECTION — the authoritative step.
   # Whatever the kept UI attempt left behind (admin / buyer / guest), a REAL
   # admin session is established through the backend's login API + the app's
-  # own bridge writer and proven on a cold start. Strictness contract: the
-  # admin-session-verified verdict written at capture 25 below is yes ONLY
-  # when every injection step succeeded AND the post-relaunch evidence agrees.
+  # OWN debug-broadcast receiver (com.zylod.wholesale.DEBUG_SET_SESSION ->
+  # SessionManager.setSession) and proven on a cold start. Strictness
+  # contract: the admin-session-verified verdict written at capture 25 below
+  # is yes ONLY when every injection step succeeded AND the post-relaunch
+  # evidence agrees.
   ADMIN_INJECTED=0
   ADMIN_REASON="not attempted"
   if budget_stop; then
@@ -1778,19 +1956,19 @@ else
     {
       echo "injection-method=none"
       echo "api-login=err"
-      echo "prefs-written=no"
+      echo "broadcast-delivered=no"
       echo "admin-failure-reason=$ADMIN_REASON"
     } >> screenshots/admin-login-check.txt 2>/dev/null || true
-  elif inject_session "market@zylod.bd" "Passw0rd!23" "admin" "screenshots/admin-login-check.txt" "admin"; then
+  elif broadcast_inject_session "market@zylod.bd" "Passw0rd!23" "admin" "screenshots/admin-login-check.txt"; then
     ADMIN_INJECTED=1
-    ADMIN_REASON="$INJECTION_REASON"
+    ADMIN_REASON="$BROADCAST_REASON"
   else
-    ADMIN_REASON="$INJECTION_REASON"
+    ADMIN_REASON="$BROADCAST_REASON"
   fi
   if [ "$ADMIN_INJECTED" -eq 1 ]; then
-    log "t249-f: admin session injected ✓ (cdp-webview-bridge, cold start on home) — authed admin dashboard/users/orders captures"
+    log "t249-g: admin session injected ✓ (debug-broadcast-receiver, cold start on home) — authed admin dashboard/users/orders captures"
   else
-    log "t249-f: admin session injection FAILED ($ADMIN_REASON) — the three admin captures will honestly show the gate (non-fatal)"
+    log "t249-g: admin session injection FAILED ($ADMIN_REASON) — the three admin captures will honestly show the gate (non-fatal)"
   fi
   # 25 — deals-style settle-poll (t239 pattern): the dashboard either renders
   # authed KPI content ("Platform overview" / "Recent activity",
@@ -1826,14 +2004,16 @@ else
       echo "admin-dashboard-content-verified=no" >> screenshots/admin-login-check.txt 2>/dev/null || true
     fi
     cap "screenshots/25-admin-dashboard-authed.png"
-    # t249-f STRICT ADMIN SESSION VERDICT (kills the old false positive: a
+    # t249-g STRICT ADMIN SESSION VERDICT (kills the old false positive: a
     # "Sign out" match on a leftover buyer session could previously read as
     # an admin session). admin-session-verified=yes ONLY when
     #   (i)  every injection step succeeded (ADMIN_INJECTED=1) AND
     #   (ii) after the injection's logcat -c + cold relaunch, the
     #        post-deeplink pid logcat shows a ZylodAdmin "fetch admin
-    #        dashboard" line with NO "not an admin session" line
-    #        (AdminDashboardViewModel.kt:86/:101 — any 401/403 gate logs it)
+    #        dashboard" line with NO failure line — BOTH "not an admin
+    #        session" AND any http=401 / http=403 count as failure
+    #        (AdminDashboardViewModel.kt:86/:101: 403 can appear for an
+    #        AUTHENTICATED non-admin, so 401 and 403 BOTH fail the verdict)
     #        OR the settle-poll found the populated dashboard markers
     #        ("Platform overview"/"Recent activity").
     ADMIN_DASH_MARKER=no
@@ -1846,7 +2026,7 @@ else
     cp screenshots/admin-logcat.txt screenshots/admin-logcat-ui-attempt.txt 2>/dev/null || true
     dump_admin_logcat
     if grep -q "fetch admin dashboard" screenshots/admin-logcat.txt 2>/dev/null \
-      && ! grep -q "not an admin session" screenshots/admin-logcat.txt 2>/dev/null; then
+      && ! grep -Eq "not an admin session|http=40[13]" screenshots/admin-logcat.txt 2>/dev/null; then
       ADMIN_LOGCAT_NO401=yes
     fi
     ADMIN_SESSION_VERIFIED=no

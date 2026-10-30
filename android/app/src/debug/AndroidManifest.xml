@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- t249-g: DEBUG-VARIANT-ONLY manifest merge. This source set is compiled
+     ONLY into assembleDebug (the screenshots workflow's build); the release
+     variant never sees it, so the exported receiver below never ships. -->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <application>
+        <receiver
+            android:name="com.zylod.wholesale.debug.DebugSessionReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.zylod.wholesale.DEBUG_SET_SESSION" />
+            </intent-filter>
+        </receiver>
+    </application>
+</manifest>
