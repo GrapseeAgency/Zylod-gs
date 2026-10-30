@@ -44,6 +44,32 @@
 #      non-empty (length only, NEVER printed) — and appends
 #      typed-email-registered=yes/no + typed-password-registered=yes/no to
 #      screenshots/login-typed-check.txt (never fatal).
+#
+# t243 FIXES (the SOCIAL CONSENT DIALOG intercepted the login typing — the
+# CI evidence shows typed-email-registered=no, typed-password-registered=no
+# and ZERO submits because the "Sign in with your email" dialog (Email +
+# "Display name (optional)" — Cancel/Continue) was still open over the
+# login form, so the EditText taps + typing landed in the dialog and no
+# Login click ever reached the form button):
+#   1. dismiss_email_dialog(): dump → marker check ("Display name" /
+#      "Sign in with your email") → Cancel via tap_clickable_text, fall
+#      back to tap_text, fall back to ONE keyevent 4 BACK — each step
+#      followed by sleep 2 + a re-dump verifying the marker text is GONE;
+#      still stuck after 2 attempts → 04z-dialog-stuck.png diagnostic and
+#      continue anyway. Called at the START of login_buyer() AND right
+#      before the typed-text check.
+#   2. Typing targets the MAIN form (email hint "Email or Phone Number",
+#      LoginScreen.kt:451): fresh dump after dismissal; any EditText whose
+#      text/hint carries "Display name" means the dialog is still up →
+#      shift to EditText#3+ or abort to the guest path (never fatal).
+#   3. login-logcat.txt was MISLABELED (the old case-insensitive grep
+#      pulled ZylodProvenance lines): now ONE pid-scoped raw dump + a
+#      STRICT case-sensitive filter (ZylodAuth|ZylodDeals|login|Login) +
+#      wc -l trace, and the UNFILTERED pid-scoped last 400 lines go to
+#      screenshots/login-logcat-full-pid.txt so nothing is hidden again.
+#   4. Deals evidence (ZylodDeals grep → deals-logcat.txt, curl /api/deals
+#      → server-deals.json) now dumps UNCONDITIONALLY right after the
+#      10-deals capture — not only on settle-timeout.
 set -u
 mkdir -p screenshots
 
@@ -309,6 +335,70 @@ hide_ime () {
   fi
 }
 
+# t243: does ANY EditText in a uiautomator dump carry the needle in its
+# text/hint/content-desc? uiautomator has no separate hint attr — Compose
+# surfaces a field's label in text= while the field is empty — so all three
+# attrs are checked. Exit 0 = present (the dialog is still contaminating
+# the EditText list), exit 1 = absent/undumpable. Never fatal.
+edittext_mentions () { # needle dump_file
+  python3 - "$1" "$2" <<'PYEOF'
+import re, sys
+try:
+    xml = open(sys.argv[2], encoding="utf-8", errors="ignore").read()
+except OSError:
+    sys.exit(1)
+needle = sys.argv[1]
+for n in re.findall(r"<node\b[^>]*>", xml):
+    if 'class="android.widget.EditText"' not in n:
+        continue
+    hay = " ".join(re.findall(r'\b(?:text|hint|content-desc)="([^"]*)"', n))
+    if needle in hay:
+        sys.exit(0)
+sys.exit(1)
+PYEOF
+}
+
+# t243 ROBUST DIALOG DISMISSAL: the social consent dialog ("Sign in with
+# your email" — Email + "Display name (optional)" — Cancel/Continue) sits
+# OVER the main login form after capture 04; while it is open the form's
+# EditText taps + typing land in the DIALOG and no Login click reaches the
+# form button (t242's typed-email-registered=no/no, zero submits). Chain:
+# attempt 1 Cancel via tap_clickable_text, attempt 2 Cancel via tap_text,
+# then ONE keyevent 4 BACK as the final fallback — each step followed by
+# sleep 2 + a fresh dump verifying the marker text is GONE. Still present
+# after everything: capture screenshots/04z-dialog-stuck.png (diagnostic)
+# and continue anyway (returns 1, never fatal). Returns 0 when the dialog
+# is gone (or never was up).
+dismiss_email_dialog () {
+  local marker_present=1
+  local i
+  for i in 1 2; do
+    if ! any_text_on_screen "Display name" "Sign in with your email"; then
+      marker_present=0
+      break
+    fi
+    echo "dismiss_email_dialog: consent dialog detected (attempt $i) — tapping Cancel"
+    if [ "$i" -eq 1 ]; then
+      tap_clickable_text "Cancel" || true
+    else
+      tap_text "Cancel" || true
+    fi
+    sleep 2
+  done
+  if [ "$marker_present" -eq 1 ] && any_text_on_screen "Display name" "Sign in with your email"; then
+    echo "dismiss_email_dialog: Cancel taps failed — keyevent 4 (BACK) once"
+    adbt 20 input keyevent 4
+    sleep 2
+  fi
+  if any_text_on_screen "Display name" "Sign in with your email"; then
+    echo "::warning::dismiss_email_dialog: consent dialog STILL open after 2 Cancel attempts + BACK — capturing screenshots/04z-dialog-stuck.png (diagnostic) and continuing"
+    cap screenshots/04z-dialog-stuck.png
+    return 1
+  fi
+  echo "dismiss_email_dialog: consent dialog dismissed (or never open) ✓"
+  return 0
+}
+
 # t241: current pid of the debug app (FIRST token — pidof can print several
 # space-separated pids and logcat --pid accepts only one). Empty when the
 # app is not running; callers fall back to unfiltered dumps. Never fatal.
@@ -338,18 +428,28 @@ dump_login_prefs () {
   } > screenshots/login-prefs.txt 2>&1 || true
 }
 
-# t241: auth/provenance logcat at decision time, scoped to the app's own
-# pid when it is alive (--pid — the whole-device grep drowned in unrelated
-# system lines); falls back to the t239 whole-device grep when pidof fails.
-# Never fatal.
+# t241: auth logcat at decision time, scoped to the app's own pid when it
+# is alive (--pid — the whole-device grep drowned in unrelated system
+# lines); whole-device dump as fallback when pidof fails.
+# t243 FIX: the old case-insensitive grep
+# (auth|login|token|session|provenance|ServerConfig|okhttp) filled
+# login-logcat.txt with ZylodProvenance lines — mislabeled evidence. Now:
+# ONE raw dump to /tmp/llog.txt, then a STRICT case-sensitive filter
+# (ZylodAuth|ZylodDeals|login|Login) into login-logcat.txt with a wc -l
+# trace, AND the UNFILTERED last 400 lines into
+# screenshots/login-logcat-full-pid.txt so nothing is hidden by the filter
+# again. Never fatal.
 dump_login_logcat () {
   local PID
   PID=$(app_pid)
   if [ -n "$PID" ]; then
-    timeout 20 adb logcat -d --pid="$PID" 2>/dev/null | grep -iE "auth|login|token|session|provenance|ServerConfig|okhttp" | tail -80 > screenshots/login-logcat.txt || true
+    timeout 20 adb logcat -d --pid="$PID" > /tmp/llog.txt 2>/dev/null || true
   else
-    timeout 20 adb logcat -d 2>/dev/null | grep -iE "auth|login|session|token" | tail -40 > screenshots/login-logcat.txt || true
+    timeout 20 adb logcat -d > /tmp/llog.txt 2>/dev/null || true
   fi
+  grep -E "ZylodAuth|ZylodDeals|login|Login" /tmp/llog.txt > screenshots/login-logcat.txt 2>/dev/null || true
+  wc -l screenshots/login-logcat.txt || true
+  tail -400 /tmp/llog.txt > screenshots/login-logcat-full-pid.txt 2>/dev/null || true
 }
 
 # t241: deals logcat (ZylodDeals), same --pid scoping as the login evidence
@@ -362,6 +462,31 @@ dump_deals_logcat () {
   else
     timeout 20 adb logcat -d -s ZylodDeals 2>/dev/null
   fi
+}
+
+# t243: deals evidence dump — SAME treatment as dump_login_logcat (raw
+# pid-scoped dump to a temp file, grep the tag from it, wc -l trace) plus
+# the raw server response via curl /api/deals. Called UNCONDITIONALLY right
+# after the 10-deals capture (previously these dumps ran ONLY on settle-
+# timeout, so a "settled" capture left zero logcat/server evidence and a
+# silent failure stayed invisible). Appends — capture 22's earlier
+# settle-timeout evidence is preserved. Never fatal.
+dump_deals_evidence () {
+  local PID
+  PID=$(app_pid)
+  if [ -n "$PID" ]; then
+    timeout 20 adb logcat -d --pid="$PID" > /tmp/dlog.txt 2>/dev/null || true
+  else
+    timeout 20 adb logcat -d > /tmp/dlog.txt 2>/dev/null || true
+  fi
+  {
+    echo "=== 10-deals post-capture $(date -u '+%Y-%m-%dT%H:%M:%SZ') ==="
+    grep -E "ZylodDeals" /tmp/dlog.txt 2>/dev/null || true
+  } >> screenshots/deals-logcat.txt 2>&1 || true
+  echo "deals evidence: $(wc -l < screenshots/deals-logcat.txt 2>/dev/null || echo 0) lines in deals-logcat.txt"
+  timeout 10 curl -s "http://127.0.0.1:3000/api/deals?type=all&page=1&limit=5" 2>/dev/null | head -c 800 >> screenshots/server-deals.json 2>/dev/null || true
+  echo >> screenshots/server-deals.json 2>/dev/null || true
+  echo "deals evidence: $(wc -c < screenshots/server-deals.json 2>/dev/null || echo 0) bytes in server-deals.json"
 }
 
 # t234: deep-link capture helper — fire a VIEW intent on the debug package
@@ -453,31 +578,48 @@ guarded_deeplink () { # name sleep_seconds uri
 # fields — that is why t237's typed text went nowhere).
 login_buyer () {
   # t239: verification is STRICT (login_verify_ok) — see that helper.
-  # If the consent dialog is open (04 just captured it), dismiss it.
-  if ui_has_text "Sign in with your email"; then
-    adbt 20 input keyevent 4
-    sleep 2
-  fi
-  # Field 1 = email: tap the FIRST EditText's center, then type.
+  # t243 FIX 1: the consent dialog (04 just captured it) may be open OVER
+  # the login form — its own Email/"Display name" EditTexts would swallow
+  # the form taps + typing. Dismiss it FIRST (Cancel chain, 04z-dialog-
+  # stuck.png diagnostic when stuck); never fatal.
+  dismiss_email_dialog || true
+  # t243 FIX 2: fresh dump after dismissal; choose the field indexes. The
+  # MAIN form's email field shows hint "Email or Phone Number"
+  # (LoginScreen.kt:451) — when the dump's EditText list still contains a
+  # node carrying the dialog's "Display name" label, the dialog survived
+  # dismissal and #1/#2 are the DIALOG's fields: shift to the form's #3/#4.
   adbt 20 uiautomator dump /sdcard/ui.xml > /dev/null 2>&1
   timeout 15 adb pull /sdcard/ui.xml /tmp/ui.xml > /dev/null 2>&1 || true
+  local eidx=1 pidx=2
+  if edittext_mentions "Display name" /tmp/ui.xml; then
+    echo "::warning::login: 'Display name' EditText still present — consent dialog survived dismissal (04z-dialog-stuck.png captured); shifting to EditText#3+"
+    eidx=3
+    pidx=4
+  fi
+  # Field <eidx> = email: tap its center, then type.
   local c1
-  c1=$(edittext_center 1 /tmp/ui.xml)
+  c1=$(edittext_center "$eidx" /tmp/ui.xml)
   if [ -n "$c1" ]; then
     adbt 20 input tap $c1
     sleep 2
     adbt 20 input text "buyer1@zylod.bd"
     sleep 1
     hide_ime
+  elif [ "$eidx" -ne 1 ]; then
+    # t243: dialog still up AND no form fields behind it (dialog-only
+    # screen) — abort to the guest path gracefully (never fatal).
+    echo "::warning::login: no EditText#3+ behind the consent dialog — aborting login to the guest path (non-fatal)"
+    check_typed_text
+    return 1
   else
     echo "::warning::login: no email EditText found on the login screen"
   fi
-  # Field 2 = password: FRESH dump (the layout may have shifted), tap the
-  # SECOND EditText's center, then type.
+  # Field <pidx> = password: FRESH dump (the layout may have shifted), tap
+  # its center, then type.
   adbt 20 uiautomator dump /sdcard/ui.xml > /dev/null 2>&1
   timeout 15 adb pull /sdcard/ui.xml /tmp/ui.xml > /dev/null 2>&1 || true
   local c2
-  c2=$(edittext_center 2 /tmp/ui.xml)
+  c2=$(edittext_center "$pidx" /tmp/ui.xml)
   if [ -n "$c2" ]; then
     adbt 20 input tap $c2
     sleep 2
@@ -487,9 +629,13 @@ login_buyer () {
   else
     echo "::warning::login: no password EditText found on the login screen"
   fi
+  # t243 FIX 1b: dismiss once more right before the typed-check — the dump
+  # behind check_typed_text must describe the MAIN form, never a lingering
+  # dialog (never fatal).
+  dismiss_email_dialog || true
   # t242 TYPED-TEXT PROOF: both fields typed — record what the UI actually
   # holds BEFORE submitting (evidence only; never fatal, never prints the
-  # password).
+  # password). t243: runs AFTER dismissal + typing so yes/yes is achievable.
   check_typed_text
   # Submit: the native form's button is labelled "Login" (ZylodButton).
   # t242: tap_clickable_text — the tap must land on the CLICKABLE node;
@@ -530,10 +676,19 @@ login_buyer () {
   # (tapping a stray "Login" label elsewhere could navigate away).
   if [ "$verified" -eq 0 ]; then
     echo "::warning::login_buyer: AUTH NOT VERIFIED on first attempt — retrying the Login tap once"
+    # t243: a still-open consent dialog would swallow the re-tap too —
+    # dismiss it first (never fatal), then re-derive the password index
+    # with the same dialog-contamination rule as the first pass (when the
+    # dialog is up the form's password sits at #4, not #2).
+    dismiss_email_dialog || true
     adbt 20 uiautomator dump /sdcard/ui.xml > /dev/null 2>&1
     timeout 15 adb pull /sdcard/ui.xml /tmp/ui.xml > /dev/null 2>&1 || true
+    local pidx_r=2
+    if edittext_mentions "Display name" /tmp/ui.xml; then
+      pidx_r=4
+    fi
     local c2r
-    c2r=$(edittext_center 2 /tmp/ui.xml)
+    c2r=$(edittext_center "$pidx_r" /tmp/ui.xml)
     if [ -n "$c2r" ]; then
       adbt 20 input tap $c2r
       sleep 2
@@ -547,7 +702,9 @@ login_buyer () {
       fi
       sleep 14
       # Retry's own diagnostic (kept SEPARATE so the first 04b survives).
+      # t243: cap is UNCONDITIONAL on EVERY retry attempt.
       cap screenshots/04c-after-login-retry.png
+      echo "trace: 04c captured (retry re-tap attempt)"
       for i in 1 2 3; do
         if login_verify_ok; then
           verified=1
@@ -566,6 +723,7 @@ login_buyer () {
       # missing and the artifact lost the evidence; the post-tap capture in
       # the re-tap branch above is kept unchanged).
       cap screenshots/04c-after-login-retry.png
+      echo "trace: 04c captured (retry path, no re-tap possible)"
     fi
   fi
   if [ "$verified" -eq 1 ]; then
@@ -804,7 +962,9 @@ guarded_deeplink "07-cart" 8 "zylod://cart"
 # ONLY a full-screen CircularProgressIndicator). Settle-poll up to 25s
 # (5×5s) for card-level deal content; on timeout capture anyway + dump the
 # deals logcat tag and the raw server response so the artifact itself shows
-# server-empty vs app-bug. Same verified card-level needle set as capture
+# server-empty vs app-bug. t243: those evidence dumps now ALSO run
+# UNCONDITIONALLY right after the capture (dump_deals_evidence below) —
+# not only on settle-timeout. Same verified card-level needle set as capture
 # 22 (see DealsScreen.kt audit there) — the "Hot Deals" top-bar title can
 # never satisfy the poll.
 if budget_stop; then
@@ -830,6 +990,11 @@ elif ensure_home; then
     echo >> screenshots/server-deals.json 2>/dev/null || true
   fi
   cap "screenshots/10-deals.png"
+  # t243: evidence UNCONDITIONALLY after the capture (previously only on
+  # settle-timeout) — ZylodDeals logcat grep → deals-logcat.txt and the raw
+  # server deals JSON → server-deals.json, so a silent failure can never
+  # hide behind a "settled" capture again.
+  dump_deals_evidence
 else
   echo "capture 10: SKIPPED — ensure_home=1 (zylod://deals fired off-home would queue)"
   echo "::warning::capture 10-deals skipped: ensure_home failed (queue desync guard)"
