@@ -1,6 +1,7 @@
 package com.zylod.wholesale.ui.logistics
 
 import androidx.compose.foundation.border
+import com.zylod.wholesale.data.api.QuoteOptionDto
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box

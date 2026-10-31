@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.zylod.wholesale.data.api.ApiClient
+import com.zylod.wholesale.data.api.QuoteOptionDto
 import com.zylod.wholesale.data.api.ServerConfig
 import com.zylod.wholesale.data.api.parseErrorBody
 import kotlinx.coroutines.CancellationException
@@ -176,7 +177,7 @@ class PickupPointsViewModel(
                 loading = false,
                 allRows = rows,
                 rows = rows,
-                districts = cached.districts,
+                districts = cached?.districts ?: emptyList(),
                 district = _state.value.district,
                 search = _state.value.search,
                 offlineFromCache = true,

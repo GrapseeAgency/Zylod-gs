@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.zylod.wholesale.data.api.ApiClient
+import com.zylod.wholesale.data.api.QuoteOptionDto
 import com.zylod.wholesale.data.api.ServerConfig
 import com.zylod.wholesale.data.api.parseErrorBody
 import kotlinx.coroutines.CancellationException
