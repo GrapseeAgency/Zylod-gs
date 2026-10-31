@@ -54,4 +54,17 @@ interface OrdersApi {
      */
     @GET("api/orders/my-orders")
     suspend fun myOrders(): Response<ApiEnvelope<List<OrderDto>>>
+
+    /**
+     * t252 — GET /api/orders/{orderId} (orders/[id]/route.ts, the exact
+     * endpoint track-order-page.tsx:126 fetches). Bearer-authenticated;
+     * 404 for a foreign/phantom id, 403 for a non-participant. The payload
+     * is the shared envelope around [TrackedOrderDto] — each subOrder
+     * embeds the supplier company name and the trackingHistory (gps_ping
+     * excluded, trackedAt DESC) that the native track screen renders. The
+     * DTOs live in LogisticsApi.kt (defined SEPARATELY from [OrderDto] —
+     * this route's field names are camelCase, my-orders' are snake_case).
+     */
+    @GET("api/orders/{orderId}")
+    suspend fun order(@Path("orderId") orderId: String): Response<ApiEnvelope<TrackedOrderDto>>
 }

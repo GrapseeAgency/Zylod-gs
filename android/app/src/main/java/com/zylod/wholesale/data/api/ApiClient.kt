@@ -230,4 +230,12 @@ object ApiClient {
     // the 401-refresh chain (chatbot/query is public and ignores the header).
     fun chatApi(baseUrl: String): ChatApi =
         cachedApi(baseUrl, "chat") { it.create(ChatApi::class.java) }
+
+    // t252 — native logistics surfaces (PUBLIC delivery-methods / warehouses
+    // / shipping-quote + the buyer's order detail for tracking, which sits
+    // on OrdersApi above). Same memoization; the shared OkHttp client adds
+    // the Bearer header and the 401-refresh chain (the three public routes
+    // ignore the header when it is present).
+    fun logisticsApi(baseUrl: String): LogisticsApi =
+        cachedApi(baseUrl, "logistics") { it.create(LogisticsApi::class.java) }
 }

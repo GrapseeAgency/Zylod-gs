@@ -228,7 +228,11 @@ adbt () { timeout "${1:-20}" adb shell "${@:2}" || true; }
 # 30-live-chat-authed, a 12s settle plus the buyer session re-injection
 # before it (~20s worst case); still far under the 60-minute job ceiling,
 # and every skipped capture degrades non-fatally).
-budget_left () { [ $((2240 - SECONDS)) -gt 10 ]; }
+# (t252: raised to 2280s — two more authed captures join the segment:
+# 31-delivery-options + 32-track-order-noorder, 12s settles each plus the
+# buyer session re-injection before 31 (~40s worst case); still far under
+# the 60-minute job ceiling, and every skipped capture degrades non-fatally).
+budget_left () { [ $((2280 - SECONDS)) -gt 10 ]; }
 budget_stop () {
   if [ "$BUDGET_EXHAUSTED" -eq 0 ] && ! budget_left; then
     BUDGET_EXHAUSTED=1
@@ -2183,6 +2187,31 @@ else
   fi
   echo "buyer-livechat-reinjection=$BUYER_REQ_LIVECHAT" >> screenshots/buyer-session-check.txt 2>/dev/null || true
   guarded_deeplink "30-live-chat-authed" 12 "zylod://live-chat"
+  # t252: RE-INJECT the buyer session immediately before capture 31 — the
+  # exact t251 pattern as the capture-30 block above (t249-k finding applies
+  # verbatim: the deeplinks before it can mid-flow-401 the SessionAuthenticator
+  # into logging the session out). 31-delivery-options is a PUBLIC screen (no
+  # auth gate), but the re-injection keeps the buyer session authoritative for
+  # the back-to-back 31→32 pair and its evidence appends to
+  # buyer-session-check.txt; non-fatal on failure.
+  BUYER_REQ_LOGISTICS=no
+  if ! budget_stop; then
+    log "t252: re-injecting the buyer session immediately before capture 31 (mid-flow 401s from earlier deeplinks can trigger the SessionAuthenticator logout that clears it)"
+    if broadcast_inject_session "buyer1@zylod.bd" "Passw0rd!23" "buyer" "screenshots/buyer-session-check.txt"; then
+      BUYER_REQ_LOGISTICS=yes
+    fi
+  fi
+  echo "buyer-logistics-reinjection=$BUYER_REQ_LOGISTICS" >> screenshots/buyer-session-check.txt 2>/dev/null || true
+  # t252: 31-delivery-options — the new typed DeliveryMethodsScreen (PUBLIC
+  # api/delivery-methods cards). Same 12s settle + queue-drain guard as
+  # 29/30.
+  guarded_deeplink "31-delivery-options" 12 "zylod://delivery-options"
+  # t252: 32-track-order-noorder — the new typed order-tracking screen with
+  # NO orderId in the query: it must render the honest "No order selected"
+  # state (buyer session still alive from the 31 injection above — no second
+  # injection, mirroring the 29→30 adjacency). Same 12s settle + queue-drain
+  # guard.
+  guarded_deeplink "32-track-order-noorder" 12 "zylod://order-tracking"
 fi
 
 log "Screen inventory"
