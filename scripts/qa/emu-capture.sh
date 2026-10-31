@@ -224,7 +224,11 @@ adbt () { timeout "${1:-20}" adb shell "${@:2}" || true; }
 # 28-admin-rfq-authed + 29-rfq-list-authed, each a 12s settle plus the
 # buyer session re-injection before 29 (~20s worst case); still far under
 # the 60-minute job ceiling, and every skipped capture degrades non-fatally).
-budget_left () { [ $((2220 - SECONDS)) -gt 10 ]; }
+# (t251: raised to 2240s — one more authed capture joins the segment:
+# 30-live-chat-authed, a 12s settle plus the buyer session re-injection
+# before it (~20s worst case); still far under the 60-minute job ceiling,
+# and every skipped capture degrades non-fatally).
+budget_left () { [ $((2240 - SECONDS)) -gt 10 ]; }
 budget_stop () {
   if [ "$BUDGET_EXHAUSTED" -eq 0 ] && ! budget_left; then
     BUDGET_EXHAUSTED=1
@@ -2163,6 +2167,22 @@ else
   fi
   echo "buyer-rfqlist-reinjection=$BUYER_REQ_RFLIST" >> screenshots/buyer-session-check.txt 2>/dev/null || true
   guarded_deeplink "29-rfq-list-authed" 12 "zylod://rfq-list"
+  # t251: RE-INJECT the buyer session immediately before capture 30 — the
+  # exact t250 pattern as the capture-29 block above (t249-k finding applies
+  # verbatim: the deeplinks before it can mid-flow-401 the SessionAuthenticator
+  # into logging the session out, and 30-live-chat-authed needs a persisted
+  # BUYER session since the native live-chat VM gates on it). Evidence
+  # appends to buyer-session-check.txt; non-fatal on failure (capture 30
+  # keeps its honest sign-in gate verdict).
+  BUYER_REQ_LIVECHAT=no
+  if ! budget_stop; then
+    log "t251: re-injecting the buyer session immediately before capture 30 (mid-flow 401s from earlier deeplinks can trigger the SessionAuthenticator logout that clears it)"
+    if broadcast_inject_session "buyer1@zylod.bd" "Passw0rd!23" "buyer" "screenshots/buyer-session-check.txt"; then
+      BUYER_REQ_LIVECHAT=yes
+    fi
+  fi
+  echo "buyer-livechat-reinjection=$BUYER_REQ_LIVECHAT" >> screenshots/buyer-session-check.txt 2>/dev/null || true
+  guarded_deeplink "30-live-chat-authed" 12 "zylod://live-chat"
 fi
 
 log "Screen inventory"

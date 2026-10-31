@@ -223,4 +223,11 @@ object ApiClient {
 
     fun rfqApi(baseUrl: String): RfqApi =
         cachedApi(baseUrl, "rfq") { it.create(RfqApi::class.java) }
+
+    // t251 — native chat surfaces (live support sessions/messages/end-chat
+    // + the PUBLIC chatbot query endpoint). Same memoization as every
+    // accessor above; the shared OkHttp client adds the Bearer header and
+    // the 401-refresh chain (chatbot/query is public and ignores the header).
+    fun chatApi(baseUrl: String): ChatApi =
+        cachedApi(baseUrl, "chat") { it.create(ChatApi::class.java) }
 }
