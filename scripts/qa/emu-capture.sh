@@ -276,7 +276,11 @@ adbt () { timeout "${1:-20}" adb shell "${@:2}" || true; }
 # PUBLIC capture in the tail (no re-injection needed, ~14s worst case);
 # still far under the 60-minute job ceiling, and every skipped capture
 # degrades non-fatally).
-budget_left () { [ $((2500 - SECONDS)) -gt 10 ]; }
+# (t264: raised to 2520s — 44-careers-public joins the segment as the
+# second PUBLIC capture (no re-injection needed, ~14s worst case);
+# still far under the 60-minute job ceiling, and every skipped capture
+# degrades non-fatally).
+budget_left () { [ $((2520 - SECONDS)) -gt 10 ]; }
 budget_stop () {
   if [ "$BUDGET_EXHAUSTED" -eq 0 ] && ! budget_left; then
     BUDGET_EXHAUSTED=1
@@ -2488,6 +2492,17 @@ else
   # editorial posts render signed-out. The shot must show real blog cards,
   # never a fabricated one. Same 12s settle + queue-drain guard as 31-42.
   guarded_deeplink "43-blog-public" 12 "zylod://blog"
+  # t264: 44-careers-public — the new typed careers board (the REAL GET
+  # api/careers cards: the "We are hiring!" hero with the live openings
+  # count, the Culture & Benefits quick-nav grid, the department chips and
+  # the job rows with the Featured badge / location / employment-type /
+  # salary labels). This is a PUBLIC surface like 43-blog-public — NO buyer
+  # re-injection before it (plain guarded_deeplink, the public-ids
+  # convention): the careers GET is unauthenticated and the seeded jobs
+  # render signed-out. The shot must show real job rows or the honest
+  # empty state with the roundtrip logged, never a fabricated one. Same
+  # 12s settle + queue-drain guard as 31-43.
+  guarded_deeplink "44-careers-public" 12 "zylod://careers"
 fi
 
 log "Screen inventory"

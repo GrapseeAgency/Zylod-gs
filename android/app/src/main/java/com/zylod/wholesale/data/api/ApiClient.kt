@@ -344,4 +344,13 @@ object ApiClient {
     // attaches (the SupportPublicApi convention — no sign-in gate).
     fun contentApi(baseUrl: String): ContentApi =
         cachedApi(baseUrl, "content") { it.create(ContentApi::class.java) }
+
+    // t264 — native careers/company/investor surfaces (the careers list +
+    // per-job detail + apply POST, the investor documents list + contact
+    // POST, and the about/milestones timeline behind the twelve company
+    // pageIds). Same memoization; every route here is PUBLIC and simply
+    // ignores the Bearer header the shared OkHttp client attaches (the
+    // SupportPublicApi convention — no sign-in gate).
+    fun careersInvestorApi(baseUrl: String): CareersInvestorApi =
+        cachedApi(baseUrl, "careersInvestor") { it.create(CareersInvestorApi::class.java) }
 }
