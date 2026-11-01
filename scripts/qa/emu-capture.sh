@@ -272,7 +272,11 @@ adbt () { timeout "${1:-20}" adb shell "${@:2}" || true; }
 # 42-favorites-authed, a 12s settle plus the buyer session re-injection
 # before it (~20s worst case); still far under the 60-minute job ceiling,
 # and every skipped capture degrades non-fatally).
-budget_left () { [ $((2480 - SECONDS)) -gt 10 ]; }
+# (t263: raised to 2500s — 43-blog-public joins the segment as the first
+# PUBLIC capture in the tail (no re-injection needed, ~14s worst case);
+# still far under the 60-minute job ceiling, and every skipped capture
+# degrades non-fatally).
+budget_left () { [ $((2500 - SECONDS)) -gt 10 ]; }
 budget_stop () {
   if [ "$BUDGET_EXHAUSTED" -eq 0 ] && ! budget_left; then
     BUDGET_EXHAUSTED=1
@@ -2476,6 +2480,14 @@ else
   # logged, never a fabricated one. Same 12s settle + queue-drain guard as
   # 31-41.
   guarded_deeplink "42-favorites-authed" 12 "zylod://buyer-favorites"
+  # t263: 43-blog-public — the new typed blog list (the REAL GET api/blog
+  # cards: cover image, category chip, excerpt, date + Read footer). This
+  # is a PUBLIC surface like 31-delivery-options / 35-faq-public — NO buyer
+  # re-injection before it (plain guarded_deeplink, the public-ids
+  # convention): the blog list GET is unauthenticated and the seeded
+  # editorial posts render signed-out. The shot must show real blog cards,
+  # never a fabricated one. Same 12s settle + queue-drain guard as 31-42.
+  guarded_deeplink "43-blog-public" 12 "zylod://blog"
 fi
 
 log "Screen inventory"

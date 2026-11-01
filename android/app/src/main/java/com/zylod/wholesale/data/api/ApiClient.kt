@@ -335,4 +335,13 @@ object ApiClient {
 
     fun savedSearchesApi(baseUrl: String): SavedSearchesApi =
         cachedApi(baseUrl, "savedSearches") { it.create(SavedSearchesApi::class.java) }
+
+    // t263 — native public-content surfaces (the blog / press / events /
+    // newsletter routes behind the seven content pageIds: blog + per-slug
+    // post, press list + per-slug release + media kit, events, and the
+    // newsletter subscribe POST). Same memoization; every route here is
+    // PUBLIC and simply ignores the Bearer header the shared OkHttp client
+    // attaches (the SupportPublicApi convention — no sign-in gate).
+    fun contentApi(baseUrl: String): ContentApi =
+        cachedApi(baseUrl, "content") { it.create(ContentApi::class.java) }
 }
