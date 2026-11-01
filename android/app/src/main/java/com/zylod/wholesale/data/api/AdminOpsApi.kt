@@ -18,7 +18,7 @@ import retrofit2.http.Query
  *    ['admin']; 401-first. Query page/limit/action(CONTAINS)/entityType/
  *    entityId/actorId. Response { success, data: [...], pagination,
  *    summary.byEntityType }.
- *  - GET api/admin/deliveries/*    — NO deliveries/route.ts exists: the
+ *  - GET api/admin/deliveries/…    — NO deliveries/route.ts exists: the
  *    listing surfaces are the two SUB-endpoints. deliveries/assignments/
  *    route.ts GET → { assignments: [...] } (bare object, no success flag);
  *    deliveries/drivers/route.ts GET → { drivers: [...] } (same).
@@ -35,7 +35,7 @@ import retrofit2.http.Query
  *    Response { success, data: { settings, dataNotes } } — the registry
  *    whitelist from src/lib/admin-settings.ts; value/defaultValue are
  *    int-or-string-or-null, so they arrive as JsonElement.
- *  - GET api/admin/shipping/*      — NO shipping/route.ts exists: the
+ *  - GET api/admin/shipping/…      — NO shipping/route.ts exists: the
  *    surface is the THREE sub-endpoints methods/ + rates/ + zones/ (Task
  *    94). Each returns { success, data: [...], count }.
  *  - GET api/admin/categories      — categories/route.ts. No query params.

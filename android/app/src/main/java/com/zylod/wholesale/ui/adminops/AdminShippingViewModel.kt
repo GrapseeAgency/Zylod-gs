@@ -105,11 +105,7 @@ class AdminShippingViewModel(private val appContext: Context) : ViewModel() {
             val api = ApiClient.adminOpsApi(base)
             // All three sections in parallel — the screen renders them as
             // sections of ONE payload, so one combined result state.
-            val (methodsResp, ratesResp, zonesResp): Triple<
-                Response<AdminOpsShippingMethodsEnvelope>,
-                Response<AdminOpsShippingRatesEnvelope>,
-                Response<AdminOpsShippingZonesEnvelope>,
-                > = coroutineScope {
+            val deferred = coroutineScope {
                 val methodsCall: Deferred<Response<AdminOpsShippingMethodsEnvelope>> =
                     async { api.shippingMethods() }
                 val ratesCall: Deferred<Response<AdminOpsShippingRatesEnvelope>> =
@@ -118,6 +114,7 @@ class AdminShippingViewModel(private val appContext: Context) : ViewModel() {
                     async { api.shippingZones() }
                 Triple(methodsCall.await(), ratesCall.await(), zonesCall.await())
             }
+            val (methodsResp, ratesResp, zonesResp) = deferred
             // Honest admin gate: any handler refusing the session ends it.
             if (methodsResp.code() == 401 || methodsResp.code() == 403 ||
                 ratesResp.code() == 401 || ratesResp.code() == 403 ||
