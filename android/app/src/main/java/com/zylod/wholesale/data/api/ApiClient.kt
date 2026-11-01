@@ -259,4 +259,14 @@ object ApiClient {
     // the header when it is present).
     fun reviewsApi(baseUrl: String): ReviewsApi =
         cachedApi(baseUrl, "reviews") { it.create(ReviewsApi::class.java) }
+
+    // t255 — native support surfaces (the twelve PUBLIC support routes the
+    // seven faq/helpdesk/docs/status/contact/feedback pageIds read: faqs +
+    // their vote, policies + articles + per-slug detail + article feedback,
+    // status + app diagnostics, public settings, contact + community
+    // feedback). Same memoization; the shared OkHttp client adds the
+    // Bearer header and the 401-refresh chain (all routes here are public
+    // and ignore the header when it is present).
+    fun supportPublicApi(baseUrl: String): SupportPublicApi =
+        cachedApi(baseUrl, "supportPublic") { it.create(SupportPublicApi::class.java) }
 }

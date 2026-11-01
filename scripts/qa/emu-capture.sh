@@ -240,7 +240,11 @@ adbt () { timeout "${1:-20}" adb shell "${@:2}" || true; }
 # 34-all-reviews, a 12s settle plus the buyer session re-injection
 # before it (~20s worst case); still far under the 60-minute job ceiling,
 # and every skipped capture degrades non-fatally).
-budget_left () { [ $((2320 - SECONDS)) -gt 10 ]; }
+# (t255: raised to 2340s — one more capture joins the segment: 35-faq-public,
+# a 12s settle plus the buyer session re-injection before it (~20s worst
+# case); still far under the 60-minute job ceiling, and every skipped
+# capture degrades non-fatally).
+budget_left () { [ $((2340 - SECONDS)) -gt 10 ]; }
 budget_stop () {
   if [ "$BUDGET_EXHAUSTED" -eq 0 ] && ! budget_left; then
     BUDGET_EXHAUSTED=1
@@ -2259,6 +2263,27 @@ else
   # badges + honest empty/error states). Same 12s settle + queue-drain
   # guard as 31-33.
   guarded_deeplink "34-all-reviews" 12 "zylod://all-reviews"
+  # t255: RE-INJECT the buyer session immediately before capture 35 — the
+  # exact t254 pattern as the capture-34 block above (t249-k finding applies
+  # verbatim: the deeplinks before it can mid-flow-401 the SessionAuthenticator
+  # into logging the session out; 35-faq-public is a PUBLIC screen like 34's
+  # list route, but the re-injection keeps the buyer session authoritative
+  # across the back-to-back 34→35 pair). Evidence appends to
+  # buyer-session-check.txt; non-fatal on failure (capture 35 keeps its
+  # honest public-list verdict).
+  BUYER_REQ_SUPPORT=no
+  if ! budget_stop; then
+    log "t255: re-injecting the buyer session immediately before capture 35 (mid-flow 401s from earlier deeplinks can trigger the SessionAuthenticator logout that clears it)"
+    if broadcast_inject_session "buyer1@zylod.bd" "Passw0rd!23" "buyer" "screenshots/buyer-session-check.txt"; then
+      BUYER_REQ_SUPPORT=yes
+    fi
+  fi
+  echo "buyer-support-reinjection=$BUYER_REQ_SUPPORT" >> screenshots/buyer-session-check.txt 2>/dev/null || true
+  # t255: 35-faq-public — the new typed shared FAQ screen (REAL
+  # api/support/faqs accordion cards with the live helpful-vote counters,
+  # category pills + search + EN⇄BN toggle + honest empty/error states).
+  # Same 12s settle + queue-drain guard as 31-34.
+  guarded_deeplink "35-faq-public" 12 "zylod://faq-page"
 fi
 
 log "Screen inventory"
