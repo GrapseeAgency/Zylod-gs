@@ -252,7 +252,11 @@ adbt () { timeout "${1:-20}" adb shell "${@:2}" || true; }
 # 37-credit-authed, a 12s settle plus the buyer session re-injection
 # before it (~20s worst case); still far under the 60-minute job ceiling,
 # and every skipped capture degrades non-fatally).
-budget_left () { [ $((2380 - SECONDS)) -gt 10 ]; }
+# (t258: raised to 2400s — one more authed capture joins the segment:
+# 38-addmoney-authed, a 12s settle plus the buyer session re-injection
+# before it (~20s worst case); still far under the 60-minute job ceiling,
+# and every skipped capture degrades non-fatally).
+budget_left () { [ $((2400 - SECONDS)) -gt 10 ]; }
 budget_stop () {
   if [ "$BUDGET_EXHAUSTED" -eq 0 ] && ! budget_left; then
     BUDGET_EXHAUSTED=1
@@ -2335,6 +2339,29 @@ else
   # real data, never an empty state. Same 12s settle + queue-drain guard as
   # 31-36.
   guarded_deeplink "37-credit-authed" 12 "zylod://credit-limit"
+  # t258: RE-INJECT the buyer session immediately before capture 38 — the
+  # exact t257 pattern as the capture-37 block above (t249-k finding applies
+  # verbatim: the deeplinks before it can mid-flow-401 the SessionAuthenticator
+  # into logging the session out, and 38-addmoney-authed needs a persisted
+  # BUYER session since the native add-money VM gates on it — and the claim
+  # ledger GET returns 200 for the buyer). Evidence appends to
+  # buyer-session-check.txt; non-fatal on failure (capture 38 keeps its
+  # honest sign-in gate verdict).
+  BUYER_REQ_MONEY=no
+  if ! budget_stop; then
+    log "t258: re-injecting the buyer session immediately before capture 38 (mid-flow 401s from earlier deeplinks can trigger the SessionAuthenticator logout that clears it)"
+    if broadcast_inject_session "buyer1@zylod.bd" "Passw0rd!23" "buyer" "screenshots/buyer-session-check.txt"; then
+      BUYER_REQ_MONEY=yes
+    fi
+  fi
+  echo "buyer-topup-reinjection=$BUYER_REQ_MONEY" >> screenshots/buyer-session-check.txt 2>/dev/null || true
+  # t258: 38-addmoney-authed — the new typed AddMoneyScreen (the REAL
+  # money rails: the manual top-up claim form with the 10..100000 amount
+  # guard + the 5 method chips + the TRXID reference field, and the claim
+  # ledger surface from GET api/wallet/topup — the buyer session is valid,
+  # so the GET answers 200 and the shot must show the real form + ledger,
+  # never an empty state). Same 12s settle + queue-drain guard as 31-37.
+  guarded_deeplink "38-addmoney-authed" 12 "zylod://add-money"
 fi
 
 log "Screen inventory"

@@ -278,4 +278,13 @@ object ApiClient {
     // renders sit on the EXISTING walletApi accessor above — not redeclared).
     fun financeApi(baseUrl: String): FinanceApi =
         cachedApi(baseUrl, "finance") { it.create(FinanceApi::class.java) }
+
+    // t258 — native money-movement surfaces (manual top-up claim GET/POST,
+    // gateway top-up initiate, the supplier payout rail GET/POST, the
+    // buyer's processed-refund ledger). Same memoization; every route here
+    // is Bearer-authenticated through the shared OkHttp client and its
+    // 401-refresh chain (a SEPARATE interface from FinanceApi so the t256
+    // route set stays put — one accessor, no duplicate class names).
+    fun walletMoneyApi(baseUrl: String): WalletMoneyApi =
+        cachedApi(baseUrl, "walletMoney") { it.create(WalletMoneyApi::class.java) }
 }
