@@ -248,7 +248,11 @@ adbt () { timeout "${1:-20}" adb shell "${@:2}" || true; }
 # 36-finance-authed, a 12s settle plus the buyer session re-injection
 # before it (~20s worst case); still far under the 60-minute job ceiling,
 # and every skipped capture degrades non-fatally).
-budget_left () { [ $((2360 - SECONDS)) -gt 10 ]; }
+# (t257: raised to 2380s — one more authed capture joins the segment:
+# 37-credit-authed, a 12s settle plus the buyer session re-injection
+# before it (~20s worst case); still far under the 60-minute job ceiling,
+# and every skipped capture degrades non-fatally).
+budget_left () { [ $((2380 - SECONDS)) -gt 10 ]; }
 budget_stop () {
   if [ "$BUDGET_EXHAUSTED" -eq 0 ] && ! budget_left; then
     BUDGET_EXHAUSTED=1
@@ -2308,6 +2312,29 @@ else
   # badge + honest empty/sign-in states). Same 12s settle + queue-drain
   # guard as 31-35.
   guarded_deeplink "36-finance-authed" 12 "zylod://bank-accounts"
+  # t257: RE-INJECT the buyer session immediately before capture 37 — the
+  # exact t256 pattern as the capture-36 block above (t249-k finding applies
+  # verbatim: the deeplinks before it can mid-flow-401 the SessionAuthenticator
+  # into logging the session out, and 37-credit-authed needs a persisted
+  # BUYER session since the native credit-limit VM gates on it). Evidence
+  # appends to buyer-session-check.txt; non-fatal on failure (capture 37
+  # keeps its honest sign-in gate verdict).
+  BUYER_REQ_CREDIT=no
+  if ! budget_stop; then
+    log "t257: re-injecting the buyer session immediately before capture 37 (mid-flow 401s from earlier deeplinks can trigger the SessionAuthenticator logout that clears it)"
+    if broadcast_inject_session "buyer1@zylod.bd" "Passw0rd!23" "buyer" "screenshots/buyer-session-check.txt"; then
+      BUYER_REQ_CREDIT=yes
+    fi
+  fi
+  echo "buyer-credit-reinjection=$BUYER_REQ_CREDIT" >> screenshots/buyer-session-check.txt 2>/dev/null || true
+  # t257: 37-credit-authed — the new typed CreditLimitScreen (the REAL
+  # api/credits/limit find-or-create facility: the credit gauge with
+  # limit/used/available progress + grace period + settlement date, and the
+  # Request Limit Increase form). GET is find-or-create, so an authed buyer
+  # ALWAYS gets a real credit line back — the shot must show the gauge with
+  # real data, never an empty state. Same 12s settle + queue-drain guard as
+  # 31-36.
+  guarded_deeplink "37-credit-authed" 12 "zylod://credit-limit"
 fi
 
 log "Screen inventory"

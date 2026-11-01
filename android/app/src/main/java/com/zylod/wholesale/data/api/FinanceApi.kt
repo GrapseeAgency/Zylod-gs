@@ -9,6 +9,7 @@ import retrofit2.http.GET
 import retrofit2.http.PATCH
 import retrofit2.http.POST
 import retrofit2.http.Path
+import retrofit2.http.Query
 
 /**
  * Financial-instrument surfaces (t256) — the REAL endpoints behind the nine
@@ -141,6 +142,136 @@ interface FinanceApi {
      */
     @GET("api/payment-methods/mobile-banking")
     suspend fun mobileBanking(): Response<ApiEnvelope<List<MobileBankingDto>>>
+
+    /* ─── trade credit (api/credits) ───────────────────────────────────── */
+
+    /**
+     * GET api/credits/limit — find-or-create the session buyer's ACTIVE
+     * creditLines row (credits/limit/route.ts GET): a buyer with no row yet
+     * gets one created server-side (৳250,000 limit), so a 200 ALWAYS carries
+     * a real facility — the native gauge never renders a fabricated zero.
+     * 401 'Authentication required' for guests.
+     */
+    @GET("api/credits/limit")
+    suspend fun creditLimit(): Response<ApiEnvelope<CreditLineDto>>
+
+    /**
+     * POST api/credits/limit — the underwriting request (rate limit 10/min).
+     * REQUIRED requestedLimit (the route parses it with parseFloat and
+     * answers 400 'Invalid credit limit amount' on <=0/NaN) and reason.
+     * Success 200 { success, message, data: CreditLimitRequestResultDto } —
+     * the message text surfaces verbatim, the referenceId rides inline.
+     */
+    @POST("api/credits/limit")
+    suspend fun requestCreditLimitIncrease(@Body body: CreditLimitRequestBody): Response<FinanceMutationEnvelope<CreditLimitRequestResultDto>>
+
+    /**
+     * GET api/credits/score — the computed commercial rating (score toward
+     * maxScore 850, tier, risk rating + the 4 factor rows). 401 for guests.
+     */
+    @GET("api/credits/score")
+    suspend fun creditScore(): Response<ApiEnvelope<CreditScoreDto>>
+
+    /* ─── payments (api/payments) ──────────────────────────────────────── */
+
+    /**
+     * GET api/payments/history?status= — the payments rows on the caller's
+     * orders (buyer OR supplier-side), take 50. `status` is an EXACT match
+     * on the payments.status column and is SKIPPED when null/"all" — the
+     * real wire values the web chips send are success | pending | failed.
+     */
+    @GET("api/payments/history")
+    suspend fun paymentsHistory(@Query("status") status: String? = null): Response<ApiEnvelope<List<PaymentHistoryRowDto>>>
+
+    /**
+     * GET api/payments/pending — the MERGED clearance pipeline: pending
+     * payments (type 'Order Payment Clearance', status 'pending_settlement')
+     * + held escrow accounts (type 'Trade Assurance Escrow', status
+     * 'held_in_escrow'), each with the server's own description line.
+     */
+    @GET("api/payments/pending")
+    suspend fun paymentsPending(): Response<ApiEnvelope<List<PendingPaymentRowDto>>>
+
+    /**
+     * GET api/payments/failed — the failed gateway authorizations with the
+     * route's HONEST reason (the stored gatewayResponse, or its verbatim
+     * fallback 'Payment authorization failed at bank gateway. Insufficient
+     * merchant limit or timeout.'). NO retry endpoint exists anywhere under
+     * api/payments — the native screen never pretends to retry.
+     */
+    @GET("api/payments/failed")
+    suspend fun paymentsFailed(): Response<ApiEnvelope<List<FailedPaymentRowDto>>>
+
+    /* ─── invoices (api/invoices + api/orders/{id}/invoice) ───────────── */
+
+    /**
+     * GET api/invoices?status= — the commercial-invoice projection of the
+     * caller's orders (admin: full book), take 40, with the derived
+     * INV-/MUSHAK-6.3- numbers. `status` filters paymentStatus EXACTLY and
+     * is skipped when null/"all" (wire values: paid | pending).
+     */
+    @GET("api/invoices")
+    suspend fun invoices(@Query("status") status: String? = null): Response<ApiEnvelope<List<InvoiceRowDto>>>
+
+    /**
+     * GET api/invoices/{id} — the Mushak 6.3 tax document for an order id
+     * (or orderNumber). Scoping is buyer-of-record, an admin, or a supplier
+     * whose supplierProfiles.id owns a subOrder — EVERYONE else gets 404
+     * 'Invoice not found' (the route deliberately answers 404, never 403,
+     * so foreign ids are indistinguishable from missing ones).
+     */
+    @GET("api/invoices/{id}")
+    suspend fun mushakInvoice(@Path("id") id: String): Response<ApiEnvelope<MushakInvoiceDto>>
+
+    /**
+     * GET api/orders/{id}/invoice — the purpose-built TAX INVOICE document
+     * the web order-invoice page renders (server-computed VAT reference,
+     * discount derivation, platform billing identity, buyer of record).
+     * 404 'Order not found' / 403 'Not authorized to view this invoice'
+     * (here the foreign-caller shape IS 403) / 401 for guests.
+     */
+    @GET("api/orders/{id}/invoice")
+    suspend fun orderInvoice(@Path("id") id: String): Response<ApiEnvelope<OrderInvoiceDto>>
+
+    /* ─── seller finance (api/finance) — SUPPLIER-SCOPED ───────────────── */
+
+    /**
+     * GET api/finance/earnings — requireUserType(['supplier']): a buyer
+     * WITH a session gets 403 (error 'Supplier account required' or the
+     * route's own auth.error text), a guest 401. The DTO mirrors the SUCCESS
+     * shape only — the 403 gate lives in the SellerFinanceViewModel, which
+     * must never render a zero-shaped revenue card from a role denial.
+     */
+    @GET("api/finance/earnings")
+    suspend fun financeEarnings(): Response<ApiEnvelope<SellerEarningsDto>>
+
+    /**
+     * GET api/finance/commissions — the per-subOrder commission ledger with
+     * the caller's REAL affiliate rate. NOTE: unlike earnings this route
+     * authenticates WITHOUT a role gate — a buyer session parses as an
+     * empty book (supplierId resolves to 'none'), so the screen renders it
+     * only when the earnings call has already passed the supplier gate.
+     */
+    @GET("api/finance/commissions")
+    suspend fun financeCommissions(): Response<ApiEnvelope<CommissionBookDto>>
+
+    /* ─── public legal documents (api/legal) ───────────────────────────── */
+
+    /**
+     * GET api/legal/faq?docType= — the public legalFaqs rows the web
+     * payment-terms / payment-faq pages render (docType=payment_terms for
+     * both). Public: no Bearer required (the shared client may send one;
+     * the route ignores it).
+     */
+    @GET("api/legal/faq")
+    suspend fun legalFaqs(@Query("docType") docType: String? = null): Response<LegalFaqEnvelope>
+
+    /**
+     * GET api/legal/{docType} — a full legal document (payment_terms) with
+     * its related FAQs; 404 'Legal document not found' when inactive/absent.
+     */
+    @GET("api/legal/{docType}")
+    suspend fun legalDocument(@Path("docType") docType: String): Response<LegalDocumentEnvelope>
 }
 
 /* ─── bank accounts ──────────────────────────────────────────────────────── */
@@ -330,4 +461,442 @@ data class FinanceDeleteEnvelope(
 @Serializable
 data class FinanceSetDefaultBody(
     val isDefault: Boolean,
+)
+
+/* ─── trade credit (api/credits) ─────────────────────────────────────────── */
+
+/**
+ * data of GET api/credits/limit (credits/limit/route.ts:32-44 projection
+ * verbatim). Money fields are Prisma Float columns → Double. The route is
+ * find-or-create, so a 200 always carries a live facility row.
+ */
+@Immutable
+@Serializable
+data class CreditLineDto(
+    val id: String? = null,
+    val creditLimit: Double? = null,
+    val usedCredit: Double? = null,
+    val availableCredit: Double? = null,
+    val currency: String? = null,
+    val interestFreeGracePeriod: String? = null,
+    val nextSettlementDate: String? = null,
+    val status: String? = null,
+) {
+    /** Stable identity for the gauge's keyed content. */
+    val stableKey: String
+        get() = id?.takeIf(String::isNotBlank) ?: "credit-line-${hashCode()}"
+}
+
+/**
+ * Outgoing POST api/credits/limit body — the route's exact field set
+ * (credits/limit/route.ts:64). requestedLimit + reason have NO Kotlin
+ * default (always serialized, ReturnSubmitBody convention); the server
+ * parseFloat()es the limit and 400s on <=0/NaN. bankSolvencyDocUrl is the
+ * route's optional third field — omitted (explicitNulls) when blank.
+ */
+@Immutable
+@Serializable
+data class CreditLimitRequestBody(
+    val requestedLimit: Double,
+    val reason: String,
+    val bankSolvencyDocUrl: String? = null,
+)
+
+/**
+ * data of the POST api/credits/limit success — status is always
+ * 'under_review' and referenceId is the CRE-REQ-… token the screen shows
+ * inline (no dialog, no fabricated confirmation).
+ */
+@Immutable
+@Serializable
+data class CreditLimitRequestResultDto(
+    val requestedLimit: Double? = null,
+    val status: String? = null,
+    val referenceId: String? = null,
+)
+
+/** One credit-rating factor row (credits/score/route.ts factors[] shape). */
+@Immutable
+@Serializable
+data class CreditFactorDto(
+    val name: String? = null,
+    val impact: String? = null,
+    val description: String? = null,
+)
+
+/**
+ * data of GET api/credits/score (credits/score/route.ts:26-42 verbatim):
+ * score toward maxScore (850), the tier title, risk rating, the three
+ * percentage/aggregate lines and the 4 factor rows.
+ */
+@Immutable
+@Serializable
+data class CreditScoreDto(
+    val score: Int? = null,
+    val maxScore: Int = 850,
+    val tier: String? = null,
+    val riskRating: String? = null,
+    val repaymentTimeliness: String? = null,
+    val tradeHistoryLength: String? = null,
+    val creditUtilization: String? = null,
+    val factors: List<CreditFactorDto> = emptyList(),
+)
+
+/* ─── payments (api/payments) ────────────────────────────────────────────── */
+
+/**
+ * One GET api/payments/history row (payments/history/route.ts:45-56
+ * projection verbatim). orderTotal/orderStatus ride along from the related
+ * order; paidAt is null while the payment is un-settled.
+ */
+@Immutable
+@Serializable
+data class PaymentHistoryRowDto(
+    val id: String? = null,
+    val orderId: String? = null,
+    val orderNumber: String? = null,
+    val amount: Double? = null,
+    val method: String? = null,
+    val status: String? = null,
+    val transactionId: String? = null,
+    val paidAt: String? = null,
+    val orderTotal: Double? = null,
+    val orderStatus: String? = null,
+) {
+    /** Stable identity for keyed collections (row id, hash fallback). */
+    val stableKey: String
+        get() = id?.takeIf(String::isNotBlank) ?: "payment-${hashCode()}"
+}
+
+/**
+ * One GET api/payments/pending merged row (payments/pending/route.ts:44-67
+ * verbatim): the two families are 'Order Payment Clearance' (status
+ * 'pending_settlement') and 'Trade Assurance Escrow' (status
+ * 'held_in_escrow', method always 'Escrow Vault'), description is the
+ * server's own copy line.
+ */
+@Immutable
+@Serializable
+data class PendingPaymentRowDto(
+    val id: String? = null,
+    val orderId: String? = null,
+    val orderNumber: String? = null,
+    val amount: Double? = null,
+    val type: String? = null,
+    val method: String? = null,
+    val status: String? = null,
+    val date: String? = null,
+    val description: String? = null,
+) {
+    /** Stable identity for keyed collections (row id, hash fallback). */
+    val stableKey: String
+        get() = id?.takeIf(String::isNotBlank) ?: "pending-${hashCode()}"
+}
+
+/**
+ * One GET api/payments/failed row (payments/failed/route.ts:31-39 verbatim).
+ * `reason` is the stored gatewayResponse or the route's honest fallback
+ * copy — surfaced verbatim, never paraphrased.
+ */
+@Immutable
+@Serializable
+data class FailedPaymentRowDto(
+    val id: String? = null,
+    val orderId: String? = null,
+    val orderNumber: String? = null,
+    val amount: Double? = null,
+    val method: String? = null,
+    val reason: String? = null,
+    val date: String? = null,
+) {
+    /** Stable identity for keyed collections (row id, hash fallback). */
+    val stableKey: String
+        get() = id?.takeIf(String::isNotBlank) ?: "failed-${hashCode()}"
+}
+
+/* ─── invoices (api/invoices + api/orders/{id}/invoice) ─────────────────── */
+
+/**
+ * One GET api/invoices row (invoices/route.ts:64-78 projection verbatim):
+ * the INV- / MUSHAK-6.3- numbers are server-derived from the order, the
+ * 5% VAT is server-computed, paymentStatus is the order's real column.
+ */
+@Immutable
+@Serializable
+data class InvoiceRowDto(
+    val id: String? = null,
+    val invoiceNumber: String? = null,
+    val mushakNumber: String? = null,
+    val orderNumber: String? = null,
+    val date: String? = null,
+    val dueDate: String? = null,
+    val subtotal: Double? = null,
+    val vatAmount: Double? = null,
+    val shipping: Double? = null,
+    val grandTotal: Double? = null,
+    val paymentStatus: String? = null,
+    val buyerName: String? = null,
+    val itemsCount: Int = 0,
+) {
+    /** Stable identity for keyed collections (row id, hash fallback). */
+    val stableKey: String
+        get() = id?.takeIf(String::isNotBlank) ?: "invoice-${hashCode()}"
+}
+
+/** buyer block of the Mushak 6.3 document (invoices/[id]/route.ts:76-82). */
+@Immutable
+@Serializable
+data class MushakBuyerBlockDto(
+    val name: String? = null,
+    val email: String? = null,
+    val phone: String? = null,
+    val address: String? = null,
+    val tin: String? = null,
+)
+
+/** seller block of the Mushak 6.3 document (invoices/[id]/route.ts:83-88). */
+@Immutable
+@Serializable
+data class MushakSellerBlockDto(
+    val name: String? = null,
+    val tin: String? = null,
+    val bin: String? = null,
+    val address: String? = null,
+)
+
+/** One item line of the Mushak 6.3 document (invoices/[id]/route.ts:89-95). */
+@Immutable
+@Serializable
+data class MushakItemLineDto(
+    val name: String? = null,
+    val quantity: Double? = null,
+    val unitPrice: Double? = null,
+    val totalPrice: Double? = null,
+    val unit: String? = null,
+)
+
+/**
+ * data of GET api/invoices/{id} — the Mushak 6.3 commercial tax document
+ * (invoices/[id]/route.ts:70-103 verbatim). vatRate arrives as the string
+ * '5.0%'; paymentMethod falls back to the server's 'Trade Escrow'.
+ */
+@Immutable
+@Serializable
+data class MushakInvoiceDto(
+    val id: String? = null,
+    val invoiceNumber: String? = null,
+    val mushakNumber: String? = null,
+    val orderNumber: String? = null,
+    val date: String? = null,
+    val buyer: MushakBuyerBlockDto? = null,
+    val seller: MushakSellerBlockDto? = null,
+    val items: List<MushakItemLineDto> = emptyList(),
+    val subtotal: Double? = null,
+    val vatRate: String? = null,
+    val vatAmount: Double? = null,
+    val shippingCost: Double? = null,
+    val grandTotal: Double? = null,
+    val paymentStatus: String? = null,
+    val paymentMethod: String? = null,
+)
+
+/** company (platform billing identity) block of GET api/orders/{id}/invoice. */
+@Immutable
+@Serializable
+data class OrderInvoiceCompanyDto(
+    val name: String? = null,
+    val address: String? = null,
+    val city: String? = null,
+    val country: String? = null,
+    val phone: String? = null,
+    val email: String? = null,
+    val taxId: String? = null,
+)
+
+/** buyer-of-record block of GET api/orders/{id}/invoice (route.ts:117-124). */
+@Immutable
+@Serializable
+data class OrderInvoiceBuyerDto(
+    val name: String? = null,
+    val businessName: String? = null,
+    val address: String? = null,
+    val city: String? = null,
+    val district: String? = null,
+    val country: String? = null,
+)
+
+/** One item line of the order tax invoice (orders/[id]/invoice route.ts:88-98). */
+@Immutable
+@Serializable
+data class OrderInvoiceItemDto(
+    val id: String? = null,
+    val productName: String? = null,
+    val productImage: String? = null,
+    val variant: String? = null,
+    val quantity: Double? = null,
+    val unitPrice: Double? = null,
+    val total: Double? = null,
+    val supplier: String? = null,
+) {
+    /** Stable identity for the items table keys (line id, index fallback). */
+    val stableKey: String
+        get() = id?.takeIf(String::isNotBlank) ?: "invoice-item-${hashCode()}"
+}
+
+/**
+ * data of GET api/orders/{id}/invoice — the TAX INVOICE document the web
+ * order-invoice page renders (route.ts:110-133 verbatim). tax is the 15%
+ * regulatory REFERENCE line (never summed into grandTotal); discount is
+ * the honest server derivation (never a phantom); grandTotal is the
+ * amount ACTUALLY charged.
+ */
+@Immutable
+@Serializable
+data class OrderInvoiceDto(
+    val invoiceNumber: String? = null,
+    val orderNumber: String? = null,
+    val orderDate: String? = null,
+    val invoiceDate: String? = null,
+    val status: String? = null,
+    val company: OrderInvoiceCompanyDto? = null,
+    val buyer: OrderInvoiceBuyerDto? = null,
+    val items: List<OrderInvoiceItemDto> = emptyList(),
+    val subtotal: Double? = null,
+    val shipping: Double? = null,
+    val tax: Double? = null,
+    val discount: Double? = null,
+    val grandTotal: Double? = null,
+    val paymentMethod: String? = null,
+    val paymentStatus: String? = null,
+)
+
+/* ─── seller finance (api/finance) — supplier-scoped success shapes ─────── */
+
+/** One recentSales row of GET api/finance/earnings (route.ts:87-90). */
+@Immutable
+@Serializable
+data class RecentSaleDto(
+    val total: Double? = null,
+    val date: String? = null,
+)
+
+/**
+ * data of GET api/finance/earnings (earnings/route.ts:76-92 verbatim).
+ * commissionRate arrives as the string '3.0%'; totalPaidOut is the payout
+ * LEDGER sum; availablePayout is wallet balance minus on-hold requests.
+ * This DTO mirrors the SUCCESS shape only — a buyer's 403 never parses
+ * into it, so a zero-shaped revenue card can never render from a role
+ * denial (the gate lives in the VM).
+ */
+@Immutable
+@Serializable
+data class SellerEarningsDto(
+    val grossGMV: Double? = null,
+    val netEarnings: Double? = null,
+    val platformCommission: Double? = null,
+    val availablePayout: Double? = null,
+    val onHoldForPayouts: Double? = null,
+    val pendingEscrow: Double? = null,
+    val totalPaidOut: Double? = null,
+    val totalOrders: Int = 0,
+    val commissionRate: String? = null,
+    val currency: String? = null,
+    val recentSales: List<RecentSaleDto> = emptyList(),
+)
+
+/**
+ * One GET api/finance/commissions row (commissions/route.ts:45-55
+ * verbatim): ratePercent is the caller's REAL affiliate rate rendered as
+ * a string ('5.0%'), status is 'settled' | 'in_escrow' from the subOrder
+ * status, subOrderNumber is the supplierProfiles id tail.
+ */
+@Immutable
+@Serializable
+data class CommissionItemDto(
+    val id: String? = null,
+    val orderNumber: String? = null,
+    val subOrderNumber: String? = null,
+    val grossAmount: Double? = null,
+    val ratePercent: String? = null,
+    val commissionAmount: Double? = null,
+    val netPayout: Double? = null,
+    val status: String? = null,
+    val date: String? = null,
+) {
+    /** Stable identity for keyed collections (row id, hash fallback). */
+    val stableKey: String
+        get() = id?.takeIf(String::isNotBlank) ?: "commission-${hashCode()}"
+}
+
+/** data of GET api/finance/commissions (commissions/route.ts:63-68). */
+@Immutable
+@Serializable
+data class CommissionBookDto(
+    val totalGross: Double? = null,
+    val totalCommissions: Double? = null,
+    val items: List<CommissionItemDto> = emptyList(),
+)
+
+/* ─── public legal documents (api/legal) ─────────────────────────────────── */
+
+/**
+ * One legalFaqs row as the web payment-faq / payment-terms pages consume
+ * it (faq/route.ts returns the full rows; these are the rendered fields).
+ */
+@Immutable
+@Serializable
+data class LegalFaqItemDto(
+    val id: String? = null,
+    val category: String? = null,
+    val questionEn: String? = null,
+    val answerEn: String? = null,
+    val sortOrder: Int = 0,
+    val isActive: Boolean = true,
+) {
+    /** Stable identity for the accordion keys. */
+    val stableKey: String
+        get() = id?.takeIf(String::isNotBlank) ?: "legal-faq-${hashCode()}"
+}
+
+/**
+ * The legalDocuments row fields the payment-terms page renders
+ * (legal/[docType]/route.ts returns the full row; this is the tolerant
+ * projection — contentEn is the whole policy body).
+ */
+@Immutable
+@Serializable
+data class LegalDocumentDto(
+    val id: String? = null,
+    val docType: String? = null,
+    val titleEn: String? = null,
+    val contentEn: String? = null,
+    val version: String? = null,
+    val updatedAt: String? = null,
+)
+
+/** data.document + data.faqs of GET api/legal/{docType} (route.ts:38-49). */
+@Immutable
+@Serializable
+data class LegalDocumentPayloadDto(
+    val document: LegalDocumentDto? = null,
+    val faqs: List<LegalFaqItemDto> = emptyList(),
+)
+
+/** Envelope of GET api/legal/faq — { success, data: [...], total }. */
+@Immutable
+@Serializable
+data class LegalFaqEnvelope(
+    val success: Boolean = false,
+    val data: List<LegalFaqItemDto> = emptyList(),
+    val total: Int = 0,
+    val error: String? = null,
+)
+
+/** Envelope of GET api/legal/{docType} — { success, data: { document, faqs } }. */
+@Immutable
+@Serializable
+data class LegalDocumentEnvelope(
+    val success: Boolean = false,
+    val data: LegalDocumentPayloadDto? = null,
+    val error: String? = null,
 )
