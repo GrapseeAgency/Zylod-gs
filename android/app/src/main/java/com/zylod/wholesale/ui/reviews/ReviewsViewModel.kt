@@ -5,7 +5,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.zylod.wholesale.data.api.ApiClient
-import com.zylod.wholesale.data.api.ReviewDto
+import com.zylod.wholesale.data.api.ReviewRowDto
 import com.zylod.wholesale.data.api.ReviewsApi
 import com.zylod.wholesale.data.api.ReviewProductDto
 import com.zylod.wholesale.data.api.ServerConfig
@@ -263,7 +263,7 @@ class ReviewsViewModel(
     }
 
     /** Persist the list's wire DTOs — the offline render matches the live one. */
-    private fun persistCache(rows: List<ReviewDto>) {
+    private fun persistCache(rows: List<ReviewRowDto>) {
         viewModelScope.launch(Dispatchers.IO) {
             ReviewsCacheStore.write(
                 appContext,
@@ -282,7 +282,7 @@ class ReviewsViewModel(
 /* ─── mappers (the web page's exact projections) ─────────────────────────── */
 
 /** Wire row → render row (web realReviews map, ReviewItem projection). */
-internal fun ReviewDto.toRow() = ReviewRow(
+internal fun ReviewRowDto.toRow() = ReviewRow(
     key = stableKey,
     id = id?.takeIf(String::isNotBlank) ?: stableKey,
     buyerName = buyerName?.takeIf(String::isNotBlank) ?: "Buyer",
@@ -372,7 +372,7 @@ internal object ReviewsCacheKeys {
 
 /** Reviews-list snapshot (the raw wire DTOs — offline render matches live). */
 @kotlinx.serialization.Serializable
-data class CachedReviews(val rows: List<ReviewDto> = emptyList())
+data class CachedReviews(val rows: List<ReviewRowDto> = emptyList())
 
 /**
  * On-device saved payloads — the SAME prefs file the rest of the native

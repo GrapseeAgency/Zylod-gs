@@ -16,7 +16,7 @@ import retrofit2.http.Query
  * were verified against src/app/api/reviews/route.ts:
  *
  *  - GET api/reviews?productId=<id> (PUBLIC): 400 when the query parameter
- *    is missing; 200 { success, data: [ReviewDto] } — the product's
+ *    is missing; 200 { success, data: [ReviewRowDto] } — the product's
  *    top-level reviews (replyToId: null) ordered createdAt DESC, take 100.
  *    Each row is the handler's exact camelCase projection: id, productId,
  *    rating, comment, images (the stored JSON array, parsed server-side —
@@ -66,7 +66,7 @@ import retrofit2.http.Query
 interface ReviewsApi {
     /** GET api/reviews?productId= — the product's top-level reviews. */
     @GET("api/reviews")
-    suspend fun list(@Query("productId") productId: String): Response<ApiEnvelope<List<ReviewDto>>>
+    suspend fun list(@Query("productId") productId: String): Response<ApiEnvelope<List<ReviewRowDto>>>;
 
     /** POST api/reviews — create; 201 with { id, verifiedPurchase }. */
     @POST("api/reviews")
@@ -90,7 +90,7 @@ interface ReviewsApi {
  */
 @Immutable
 @Serializable
-data class ReviewDto(
+data class ReviewRowDto(
     val id: String? = null,
     val productId: String? = null,
     val rating: Int = 0,
