@@ -83,18 +83,54 @@ import retrofit2.http.POST
  *    mirrors the web component's expected fields so a future server
  *    population parses without a Kotlin change.
  *
- *  - DAILY CHECK-IN (api/rewards/checkin GET+POST) and SPIN
- *    (api/rewards/spin + api/rewards/spin-history) are deliberately NOT
- *    declared here: none of the nine pageIds hosts those surfaces. The web
- *    renders the check-in card ONLY on the daily-checkin / checkin-streak
- *    pageIds and the wheel ONLY on spin-win / spin-history / mini-games —
- *    components outside this batch (the loyalty page merely LINKS to them,
- *    exactly as it links to category-browser, and the native loyalty
- *    screen mirrors that link with the same openPage navigation instead of
- *    re-hosting the card). Declaring endpoints no screen calls would be
- *    the unused-contract anti-pattern t256's PATCH note warns about; the
- *    same applies to api/rewards/history (points-history pageId) — the
- *    ledger this batch renders comes from the api/rewards GET above.
+ *  - t260 EXTENSION — VIP + daily-engagement surfaces. The t259 note below
+ *    used to exclude check-in/spin because no t259 pageId hosted them; the
+ *    twelve t260 pageIds DO, so the routes now live on this interface:
+ *  - GET api/vip (vip/route.ts GET, 97 lines) — the ONLY vip route. PUBLIC
+ *    by design: authenticateRequest is not gated, a guest session still
+ *    gets the full tier ladder with currentTier 'standard' / totalSpend 0
+ *    (an authed buyer's spend = the SUM of their PAID orders' totalAmount).
+ *    data = { currentTier, totalSpendBDT, tiers: VIP_TIERS } where each
+ *    tier row is { id, name, minSpendBDT, badge, color, benefits[] } —
+ *    standard ৳0 Bronze #78716C / silver ৳100,000 Silver #94A3B8 /
+ *    gold ৳500,000 Gold #F59E0B / platinum ৳2,000,000 Platinum #C62828,
+ *    benefits verbatim from the route's const. NO next-tier object and NO
+ *    per-user progress exist on the wire — the screen renders the ladder
+ *    + the real spend, never an invented progress bar.
+ *  - GET api/rewards/checkin (rewards/checkin/route.ts GET) — 401
+ *    'Authentication required' for guests; 200 { success, data: {
+ *    checkedInToday, currentStreak, todayReward, schedule: the 7-day
+ *    STREAK_REWARDS ladder [50,75,100,150,200,300,500], history: the last
+ *    30 dailyCheckins rows newest-first } }.
+ *  - POST api/rewards/checkin (rewards/checkin/route.ts POST, rate limit
+ *    10/min 'rewards-checkin', NO body) — the daily claim. 201 { success,
+ *    message: 'Checked in! +<pointsAwarded> points awarded.', data: the
+ *    created dailyCheckins row }; 409 { error: 'You have already checked
+ *    in today! Come back tomorrow.', alreadyCheckedIn: true } (parsed via
+ *    [CheckinSubmitEnvelope] so the flag rides along); 429 with the shared
+ *    rate-limit { error: 'Too many requests. Try again in Ns.' }. The POST
+ *    credits buyerRewards AND writes the earn ledger row server-side.
+ *  - POST api/rewards/spin (rewards/spin/route.ts POST, rate limit 10/min
+ *    'rewards-spin', NO body) — the lucky wheel. FREE (no cost field
+ *    exists anywhere on the wire) with a hard 3/day cap: over the cap →
+ *    429 { error: 'Daily spin limit reached (3/3). Come back tomorrow at
+ *    00:00 AM!', spinsRemaining: 0 }. Success 200 { success, data: {
+ *    prize: { id, label, type, value, weight }, segmentIndex,
+ *    spinsRemaining, spinsToday } } — voucher/free-shipping prizes create
+ *    a 7-day SPIN-… user coupon, points prizes credit buyerRewards, both
+ *    server-side. The prize table itself is route-internal (no GET), so
+ *    the screen shows the web component's own segment labels/colors.
+ *  - GET api/rewards/spin-history (rewards/spin-history/route.ts GET) —
+ *    401 guests; 200 with the counters OUTSIDE data: { success,
+ *    data: [the last 50 spinWinResults rows newest-first], spinsToday,
+ *    spinsRemaining: max(0, 3 - spinsToday) } — parsed by the dedicated
+ *    [SpinHistoryEnvelope], NOT ApiEnvelope (whose data is a single object).
+ *
+ *  - api/rewards/history (the points-history pageId) remains undeclared —
+ *    still no native screen calls it; the t259 ledger comes from the
+ *    api/rewards GET above. api/mini-games (trivia/memory/box) likewise:
+ *    none of the t260 pageIds re-hosts those three web games — the native
+ *    mini-games hub composes the two GETs above instead, honestly labeled.
  *
  * WIRE NOTES (dc74841 lesson applied everywhere): every response field is
  * nullable-with-default so shape drift degrades into the screen mappers;
@@ -166,6 +202,54 @@ interface RewardsApi {
      */
     @GET("api/affiliate/dashboard")
     suspend fun affiliateDashboard(): Response<ApiEnvelope<AffiliateDashboardDto>>
+
+    /* ─── t260: vip tier ladder (api/vip) ─────────────────────────────────── */
+
+    /**
+     * GET api/vip — the platform's REAL tier ladder + the caller's current
+     * tier and lifetime PAID spend. Public (guests get 'standard'/0); 500
+     * 'Internal server error' on the route's own failure path.
+     */
+    @GET("api/vip")
+    suspend fun vipMatrix(): Response<ApiEnvelope<VipDataDto>>
+
+    /* ─── t260: daily check-in (api/rewards/checkin) ──────────────────────── */
+
+    /**
+     * GET api/rewards/checkin — today's claim state, the streak, the
+     * server's 7-day reward schedule and the last 30 check-in rows.
+     * 401 'Authentication required' for guests.
+     */
+    @GET("api/rewards/checkin")
+    suspend fun checkinStatus(): Response<ApiEnvelope<CheckinStatusDto>>
+
+    /**
+     * POST api/rewards/checkin — claim today's check-in (NO body; the
+     * route reads nothing from the request). 201 message + row; 409
+     * 'You have already checked in today! …' with alreadyCheckedIn; 429
+     * rate-limit text — all parsed via [CheckinSubmitEnvelope].
+     */
+    @POST("api/rewards/checkin")
+    suspend fun checkinSubmit(): Response<CheckinSubmitEnvelope>
+
+    /* ─── t260: lucky wheel (api/rewards/spin + spin-history) ─────────────── */
+
+    /**
+     * POST api/rewards/spin — one free wheel turn (NO body). 200 prize
+     * result; 429 daily-cap / rate-limit text; 401 guests. The screen
+     * renders the server's prize verbatim — never a pre-picked animation.
+     */
+    @POST("api/rewards/spin")
+    suspend fun spinSubmit(): Response<ApiEnvelope<SpinResultDto>>
+
+    /**
+     * GET api/rewards/spin-history — the last 50 spinWinResults rows PLUS
+     * the top-level spinsToday / spinsRemaining counters (see
+     * [SpinHistoryEnvelope]). Doubles as the spin screen's status probe
+     * (exactly what the web spin-win component calls first).
+     */
+    @GET("api/rewards/spin-history")
+    suspend fun spinHistory(): Response<SpinHistoryEnvelope>
 }
 
 /* ─── rewards book (GET api/rewards) ─────────────────────────────────────── */
@@ -262,6 +346,169 @@ data class RewardsRedeemResultDto(
     val redeemed: String? = null,
     val pointsSpent: Int? = null,
     val walletBalanceAfter: Double? = null,
+)
+
+/* ─── t260: vip tier ladder (GET api/vip) ────────────────────────────────── */
+
+/**
+ * data of GET api/vip (vip/route.ts:85-92 verbatim). totalSpendBDT is the
+ * SUM of the buyer's PAID orders' totalAmount (0 for a guest — the route
+ * answers guests too, so null only on shape drift). currentTier is the
+ * route's token (standard | silver | gold | platinum).
+ */
+@Immutable
+@Serializable
+data class VipDataDto(
+    val currentTier: String? = null,
+    val totalSpendBDT: Double? = null,
+    val tiers: List<VipTierDto> = emptyList(),
+)
+
+/**
+ * One GET api/vip tiers row (vip/route.ts:10-64 VIP_TIERS verbatim):
+ * badge is the display token (Bronze…Platinum), color the route's hex
+ * ('#F59E0B'…), benefits the verbatim privilege list. minSpendBDT is a
+ * plain number on the wire → Double.
+ */
+@Immutable
+@Serializable
+data class VipTierDto(
+    val id: String? = null,
+    val name: String? = null,
+    val minSpendBDT: Double? = null,
+    val badge: String? = null,
+    val color: String? = null,
+    val benefits: List<String> = emptyList(),
+) {
+    /** Stable identity for keyed collections (tier id, hash fallback). */
+    val stableKey: String
+        get() = id?.takeIf(String::isNotBlank) ?: "vip-tier-${hashCode()}"
+}
+
+/* ─── t260: daily check-in (GET/POST api/rewards/checkin) ────────────────── */
+
+/**
+ * data of GET api/rewards/checkin (rewards/checkin/route.ts:47-56
+ * verbatim). todayReward = schedule[min(currentStreak, 6)] (the NEXT
+ * claim's amount); schedule is the server's own 7-day ladder — the grid
+ * renders it, never a client copy.
+ */
+@Immutable
+@Serializable
+data class CheckinStatusDto(
+    val checkedInToday: Boolean = false,
+    val currentStreak: Int? = null,
+    val todayReward: Int? = null,
+    val schedule: List<Int> = emptyList(),
+    val history: List<CheckinRowDto> = emptyList(),
+)
+
+/**
+ * One dailyCheckins row — BOTH the GET history rows and the POST 201 data
+ * carry this shape (rewards/checkin/route.ts data: checkin). checkinDate
+ * is the route's YYYY-MM-DD token; pointsAwarded the credited points.
+ */
+@Immutable
+@Serializable
+data class CheckinRowDto(
+    val id: String? = null,
+    val userId: String? = null,
+    val checkinDate: String? = null,
+    val streakCount: Int? = null,
+    val pointsAwarded: Int? = null,
+    val createdAt: String? = null,
+) {
+    /** Stable identity for keyed collections (row id, hash fallback). */
+    val stableKey: String
+        get() = id?.takeIf(String::isNotBlank) ?: "checkin-${hashCode()}"
+}
+
+/**
+ * POST api/rewards/checkin response — TWO wire shapes land here: the 201
+ * { success, message, data } and the 409 { error, alreadyCheckedIn: true }
+ * (NO success field → default false; the screen branches on success and
+ * surfaces error verbatim). 429 rate-limit answers { error } only.
+ */
+@Immutable
+@Serializable
+data class CheckinSubmitEnvelope(
+    val success: Boolean = false,
+    val message: String? = null,
+    val data: CheckinRowDto? = null,
+    val error: String? = null,
+    val alreadyCheckedIn: Boolean = false,
+)
+
+/* ─── t260: lucky wheel (POST api/rewards/spin, GET spin-history) ────────── */
+
+/**
+ * prize of the POST api/rewards/spin success (rewards/spin/route.ts:12-20
+ * PRIZE_SEGMENTS row verbatim): type is the route's token (fixed |
+ * points | free-shipping), value the BDT/points magnitude, weight the
+ * server's odds weight (displayed nowhere — kept for shape fidelity).
+ */
+@Immutable
+@Serializable
+data class SpinPrizeDto(
+    val id: String? = null,
+    val label: String? = null,
+    val type: String? = null,
+    val value: Double? = null,
+    val weight: Int? = null,
+)
+
+/**
+ * data of the POST api/rewards/spin success (rewards/spin/route.ts:132-140
+ * verbatim): the WON prize (rendered verbatim — the native screen runs no
+ * fake wheel animation ahead of it), its segmentIndex (highlights the
+ * matching table row), and the REAL remaining/today counters.
+ */
+@Immutable
+@Serializable
+data class SpinResultDto(
+    val prize: SpinPrizeDto? = null,
+    val segmentIndex: Int? = null,
+    val spinsRemaining: Int? = null,
+    val spinsToday: Int? = null,
+)
+
+/**
+ * One spinWinResults row as GET api/rewards/spin-history serves it
+ * (schema.prisma spinWinResults): prizeValue Float → Double, spinDate the
+ * YYYY-MM-DD token, couponId set only for voucher/free-shipping wins.
+ */
+@Immutable
+@Serializable
+data class SpinRowDto(
+    val id: String? = null,
+    val userId: String? = null,
+    val prizeType: String? = null,
+    val prizeLabel: String? = null,
+    val prizeValue: Double? = null,
+    val couponId: String? = null,
+    val spinsToday: Int? = null,
+    val spinDate: String? = null,
+    val createdAt: String? = null,
+) {
+    /** Stable identity for keyed collections (row id, hash fallback). */
+    val stableKey: String
+        get() = id?.takeIf(String::isNotBlank) ?: "spin-${hashCode()}"
+}
+
+/**
+ * Envelope of GET api/rewards/spin-history — the route puts the counters
+ * OUTSIDE data (spin-history/route.ts:27-32: { success, data: [...rows],
+ * spinsToday, spinsRemaining }), so the generic ApiEnvelope (single-object
+ * data) cannot express it. 401 answers { error }.
+ */
+@Immutable
+@Serializable
+data class SpinHistoryEnvelope(
+    val success: Boolean = false,
+    val data: List<SpinRowDto> = emptyList(),
+    val spinsToday: Int? = null,
+    val spinsRemaining: Int? = null,
+    val error: String? = null,
 )
 
 /* ─── loyalty status (GET api/rewards/loyalty) ───────────────────────────── */

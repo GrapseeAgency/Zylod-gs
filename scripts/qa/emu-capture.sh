@@ -260,7 +260,11 @@ adbt () { timeout "${1:-20}" adb shell "${@:2}" || true; }
 # 39-rewards-authed, a 12s settle plus the buyer session re-injection
 # before it (~20s worst case); still far under the 60-minute job ceiling,
 # and every skipped capture degrades non-fatally).
-budget_left () { [ $((2420 - SECONDS)) -gt 10 ]; }
+# (t260: raised to 2440s — one more authed capture joins the segment:
+# 40-vip-authed, a 12s settle plus the buyer session re-injection
+# before it (~20s worst case); still far under the 60-minute job ceiling,
+# and every skipped capture degrades non-fatally).
+budget_left () { [ $((2440 - SECONDS)) -gt 10 ]; }
 budget_stop () {
   if [ "$BUDGET_EXHAUSTED" -eq 0 ] && ! budget_left; then
     BUDGET_EXHAUSTED=1
@@ -2391,6 +2395,29 @@ else
   # show the real data surface, never a fabricated row. Same 12s settle +
   # queue-drain guard as 31-38.
   guarded_deeplink "39-rewards-authed" 12 "zylod://buyer-rewards"
+  # t260: RE-INJECT the buyer session immediately before capture 40 — the
+  # exact t259 pattern as the capture-39 block above (t249-k finding applies
+  # verbatim: the deeplinks before it can mid-flow-401 the SessionAuthenticator
+  # into logging the session out, and 40-vip-authed wants a persisted BUYER
+  # session so the api/vip payload carries the real currentTier + lifetime
+  # paid spend instead of the guest 'standard'/0 answer). Evidence appends
+  # to buyer-session-check.txt; non-fatal on failure (GET api/vip is public
+  # so capture 40 still shows the REAL tier ladder either way).
+  BUYER_REQ_VIP=no
+  if ! budget_stop; then
+    log "t260: re-injecting the buyer session immediately before capture 40 (mid-flow 401s from earlier deeplinks can trigger the SessionAuthenticator logout that clears it)"
+    if broadcast_inject_session "buyer1@zylod.bd" "Passw0rd!23" "buyer" "screenshots/buyer-session-check.txt"; then
+      BUYER_REQ_VIP=yes
+    fi
+  fi
+  echo "buyer-vip-reinjection=$BUYER_REQ_VIP" >> screenshots/buyer-session-check.txt 2>/dev/null || true
+  # t260: 40-vip-authed — the new typed VipScreen (the REAL api/vip tier
+  # ladder + privilege matrix: name, badge, minSpendBDT, the route's own
+  # color hex + verbatim benefit bullets per tier, and the buyer's current
+  # tier + lifetime paid spend on the ladder variant). GET api/vip always
+  # returns the real tier ladder — the shot must show real tiers, never a
+  # fabricated one. Same 12s settle + queue-drain guard as 31-39.
+  guarded_deeplink "40-vip-authed" 12 "zylod://vip-benefits"
 fi
 
 log "Screen inventory"

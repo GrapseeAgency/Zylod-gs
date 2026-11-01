@@ -2,9 +2,11 @@ package com.zylod.wholesale.ui.rewards
 
 import com.zylod.wholesale.data.api.AffiliateDashboardDto
 import com.zylod.wholesale.data.api.AffiliateProfileDto
+import com.zylod.wholesale.data.api.CheckinStatusDto
 import com.zylod.wholesale.data.api.LoyaltyStatusDto
 import com.zylod.wholesale.data.api.ReferralsDataDto
 import com.zylod.wholesale.data.api.RewardsBookDto
+import com.zylod.wholesale.data.api.SpinHistoryEnvelope
 
 /**
  * Shared models for the t259 rewards/referral/affiliate surfaces. Same
@@ -33,6 +35,12 @@ object RewardsCacheKeys {
 
     /** Last successful GET api/affiliate/dashboard aggregates. */
     const val AFFILIATE_DASHBOARD = "native_affiliate_dashboard_cache"
+
+    /** Last successful GET api/rewards/checkin status (streak + schedule + ledger). */
+    const val CHECKIN = "native_checkin_cache"
+
+    /** Last successful GET api/rewards/spin-history payload (rows + today counters). */
+    const val SPIN_HISTORY = "native_spin_history_cache"
 }
 
 /* ─── offline cache envelopes (the raw wire DTOs — offline render matches live) ─── */
@@ -59,6 +67,16 @@ data class CachedAffiliateStatus(
 /** Saved affiliate-dashboard snapshot (GET api/affiliate/dashboard). */
 @kotlinx.serialization.Serializable
 data class CachedAffiliateDashboard(val dashboard: AffiliateDashboardDto? = null)
+
+/* ─── t260 offline cache envelopes (the raw wire DTOs — offline matches live) ── */
+
+/** Saved check-in status snapshot (GET api/rewards/checkin). */
+@kotlinx.serialization.Serializable
+data class CachedCheckinStatus(val status: CheckinStatusDto? = null)
+
+/** Saved spin-history snapshot (GET api/rewards/spin-history, counters included). */
+@kotlinx.serialization.Serializable
+data class CachedSpinHistory(val envelope: SpinHistoryEnvelope? = null)
 
 /* ─── the routes' REAL wire tokens (ladders + chips use the exact values) ── */
 
