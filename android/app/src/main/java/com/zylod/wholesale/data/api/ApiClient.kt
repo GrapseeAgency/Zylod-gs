@@ -287,4 +287,13 @@ object ApiClient {
     // route set stays put — one accessor, no duplicate class names).
     fun walletMoneyApi(baseUrl: String): WalletMoneyApi =
         cachedApi(baseUrl, "walletMoney") { it.create(WalletMoneyApi::class.java) }
+
+    // t259 — native rewards/referral/affiliate surfaces (the rewards book +
+    // catalog redemption, loyalty status, the referral code/claim pair, the
+    // affiliate status/join + dashboard). Same memoization; every route here
+    // is Bearer-authenticated through the shared OkHttp client and its
+    // 401-refresh chain (the minimal GET api/rewards strip the coupon vault
+    // reads stays on couponsApi above — never redeclared there).
+    fun rewardsApi(baseUrl: String): RewardsApi =
+        cachedApi(baseUrl, "rewards") { it.create(RewardsApi::class.java) }
 }

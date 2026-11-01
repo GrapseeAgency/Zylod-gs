@@ -256,7 +256,11 @@ adbt () { timeout "${1:-20}" adb shell "${@:2}" || true; }
 # 38-addmoney-authed, a 12s settle plus the buyer session re-injection
 # before it (~20s worst case); still far under the 60-minute job ceiling,
 # and every skipped capture degrades non-fatally).
-budget_left () { [ $((2400 - SECONDS)) -gt 10 ]; }
+# (t259: raised to 2420s — one more authed capture joins the segment:
+# 39-rewards-authed, a 12s settle plus the buyer session re-injection
+# before it (~20s worst case); still far under the 60-minute job ceiling,
+# and every skipped capture degrades non-fatally).
+budget_left () { [ $((2420 - SECONDS)) -gt 10 ]; }
 budget_stop () {
   if [ "$BUDGET_EXHAUSTED" -eq 0 ] && ! budget_left; then
     BUDGET_EXHAUSTED=1
@@ -2362,6 +2366,31 @@ else
   # so the GET answers 200 and the shot must show the real form + ledger,
   # never an empty state). Same 12s settle + queue-drain guard as 31-37.
   guarded_deeplink "38-addmoney-authed" 12 "zylod://add-money"
+  # t259: RE-INJECT the buyer session immediately before capture 39 — the
+  # exact t258 pattern as the capture-38 block above (t249-k finding applies
+  # verbatim: the deeplinks before it can mid-flow-401 the SessionAuthenticator
+  # into logging the session out, and 39-rewards-authed needs a persisted
+  # BUYER session since the native rewards VM gates on it — GET api/rewards
+  # is buyer-scoped via requireUserType and answers 401 otherwise). Evidence
+  # appends to buyer-session-check.txt; non-fatal on failure (capture 39
+  # keeps its honest sign-in gate verdict).
+  BUYER_REQ_REWARDS=no
+  if ! budget_stop; then
+    log "t259: re-injecting the buyer session immediately before capture 39 (mid-flow 401s from earlier deeplinks can trigger the SessionAuthenticator logout that clears it)"
+    if broadcast_inject_session "buyer1@zylod.bd" "Passw0rd!23" "buyer" "screenshots/buyer-session-check.txt"; then
+      BUYER_REQ_REWARDS=yes
+    fi
+  fi
+  echo "buyer-rewards-reinjection=$BUYER_REQ_REWARDS" >> screenshots/buyer-session-check.txt 2>/dev/null || true
+  # t259: 39-rewards-authed — the new typed RewardsScreen (the REAL
+  # api/rewards book: the points-balance hero + the server's tier + the
+  # wallet-credit redemption catalog + the points ledger). GET api/rewards
+  # is find-or-create for the buyer, so an authed buyer ALWAYS gets a real
+  # 200 payload back (balance card + the fixed catalog render even at zero
+  # points; an empty history is the honest ledger state) — the shot must
+  # show the real data surface, never a fabricated row. Same 12s settle +
+  # queue-drain guard as 31-38.
+  guarded_deeplink "39-rewards-authed" 12 "zylod://buyer-rewards"
 fi
 
 log "Screen inventory"
