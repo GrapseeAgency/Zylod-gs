@@ -236,7 +236,11 @@ adbt () { timeout "${1:-20}" adb shell "${@:2}" || true; }
 # 33-addresses-authed, a 12s settle plus the buyer session re-injection
 # before it (~20s worst case); still far under the 60-minute job ceiling,
 # and every skipped capture degrades non-fatally).
-budget_left () { [ $((2300 - SECONDS)) -gt 10 ]; }
+# (t254: raised to 2320s — one more authed capture joins the segment:
+# 34-all-reviews, a 12s settle plus the buyer session re-injection
+# before it (~20s worst case); still far under the 60-minute job ceiling,
+# and every skipped capture degrades non-fatally).
+budget_left () { [ $((2320 - SECONDS)) -gt 10 ]; }
 budget_stop () {
   if [ "$BUDGET_EXHAUSTED" -eq 0 ] && ! budget_left; then
     BUDGET_EXHAUSTED=1
@@ -2235,6 +2239,26 @@ else
   # api/addresses cards with the Default badge + selection + continue bar).
   # Same 12s settle + queue-drain guard as 31/32.
   guarded_deeplink "33-addresses-authed" 12 "zylod://address-book"
+  # t254: RE-INJECT the buyer session immediately before capture 34 — the
+  # exact t253 pattern as the capture-33 block above (t249-k finding applies
+  # verbatim: the deeplinks before it can mid-flow-401 the SessionAuthenticator
+  # into logging the session out, and 34-all-reviews renders its verified-purchase
+  # badges best under a live BUYER session even though the list route is public).
+  # Evidence appends to buyer-session-check.txt; non-fatal on failure (capture
+  # 34 keeps its honest public-list verdict).
+  BUYER_REQ_REVIEWS=no
+  if ! budget_stop; then
+    log "t254: re-injecting the buyer session immediately before capture 34 (mid-flow 401s from earlier deeplinks can trigger the SessionAuthenticator logout that clears it)"
+    if broadcast_inject_session "buyer1@zylod.bd" "Passw0rd!23" "buyer" "screenshots/buyer-session-check.txt"; then
+      BUYER_REQ_REVIEWS=yes
+    fi
+  fi
+  echo "buyer-reviews-reinjection=$BUYER_REQ_REVIEWS" >> screenshots/buyer-session-check.txt 2>/dev/null || true
+  # t254: 34-all-reviews — the new typed shared reviews-list screen (REAL
+  # api/reviews cards with the product header + filter pills + verified
+  # badges + honest empty/error states). Same 12s settle + queue-drain
+  # guard as 31-33.
+  guarded_deeplink "34-all-reviews" 12 "zylod://all-reviews"
 fi
 
 log "Screen inventory"

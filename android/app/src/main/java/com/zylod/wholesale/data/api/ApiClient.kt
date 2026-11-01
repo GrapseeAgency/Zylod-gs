@@ -251,4 +251,12 @@ object ApiClient {
     // Bearer-authenticated through the shared OkHttp client.
     fun addressesApi(baseUrl: String): AddressesApi =
         cachedApi(baseUrl, "addresses") { it.create(AddressesApi::class.java) }
+
+    // t254 — native reviews surfaces (PUBLIC GET api/reviews + the
+    // buyer-only POST, plus the product-context GETs the review header
+    // resolves). Same memoization; the shared OkHttp client adds the
+    // Bearer header and the 401-refresh chain (the public reads ignore
+    // the header when it is present).
+    fun reviewsApi(baseUrl: String): ReviewsApi =
+        cachedApi(baseUrl, "reviews") { it.create(ReviewsApi::class.java) }
 }
