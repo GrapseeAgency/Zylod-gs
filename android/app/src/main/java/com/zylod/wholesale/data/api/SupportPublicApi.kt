@@ -14,7 +14,8 @@ import retrofit2.http.Query
  * Support surfaces — the REAL endpoints behind the seven native support /
  * help pageIds (t255: faq-page + helpdesk + docs-page + system-status +
  * system-health + contact-page + feedback-page). Every route was verified
- * against its src/app/api/** handler:
+ * against its src/app/api route handlers (Kotlin block comments nest — a
+ * literal glob star-slash-star here would open an unterminated comment):
  *
  *  - GET api/support/faqs?category= (PUBLIC): 200 { success, data: [row],
  *    total } — the isActive faqItems rows ordered sortOrder/createdAt ASC.
