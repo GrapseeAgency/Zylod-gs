@@ -23,11 +23,11 @@ android {
         applicationId = "com.zylod.wholesale"
         minSdk = 24
         targetSdk = 35
-        versionCode = 265
+        versionCode = 266
         // CI passes -PcommitSuffix=<short-sha> so every CI-built APK is
         // traceable to its exact commit on-device (Settings → Apps).
-        // Local builds stay plain "2.4.25".
-        versionName = "2.4.25" + (findProperty("commitSuffix")?.let { "-$it" } ?: "")
+        // Local builds stay plain "2.4.26".
+        versionName = "2.4.26" + (findProperty("commitSuffix")?.let { "-$it" } ?: "")
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {

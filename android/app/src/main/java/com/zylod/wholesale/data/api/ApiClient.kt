@@ -296,4 +296,13 @@ object ApiClient {
     // reads stays on couponsApi above — never redeclared there).
     fun rewardsApi(baseUrl: String): RewardsApi =
         cachedApi(baseUrl, "rewards") { it.create(RewardsApi::class.java) }
+
+    // t261 — native complaints/queries surfaces (the complaints list/create/
+    // detail/withdraw routes, the supplier query thread GET/PATCH, the buyer
+    // query rail, and the report-problem POST both raise pageIds submit).
+    // Same memoization; every route here is Bearer-authenticated through the
+    // shared OkHttp client and its 401-refresh chain (report-problem is
+    // public-optional and ignores the header when it is present).
+    fun complaintsApi(baseUrl: String): ComplaintsApi =
+        cachedApi(baseUrl, "complaints") { it.create(ComplaintsApi::class.java) }
 }

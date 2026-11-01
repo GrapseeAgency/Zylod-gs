@@ -264,7 +264,11 @@ adbt () { timeout "${1:-20}" adb shell "${@:2}" || true; }
 # 40-vip-authed, a 12s settle plus the buyer session re-injection
 # before it (~20s worst case); still far under the 60-minute job ceiling,
 # and every skipped capture degrades non-fatally).
-budget_left () { [ $((2440 - SECONDS)) -gt 10 ]; }
+# (t261: raised to 2460s — one more authed capture joins the segment:
+# 41-complaints-authed, a 12s settle plus the buyer session re-injection
+# before it (~20s worst case); still far under the 60-minute job ceiling,
+# and every skipped capture degrades non-fatally).
+budget_left () { [ $((2460 - SECONDS)) -gt 10 ]; }
 budget_stop () {
   if [ "$BUDGET_EXHAUSTED" -eq 0 ] && ! budget_left; then
     BUDGET_EXHAUSTED=1
@@ -2418,6 +2422,30 @@ else
   # returns the real tier ladder — the shot must show real tiers, never a
   # fabricated one. Same 12s settle + queue-drain guard as 31-39.
   guarded_deeplink "40-vip-authed" 12 "zylod://vip-benefits"
+  # t261: RE-INJECT the buyer session immediately before capture 41 — the
+  # exact t260 pattern as the capture-40 block above (t249-k finding applies
+  # verbatim: the deeplinks before it can mid-flow-401 the SessionAuthenticator
+  # into logging the session out, and 41-complaints-authed needs a persisted
+  # BUYER session since the native complaints VM gates on it — GET
+  # api/complaints is buyer-scoped and answers 401 otherwise). Evidence
+  # appends to buyer-session-check.txt; non-fatal on failure (capture 41
+  # keeps its honest sign-in gate verdict).
+  BUYER_REQ_COMPLAINTS=no
+  if ! budget_stop; then
+    log "t261: re-injecting the buyer session immediately before capture 41 (mid-flow 401s from earlier deeplinks can trigger the SessionAuthenticator logout that clears it)"
+    if broadcast_inject_session "buyer1@zylod.bd" "Passw0rd!23" "buyer" "screenshots/buyer-session-check.txt"; then
+      BUYER_REQ_COMPLAINTS=yes
+    fi
+  fi
+  echo "buyer-complaints-reinjection=$BUYER_REQ_COMPLAINTS" >> screenshots/buyer-session-check.txt 2>/dev/null || true
+  # t261: 41-complaints-authed — the new typed ComplaintsScreen (the REAL
+  # api/complaints list: status chips on the route's own zod enum, rows with
+  # the category chip + status badge + filed timestamp + mono ref, the
+  # per-row evidence re-read and the withdraw dialog on open rows). The
+  # buyer session is valid, so GET api/complaints answers 200 — the shot
+  # shows the real rows or the honest empty state with the roundtrip logged,
+  # never a fabricated one. Same 12s settle + queue-drain guard as 31-40.
+  guarded_deeplink "41-complaints-authed" 12 "zylod://buyer-complaints"
 fi
 
 log "Screen inventory"
