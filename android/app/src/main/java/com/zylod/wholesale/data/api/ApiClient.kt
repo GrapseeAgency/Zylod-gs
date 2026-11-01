@@ -363,4 +363,15 @@ object ApiClient {
     // (requireUserType(['admin']) handlers — 401/403 render the honest gate).
     fun adminOpsApi(baseUrl: String): AdminOpsApi =
         cachedApi(baseUrl, "admin-ops") { it.create(AdminOpsApi::class.java) }
+
+    // t266 — native seller-operations surfaces (the eight seller pageIds:
+    // payouts, revenue, analytics, inventory, customer-insights, reviews,
+    // shipping-settings, verification-status). A SEPARATE interface from
+    // SellerApi so the t245 seller route set stays put. Same memoization;
+    // every route here is Bearer-authenticated through the shared OkHttp
+    // client and its 401-refresh chain (requireUserType(['supplier','admin'])
+    // handlers — 401 signed-out and 403 no-supplier-profile both render the
+    // screens' honest not-seller gate).
+    fun sellerOpsApi(baseUrl: String): SellerOpsApi =
+        cachedApi(baseUrl, "seller-ops") { it.create(SellerOpsApi::class.java) }
 }

@@ -283,7 +283,11 @@ adbt () { timeout "${1:-20}" adb shell "${@:2}" || true; }
 # (t265: raised to 2560s — 45-admin-audit-logs-authed + 46-admin-shipping-authed
 # join the admin-authed segment (12s settles each, no extra re-injection —
 # same admin session as 28); every skipped capture degrades non-fatally).
-budget_left () { [ $((2560 - SECONDS)) -gt 10 ]; }
+# (t266: raised to 2600s — the seller-authed segment joins the tail: seller
+# session re-injection (~40s worst) + 47-seller-payouts-authed and
+# 48-seller-revenue-authed (12s settles each); every skipped capture
+# degrades non-fatally).
+budget_left () { [ $((2600 - SECONDS)) -gt 10 ]; }
 budget_stop () {
   if [ "$BUDGET_EXHAUSTED" -eq 0 ] && ! budget_left; then
     BUDGET_EXHAUSTED=1
@@ -2570,6 +2574,33 @@ else
   # empty state with the roundtrip logged, never a fabricated one. Same
   # 12s settle + queue-drain guard as 31-43.
   guarded_deeplink "44-careers-public" 12 "zylod://careers"
+  # t266: seller-authed segment — the seeded supplier session (dhaka.textile)
+  # re-injected right before its captures (same mid-flow 401 logic as the
+  # t249-k buyer re-injections: SessionAuthenticator logout clears stale
+  # roles, the broadcast swap is the only reliable role switch). The captures
+  # above left the ADMIN session persisted — 47/48 are seller-scoped
+  # (requireUserType(['supplier','admin'])) so the SELLER session must be the
+  # one committed on the cold-started home. Local style: the injection is
+  # budget-guarded and appends its evidence key; the guarded_deeplink calls
+  # run unconditionally (the queue-desync guard inside handles failure —
+  # non-fatal: on injection failure the captures keep their honest gate
+  # verdict).
+  SELLER_REQ_PAYOUTS=no
+  if ! budget_stop; then
+    log "t266: injecting the seeded supplier session (dhaka.textile) immediately before the seller captures (mid-flow 401s from earlier deeplinks trigger the SessionAuthenticator logout that clears roles)"
+    if broadcast_inject_session "dhaka.textile@zylod.bd" "Passw0rd!23" "seller" "screenshots/seller-session-check.txt"; then
+      SELLER_REQ_PAYOUTS=yes
+    fi
+  fi
+  echo "seller-reinjection=$SELLER_REQ_PAYOUTS" >> screenshots/seller-session-check.txt 2>/dev/null || true
+  # t266: 47-seller-payouts-authed + 48-seller-revenue-authed — two of the
+  # eight typed seller-operations screens this batch owns (Payouts +
+  # Revenue). Same 12s settle + queue-drain guard as 31-46 — they evidence
+  # the real payout rows + derived summary strip and the revenue ledger
+  # rendering under the fresh SELLER session (a no-supplier-profile session
+  # would show the honest seller gate instead — never fabricated data).
+  guarded_deeplink "47-seller-payouts-authed" 12 "zylod://seller-payouts"
+  guarded_deeplink "48-seller-revenue-authed" 12 "zylod://seller-revenue"
 fi
 
 log "Screen inventory"
