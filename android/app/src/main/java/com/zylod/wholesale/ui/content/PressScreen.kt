@@ -291,7 +291,7 @@ fun PressScreen(
                 state.mediaKitError != null -> item(key = "kit-error") {
                     ContentErrorCard(message = state.mediaKitError.orEmpty(), onRetry = vm::retryMediaKit)
                 }
-                state.mediaKit == null || state.mediaKit.assets.isEmpty() -> item(key = "kit-empty") {
+                state.mediaKit?.assets.isNullOrEmpty() -> item(key = "kit-empty") {
                     Surface(
                         color = MaterialTheme.colorScheme.surface,
                         shape = RoundedCornerShape(14.dp),
