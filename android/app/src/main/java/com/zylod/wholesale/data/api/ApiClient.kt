@@ -374,4 +374,12 @@ object ApiClient {
     // screens' honest not-seller gate).
     fun sellerOpsApi(baseUrl: String): SellerOpsApi =
         cachedApi(baseUrl, "seller-ops") { it.create(SellerOpsApi::class.java) }
+
+    // t267 — native supplier-core surfaces (supplier-orders, supplier-products,
+    // supplier-samples, supplier-warehouse, suppliers directory). A SEPARATE
+    // interface from SellerOpsApi so the t266 seller route set stays put. Same
+    // memoization + Bearer auth + 401-refresh chain; 401/403/404 profile
+    // gates render the screens' honest not-seller state.
+    fun supplierCoreApi(baseUrl: String): SupplierCoreApi =
+        cachedApi(baseUrl, "supplier-core") { it.create(SupplierCoreApi::class.java) }
 }

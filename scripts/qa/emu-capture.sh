@@ -287,7 +287,12 @@ adbt () { timeout "${1:-20}" adb shell "${@:2}" || true; }
 # session re-injection (~40s worst) + 47-seller-payouts-authed and
 # 48-seller-revenue-authed (12s settles each); every skipped capture
 # degrades non-fatally).
-budget_left () { [ $((2600 - SECONDS)) -gt 10 ]; }
+# (t267: raised to 2680s — six supplier-core captures join the seller
+# segment: 49-53 (orders/products/samples/warehouse + the public suppliers
+# directory, 12s settles each, same fresh SELLER session as 47/48 — no
+# extra re-injection) and 54-supplier-analytics-authed; every skipped
+# capture degrades non-fatally).
+budget_left () { [ $((2680 - SECONDS)) -gt 10 ]; }
 budget_stop () {
   if [ "$BUDGET_EXHAUSTED" -eq 0 ] && ! budget_left; then
     BUDGET_EXHAUSTED=1
@@ -2601,6 +2606,21 @@ else
   # would show the honest seller gate instead — never fabricated data).
   guarded_deeplink "47-seller-payouts-authed" 12 "zylod://seller-payouts"
   guarded_deeplink "48-seller-revenue-authed" 12 "zylod://seller-revenue"
+  # t267: 49-54 supplier-core — six more typed surfaces this batch owns,
+  # captured under the SAME fresh SELLER session as 47/48 (no extra
+  # re-injection — the dhaka.textile injection above is still committed):
+  # the four supplier-scoped route screens (orders 404s / products answers
+  # an honest empty / samples+warehouses 403 without a supplier profile —
+  # every failure renders the honest supplier gate, never fabricated data),
+  # the PUBLIC suppliers directory (renders signed-out-safe) and the
+  # supplier-analytics pageId that now rides the t266 seller-analytics
+  # screen. Same 12s settle + queue-drain guard as 31-48.
+  guarded_deeplink "49-supplier-orders-authed" 12 "zylod://supplier-orders"
+  guarded_deeplink "50-supplier-products-authed" 12 "zylod://supplier-products"
+  guarded_deeplink "51-supplier-samples-authed" 12 "zylod://supplier-samples"
+  guarded_deeplink "52-supplier-warehouse-authed" 12 "zylod://supplier-warehouse"
+  guarded_deeplink "53-suppliers-directory" 12 "zylod://suppliers"
+  guarded_deeplink "54-supplier-analytics-authed" 12 "zylod://supplier-analytics"
 fi
 
 log "Screen inventory"
