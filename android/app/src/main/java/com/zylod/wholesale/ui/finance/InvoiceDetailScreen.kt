@@ -18,7 +18,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.CheckCircle
-import androidx.compose.material.icons.outlined.Clock
+import androidx.compose.material.icons.outlined.Schedule
 import androidx.compose.material.icons.outlined.ErrorOutline
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.Lock
@@ -258,7 +258,7 @@ private fun InvoicePaidChip(paymentStatus: String?) {
             modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
         ) {
             Icon(
-                if (paid) Icons.Outlined.CheckCircle else Icons.Outlined.Clock,
+                if (paid) Icons.Outlined.CheckCircle else Icons.Outlined.Schedule,
                 null,
                 tint = content,
                 modifier = Modifier.size(12.dp),
