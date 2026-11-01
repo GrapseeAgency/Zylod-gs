@@ -26,7 +26,7 @@ import androidx.compose.material.icons.outlined.ErrorOutline
 import androidx.compose.material.icons.outlined.ExpandMore
 import androidx.compose.material.icons.outlined.Inventory
 import androidx.compose.material.icons.outlined.Lock
-import androidx.compose.material.icons.outlined.Package
+import androidx.compose.material.icons.outlined.Inventory2
 import androidx.compose.material.icons.outlined.Refresh
 import androidx.compose.material.icons.outlined.Remove
 import androidx.compose.material3.Button
@@ -318,7 +318,7 @@ private fun ReturnItemCard(item: ReturnItemRow, state: ReturnRequestUiState, vm:
                         )
                     } else {
                         Icon(
-                            Icons.Outlined.Package,
+                            Icons.Outlined.Inventory2,
                             null,
                             tint = MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier.size(20.dp),
@@ -988,7 +988,7 @@ private fun EmptyItemsCard() {
                     .background(MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(50)),
             ) {
                 Icon(
-                    Icons.Outlined.Package,
+                    Icons.Outlined.Inventory2,
                     null,
                     tint = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.size(28.dp),

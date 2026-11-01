@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -246,7 +247,7 @@ private fun StepBubble(position: Int, label: String, active: Boolean) {
 }
 
 @Composable
-private fun StepConnector() {
+private fun RowScope.StepConnector() {
     Box(
         Modifier
             .weight(1f)

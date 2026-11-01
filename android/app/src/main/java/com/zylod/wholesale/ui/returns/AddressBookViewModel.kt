@@ -143,7 +143,7 @@ class AddressBookViewModel(
             if (gateOn401(response.code())) return
             val payload = response.body()
             val rows = payload?.data
-                ?.takeIf { response.isSuccessful && it.success }
+                ?.takeIf { response.isSuccessful && payload?.success == true }
                 ?.map { it.toRow() }
                 .orEmpty()
             if (!response.isSuccessful || payload?.success != true) {
