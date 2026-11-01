@@ -269,4 +269,13 @@ object ApiClient {
     // and ignore the header when it is present).
     fun supportPublicApi(baseUrl: String): SupportPublicApi =
         cachedApi(baseUrl, "supportPublic") { it.create(SupportPublicApi::class.java) }
+
+    // t256 — native financial-instrument surfaces (bank accounts GET/POST/
+    // DELETE, cards GET/POST/DELETE, payment methods GET/POST/DELETE + the
+    // mobile-banking projection). Same memoization; every route here is
+    // Bearer-authenticated through the shared OkHttp client and its
+    // 401-refresh chain (the wallet transaction routes this batch also
+    // renders sit on the EXISTING walletApi accessor above — not redeclared).
+    fun financeApi(baseUrl: String): FinanceApi =
+        cachedApi(baseUrl, "finance") { it.create(FinanceApi::class.java) }
 }

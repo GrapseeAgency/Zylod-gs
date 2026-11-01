@@ -244,7 +244,11 @@ adbt () { timeout "${1:-20}" adb shell "${@:2}" || true; }
 # a 12s settle plus the buyer session re-injection before it (~20s worst
 # case); still far under the 60-minute job ceiling, and every skipped
 # capture degrades non-fatally).
-budget_left () { [ $((2340 - SECONDS)) -gt 10 ]; }
+# (t256: raised to 2360s — one more authed capture joins the segment:
+# 36-finance-authed, a 12s settle plus the buyer session re-injection
+# before it (~20s worst case); still far under the 60-minute job ceiling,
+# and every skipped capture degrades non-fatally).
+budget_left () { [ $((2360 - SECONDS)) -gt 10 ]; }
 budget_stop () {
   if [ "$BUDGET_EXHAUSTED" -eq 0 ] && ! budget_left; then
     BUDGET_EXHAUSTED=1
@@ -2284,6 +2288,26 @@ else
   # category pills + search + EN⇄BN toggle + honest empty/error states).
   # Same 12s settle + queue-drain guard as 31-34.
   guarded_deeplink "35-faq-public" 12 "zylod://faq-page"
+  # t256: RE-INJECT the buyer session immediately before capture 36 — the
+  # exact t255 pattern as the capture-35 block above (t249-k finding applies
+  # verbatim: the deeplinks before it can mid-flow-401 the SessionAuthenticator
+  # into logging the session out, and 36-finance-authed needs a persisted
+  # BUYER session since the native bank-accounts VM gates on it). Evidence
+  # appends to buyer-session-check.txt; non-fatal on failure (capture 36
+  # keeps its honest sign-in gate verdict).
+  BUYER_REQ_FINANCE=no
+  if ! budget_stop; then
+    log "t256: re-injecting the buyer session immediately before capture 36 (mid-flow 401s from earlier deeplinks can trigger the SessionAuthenticator logout that clears it)"
+    if broadcast_inject_session "buyer1@zylod.bd" "Passw0rd!23" "buyer" "screenshots/buyer-session-check.txt"; then
+      BUYER_REQ_FINANCE=yes
+    fi
+  fi
+  echo "buyer-finance-reinjection=$BUYER_REQ_FINANCE" >> screenshots/buyer-session-check.txt 2>/dev/null || true
+  # t256: 36-finance-authed — the new typed BankAccountsScreen (REAL
+  # api/bank-accounts cards with masked account numbers + the Default
+  # badge + honest empty/sign-in states). Same 12s settle + queue-drain
+  # guard as 31-35.
+  guarded_deeplink "36-finance-authed" 12 "zylod://bank-accounts"
 fi
 
 log "Screen inventory"
