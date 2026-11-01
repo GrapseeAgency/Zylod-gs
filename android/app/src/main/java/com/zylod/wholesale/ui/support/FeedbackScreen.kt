@@ -570,6 +570,7 @@ private fun FeedbackTypeDropdown(selected: String, onSelected: (String) -> Unit)
     }
 }
 
+@Composable
 private fun feedbackFieldColors() = OutlinedTextFieldDefaults.colors(
     unfocusedContainerColor = androidx.compose.ui.graphics.Color.Transparent,
     focusedContainerColor = androidx.compose.ui.graphics.Color.Transparent,

@@ -368,6 +368,7 @@ private fun LabeledField(label: String, content: @Composable () -> Unit) {
     }
 }
 
+@Composable
 private fun contactFieldColors() = OutlinedTextFieldDefaults.colors(
     unfocusedContainerColor = androidx.compose.ui.graphics.Color.Transparent,
     focusedContainerColor = androidx.compose.ui.graphics.Color.Transparent,

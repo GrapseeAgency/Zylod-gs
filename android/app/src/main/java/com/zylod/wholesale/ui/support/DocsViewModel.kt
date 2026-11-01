@@ -51,7 +51,7 @@ data class DocsUiState(
     val tocError: String? = null,
     /** GET api/support/articles/{slug} resolve. */
     val articleLoading: Boolean = true,
-    val activeSlug: String = DEFAULT_SLUG,
+    val activeSlug: String = DOCS_DEFAULT_SLUG,
     val article: SupportArticleDto? = null,
     /** Article failure with nothing renderable (error card + Retry). */
     val articleError: String? = null,
