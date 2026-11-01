@@ -284,7 +284,7 @@ private fun WonPrizeCard(prize: SpinPrizeDto, onDismiss: () -> Unit) {
             .border(1.dp, SpinAmber.copy(alpha = 0.4f), RoundedCornerShape(18.dp)),
     ) {
         Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-            Row(horizontalAlignment = Alignment.CenterVertically, modifier = Modifier.align(Alignment.CenterHorizontally)) {
+            Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.align(Alignment.CenterHorizontally)) {
                 Icon(Icons.Outlined.CheckCircle, null, tint = SpinAmberDeep, modifier = Modifier.size(14.dp))
                 Spacer(Modifier.width(6.dp))
                 Text(

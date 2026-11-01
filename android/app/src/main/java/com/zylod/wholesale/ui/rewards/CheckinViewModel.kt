@@ -8,6 +8,7 @@ import com.zylod.wholesale.data.api.ApiClient
 import com.zylod.wholesale.data.api.CheckinSubmitEnvelope
 import com.zylod.wholesale.data.api.CheckinStatusDto
 import com.zylod.wholesale.data.api.ServerConfig
+import com.zylod.wholesale.data.api.parseErrorBody
 import com.zylod.wholesale.data.session.SessionManager
 import com.zylod.wholesale.ui.finance.FinanceCacheStore
 import kotlinx.coroutines.CancellationException

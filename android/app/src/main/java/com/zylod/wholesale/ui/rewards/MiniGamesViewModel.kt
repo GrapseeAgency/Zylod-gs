@@ -15,6 +15,7 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -105,10 +106,13 @@ class MiniGamesViewModel(
             Log.i(TAG, "fetch mini-games hub (checkin + spin)")
             val base = baseUrl ?: ServerConfig.resolve(appContext).also { baseUrl = it }
             val api = ApiClient.rewardsApi(base)
-            val checkinDeferred = async { runCatching { api.checkinStatus() }.getOrNull() }
-            val spinDeferred = async { runCatching { api.spinHistory() }.getOrNull() }
-            val checkinResponse = checkinDeferred.await()
-            val spinResponse = spinDeferred.await()
+            // BOTH calls fire together (the hub composes two endpoints); the
+            // scope owns the awaits (fetchHub is suspend, not a CoroutineScope).
+            val (checkinResponse, spinResponse) = coroutineScope {
+                val checkinDeferred = async { runCatching { api.checkinStatus() }.getOrNull() }
+                val spinDeferred = async { runCatching { api.spinHistory() }.getOrNull() }
+                Pair(checkinDeferred.await(), spinDeferred.await())
+            }
 
             if (checkinResponse?.code() == 401 && spinResponse?.code() == 401) {
                 Log.i(TAG, "not permitted (http=401) — session ended")
