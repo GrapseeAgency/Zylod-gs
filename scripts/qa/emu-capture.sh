@@ -232,7 +232,11 @@ adbt () { timeout "${1:-20}" adb shell "${@:2}" || true; }
 # 31-delivery-options + 32-track-order-noorder, 12s settles each plus the
 # buyer session re-injection before 31 (~40s worst case); still far under
 # the 60-minute job ceiling, and every skipped capture degrades non-fatally).
-budget_left () { [ $((2280 - SECONDS)) -gt 10 ]; }
+# (t253: raised to 2300s — one more authed capture joins the segment:
+# 33-addresses-authed, a 12s settle plus the buyer session re-injection
+# before it (~20s worst case); still far under the 60-minute job ceiling,
+# and every skipped capture degrades non-fatally).
+budget_left () { [ $((2300 - SECONDS)) -gt 10 ]; }
 budget_stop () {
   if [ "$BUDGET_EXHAUSTED" -eq 0 ] && ! budget_left; then
     BUDGET_EXHAUSTED=1
@@ -2212,6 +2216,25 @@ else
   # injection, mirroring the 29→30 adjacency). Same 12s settle + queue-drain
   # guard.
   guarded_deeplink "32-track-order-noorder" 12 "zylod://order-tracking"
+  # t253: RE-INJECT the buyer session immediately before capture 33 — the
+  # exact t252 pattern as the capture-31 block above (t249-k finding applies
+  # verbatim: the deeplinks before it can mid-flow-401 the SessionAuthenticator
+  # into logging the session out, and 33-addresses-authed needs a persisted
+  # BUYER session since the native address-book VM gates on it). Evidence
+  # appends to buyer-session-check.txt; non-fatal on failure (capture 33
+  # keeps its honest sign-in gate verdict).
+  BUYER_REQ_RETURNS=no
+  if ! budget_stop; then
+    log "t253: re-injecting the buyer session immediately before capture 33 (mid-flow 401s from earlier deeplinks can trigger the SessionAuthenticator logout that clears it)"
+    if broadcast_inject_session "buyer1@zylod.bd" "Passw0rd!23" "buyer" "screenshots/buyer-session-check.txt"; then
+      BUYER_REQ_RETURNS=yes
+    fi
+  fi
+  echo "buyer-returns-reinjection=$BUYER_REQ_RETURNS" >> screenshots/buyer-session-check.txt 2>/dev/null || true
+  # t253: 33-addresses-authed — the new typed AddressBookScreen (REAL
+  # api/addresses cards with the Default badge + selection + continue bar).
+  # Same 12s settle + queue-drain guard as 31/32.
+  guarded_deeplink "33-addresses-authed" 12 "zylod://address-book"
 fi
 
 log "Screen inventory"

@@ -238,4 +238,17 @@ object ApiClient {
     // ignore the header when it is present).
     fun logisticsApi(baseUrl: String): LogisticsApi =
         cachedApi(baseUrl, "logistics") { it.create(LogisticsApi::class.java) }
+
+    // t253 — native returns surface (the order-for-return projection of
+    // GET api/orders/{orderId} + POST api/orders/{orderId}/return). Same
+    // memoization; both routes are Bearer-authenticated through the shared
+    // OkHttp client and its 401-refresh chain.
+    fun returnsApi(baseUrl: String): ReturnsApi =
+        cachedApi(baseUrl, "returns") { it.create(ReturnsApi::class.java) }
+
+    // t253 — native address-book surfaces (GET/POST api/addresses plus the
+    // per-id PUT/DELETE contract). Same memoization; all four routes are
+    // Bearer-authenticated through the shared OkHttp client.
+    fun addressesApi(baseUrl: String): AddressesApi =
+        cachedApi(baseUrl, "addresses") { it.create(AddressesApi::class.java) }
 }
