@@ -268,7 +268,11 @@ adbt () { timeout "${1:-20}" adb shell "${@:2}" || true; }
 # 41-complaints-authed, a 12s settle plus the buyer session re-injection
 # before it (~20s worst case); still far under the 60-minute job ceiling,
 # and every skipped capture degrades non-fatally).
-budget_left () { [ $((2460 - SECONDS)) -gt 10 ]; }
+# (t262: raised to 2480s — one more authed capture joins the segment:
+# 42-favorites-authed, a 12s settle plus the buyer session re-injection
+# before it (~20s worst case); still far under the 60-minute job ceiling,
+# and every skipped capture degrades non-fatally).
+budget_left () { [ $((2480 - SECONDS)) -gt 10 ]; }
 budget_stop () {
   if [ "$BUDGET_EXHAUSTED" -eq 0 ] && ! budget_left; then
     BUDGET_EXHAUSTED=1
@@ -2446,6 +2450,32 @@ else
   # shows the real rows or the honest empty state with the roundtrip logged,
   # never a fabricated one. Same 12s settle + queue-drain guard as 31-40.
   guarded_deeplink "41-complaints-authed" 12 "zylod://buyer-complaints"
+  # t262: RE-INJECT the buyer session immediately before capture 42 — the
+  # exact t261 pattern as the capture-41 block above (t249-k finding applies
+  # verbatim: the deeplinks before it can mid-flow-401 the SessionAuthenticator
+  # into logging the session out, and 42-favorites-authed needs a persisted
+  # BUYER session since the native favorites VM gates on it — GET
+  # api/buyer/favorite-suppliers is buyer-scoped and answers 401 otherwise).
+  # Evidence appends to buyer-session-check.txt; non-fatal on failure
+  # (capture 42 keeps its honest sign-in gate verdict).
+  BUYER_REQ_FAVORITES=no
+  if ! budget_stop; then
+    log "t262: re-injecting the buyer session immediately before capture 42 (mid-flow 401s from earlier deeplinks can trigger the SessionAuthenticator logout that clears it)"
+    if broadcast_inject_session "buyer1@zylod.bd" "Passw0rd!23" "buyer" "screenshots/buyer-session-check.txt"; then
+      BUYER_REQ_FAVORITES=yes
+    fi
+  fi
+  echo "buyer-favorites-reinjection=$BUYER_REQ_FAVORITES" >> screenshots/buyer-session-check.txt 2>/dev/null || true
+  # t262: 42-favorites-authed — the new typed FavoritesScreen (the REAL
+  # api/buyer/favorite-suppliers feed: chunk-misc.ts:121 maps the
+  # buyer-favorites pageId onto the SAME favorite-suppliers component, so
+  # the shot shows the supplier variant — followed-supplier cards with the
+  # Verified badge, the rating + count, the sort chips and the heart
+  # unfollow). The buyer session is valid, so the GET answers 200 — the
+  # shot shows the real rows or the honest empty state with the roundtrip
+  # logged, never a fabricated one. Same 12s settle + queue-drain guard as
+  # 31-41.
+  guarded_deeplink "42-favorites-authed" 12 "zylod://buyer-favorites"
 fi
 
 log "Screen inventory"

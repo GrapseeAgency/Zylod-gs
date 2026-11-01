@@ -305,4 +305,34 @@ object ApiClient {
     // public-optional and ignores the header when it is present).
     fun complaintsApi(baseUrl: String): ComplaintsApi =
         cachedApi(baseUrl, "complaints") { it.create(ComplaintsApi::class.java) }
+
+    // t262 — native wishlist/favorites surfaces (the per-item wishlist row
+    // GET/PATCH/DELETE, the share-link GET/POST/DELETE, the PUBLIC shared
+    // read, the ranked favorites GET, the followed-categories +
+    // favorite-suppliers follow rails, and the saved-searches GET/DELETE).
+    // Same memoization; every route except the shared read is
+    // Bearer-authenticated through the shared OkHttp client and its
+    // 401-refresh chain (api/wishlist/shared is public and ignores the
+    // header when it is present — the t233 list/add/remove wishlist routes
+    // stay on the wishlistApi accessor above, never redeclared).
+    fun wishlistItemApi(baseUrl: String): WishlistItemApi =
+        cachedApi(baseUrl, "wishlistItem") { it.create(WishlistItemApi::class.java) }
+
+    fun wishlistShareApi(baseUrl: String): WishlistShareApi =
+        cachedApi(baseUrl, "wishlistShare") { it.create(WishlistShareApi::class.java) }
+
+    fun sharedWishlistApi(baseUrl: String): SharedWishlistApi =
+        cachedApi(baseUrl, "sharedWishlist") { it.create(SharedWishlistApi::class.java) }
+
+    fun favoritesApi(baseUrl: String): FavoritesApi =
+        cachedApi(baseUrl, "favorites") { it.create(FavoritesApi::class.java) }
+
+    fun categoryFollowApi(baseUrl: String): CategoryFollowApi =
+        cachedApi(baseUrl, "categoryFollow") { it.create(CategoryFollowApi::class.java) }
+
+    fun supplierFollowApi(baseUrl: String): SupplierFollowApi =
+        cachedApi(baseUrl, "supplierFollow") { it.create(SupplierFollowApi::class.java) }
+
+    fun savedSearchesApi(baseUrl: String): SavedSearchesApi =
+        cachedApi(baseUrl, "savedSearches") { it.create(SavedSearchesApi::class.java) }
 }

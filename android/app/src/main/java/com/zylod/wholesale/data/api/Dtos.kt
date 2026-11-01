@@ -67,6 +67,10 @@ data class ProductDto(
     val images: List<ProductImageDto> = emptyList(),
     val unit: String? = null,
     val moq: Int = 1,
+    // t262 — the wishlist/favorites product selects ship stockQuantity (the
+    // web maps it into the stock badges); every other reader keeps the
+    // defaulted 0.
+    val stockQuantity: Int = 0,
     val soldCount: Int = 0,
     val ratingAvg: Double = 0.0,
     val reviewCount: Int = 0,

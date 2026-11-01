@@ -1,40 +1,26 @@
 package com.zylod.wholesale.ui.screens
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.ArrowBack
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.sp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.zylod.wholesale.ui.pages.NativePageBody
+import androidx.compose.material3.ExperimentalMaterial3Api
 import com.zylod.wholesale.ui.pages.NativePageKind
 import com.zylod.wholesale.ui.pages.NativePageLink
 import com.zylod.wholesale.ui.pages.NativePageMeta
-import com.zylod.wholesale.ui.pages.NativePageViewModel
+import com.zylod.wholesale.ui.wishlist.WishlistDetailScreen as TypedWishlistDetailScreen
 
 /**
  * t233 — NATIVE Kotlin screen for the SPA pageId "wishlist-detail"
  * (src/lib/page-loader.ts registry entry, now owned by Compose — the
  * WebView is fallback-only for unregistered ids).
  *
- * Live data: GET api/wishlist?limit=50 through NativePageRepository, cached on-device for offline.
-"Wishlist Detail — product discovery and buying on the Zylod marketplace. Content streams live from the Zylod API and renders through the shared native page model."
+ * t262 — the curated-metadata body is GONE: this pageId is now owned by the
+ * typed ui/wishlist implementation. The body is a thin delegation to the
+ * shared [TypedWishlistDetailScreen] — the REAL single wishlist row
+ * (GET api/wishlist/{itemId}: full-bleed image, price "/ unit", supplier +
+ * VERIFIED, the Personal Note editor through PATCH and the Remove confirm
+ * through DELETE — exactly wishlist-detail-page.tsx's contract; the web's
+ * hardcoded "-5% this week" badge is a fake and is not mirrored). The meta
+ * object below and the NativePageRegistry composable signature are
+ * unchanged.
  */
 data object WishlistDetailPageMeta : NativePageMeta() {
     override val pageId = "wishlist-detail"
@@ -57,11 +43,10 @@ data object WishlistDetailPageMeta : NativePageMeta() {
 }
 
 /**
- * Real themed Compose screen: native top bar (back arrow pops the back
- * stack toward Home), sections driven by the shared [NativePageData] model
- * through [NativePageBody] — live data when the endpoint feeds it, the
- * device-saved cache offline, curated Kotlin metadata otherwise, with a
- * working retry state. Stable keys inside the shared renderer.
+ * Delegation only — the shared [TypedWishlistDetailScreen] owns the
+ * rendering and the wire calls; this file keeps the registry-facing
+ * signature (the aliased import is what makes the delegation land on
+ * ui/wishlist, not on this file's own same-named composable).
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -70,47 +55,5 @@ fun WishlistDetailScreen(
     openPage: (pageId: String, query: String) -> Unit,
     query: String,
 ) {
-    val context = LocalContext.current
-    val vm: NativePageViewModel = viewModel(key = "native-page-wishlist-detail") {
-        NativePageViewModel(context.applicationContext, WishlistDetailPageMeta)
-    }
-    val state by vm.state.collectAsStateWithLifecycle()
-    LaunchedEffect(Unit) { vm.refresh(query) }
-
-    Scaffold(
-        containerColor = MaterialTheme.colorScheme.background,
-        topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        "Wishlist Detail",
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Black,
-                        color = MaterialTheme.colorScheme.primary,
-                    )
-                },
-                navigationIcon = {
-                    if (onBack != null) {
-                        IconButton(onClick = onBack) {
-                            Icon(
-                                Icons.AutoMirrored.Outlined.ArrowBack,
-                                "Go back",
-                                tint = MaterialTheme.colorScheme.onSurface,
-                            )
-                        }
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background),
-            )
-        },
-    ) { padding ->
-        Box(Modifier.fillMaxSize().padding(padding)) {
-            NativePageBody(
-                meta = WishlistDetailPageMeta,
-                state = state,
-                onRetry = { vm.refresh() },
-                openPage = openPage,
-            )
-        }
-    }
+    TypedWishlistDetailScreen(pageId = "wishlist-detail", onBack = onBack, openPage = openPage, query = query)
 }
