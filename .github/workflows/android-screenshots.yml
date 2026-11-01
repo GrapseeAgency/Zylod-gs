@@ -82,7 +82,25 @@ jobs:
 
       - name: Seed marketplace data (real products, suppliers, buyers)
         run: |
-          node scripts/qa/seed-marketplace.mjs || echo "::warning::Seed script failed — continuing with whatever data exists"
+          # t265: next start auto-seeds a products-empty DB via instrumentation-node
+          # (detached, after the listener is up). Spawning seed-marketplace.mjs here
+          # raced it — the auto-seed registered the admin first and our second
+          # instance died on 403 ADMIN_REGISTRATION_CLOSED mid-run (t264's warning).
+          # Poll for the auto-seed's first product; only spawn our own seed if the
+          # catalog is still empty after the wait window.
+          SEEDED=0
+          for i in $(seq 1 90); do
+            if curl -s "http://localhost:3000/api/products?limit=1" | grep -q '"id":"'; then
+              SEEDED=1
+              break
+            fi
+            sleep 2
+          done
+          if [ "$SEEDED" -eq 1 ]; then
+            echo "auto-seed already filled the catalog — skipping our seed-marketplace spawn (race fixed)"
+          else
+            node scripts/qa/seed-marketplace.mjs || echo "::warning::Seed script failed — continuing with whatever data exists"
+          fi
           node scripts/qa/seed-content.mjs || echo "::warning::Content seed failed — continuing"
           curl -s "http://localhost:3000/api/products?limit=3" | head -c 400
 

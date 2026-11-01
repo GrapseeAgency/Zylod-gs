@@ -280,7 +280,10 @@ adbt () { timeout "${1:-20}" adb shell "${@:2}" || true; }
 # second PUBLIC capture (no re-injection needed, ~14s worst case);
 # still far under the 60-minute job ceiling, and every skipped capture
 # degrades non-fatally).
-budget_left () { [ $((2520 - SECONDS)) -gt 10 ]; }
+# (t265: raised to 2560s — 45-admin-audit-logs-authed + 46-admin-shipping-authed
+# join the admin-authed segment (12s settles each, no extra re-injection —
+# same admin session as 28); every skipped capture degrades non-fatally).
+budget_left () { [ $((2560 - SECONDS)) -gt 10 ]; }
 budget_stop () {
   if [ "$BUDGET_EXHAUSTED" -eq 0 ] && ! budget_left; then
     BUDGET_EXHAUSTED=1
@@ -1256,6 +1259,27 @@ ensure_home () {
   if any_text_on_screen "Hot deals" "Featured products"; then
     return 0
   fi
+  # t265: if the onboarding gate is up (fresh install; the launch monkey
+  # may have raced the welcome flow), advance it here — ensure_home can
+  # NEVER succeed while slides cover the screen (no bottom bar exists) and
+  # every downstream guard decays from that. Advance with verification,
+  # max 8 rounds, then fall through to the normal home recovery.
+  local oh_i=0
+  while [ $oh_i -lt 8 ]; do
+    oh_i=$((oh_i + 1))
+    if any_text_on_screen "Source Global" "Access millions"; then
+      if any_text_on_screen "Get Started"; then
+        tap_text "Get Started" || true
+        sleep 3
+        break
+      else
+        tap_text "Next" || true
+        sleep 3
+      fi
+    else
+      break
+    fi
+  done
   tap_tab "Home" || true
   for i in 1 2 3 4; do
     sleep 2
@@ -1675,21 +1699,57 @@ adbt 20 settings put secure show_ime_with_hard_keyboard 0 > /dev/null 2>&1
 
 log "Launching app (Welcome gate)"
 adbt 20 monkey -p com.zylod.wholesale.debug -c android.intent.category.LAUNCHER 1 > /dev/null 2>&1
-sleep 12
+# t265: cold-start patience. The t264 run caught the LAUNCHER at 01-welcome
+# (swiftshader cold start took >4 min to first mount); the blind Next taps
+# fired into the launcher, onboarding never advanced, ensure_home failed
+# everywhere and the budget died with 33 captures skipped. Poll for a REAL
+# app window (onboarding headline markers, or home markers if onboarding
+# already completed) before anything else — up to 240s, 5s cadence, each
+# miss non-fatal. "Zylod" alone is NOT a marker (the launcher icon label
+# can match); slide copy is unique to the app.
+WELCOME_MOUNTED=0
+i=0
+while [ $i -lt 48 ]; do
+  i=$((i + 1))
+  if any_text_on_screen "Source Global" "Access millions" "Hot deals" "Featured products"; then WELCOME_MOUNTED=1; break; fi
+  sleep 5
+done
+if [ "$WELCOME_MOUNTED" -eq 1 ]; then
+  echo "app window detected after ~$((i * 5))s"
+else
+  echo "::warning::app window not detected after 240s — capturing evidence and continuing (non-fatal)"
+fi
+sleep 2
 cap screenshots/01-welcome.png
-
-# Pass the onboarding gate (deep links are deferred until the gate is seen):
-# slide 1 -> "Next" -> slide 2 -> "Next" -> slide 3.
-tap_text "Next"
-sleep 3
-tap_text "Next"
-sleep 3
+# t265: advance onboarding with VERIFICATION — loop tap Next until it is
+# gone, then Get Started; at most 8 rounds, each round re-dumps the UI.
+ADV_ROUNDS=0
+while [ $ADV_ROUNDS -lt 8 ]; do
+  ADV_ROUNDS=$((ADV_ROUNDS + 1))
+  if any_text_on_screen "Get Started"; then
+    tap_text "Get Started"
+    sleep 4
+    break
+  elif any_text_on_screen "Next" "Skip"; then
+    tap_text "Next" || true
+    sleep 3
+  else
+    break
+  fi
+done
 cap screenshots/01b-welcome-last-slide.png
-
-# "Get Started" completes onboarding and lands in the main app (WebView home
-# loads the real SPA from the runner's server at 10.0.2.2:3000).
-tap_text "Get Started"
-sleep 18
+tap_text "Get Started" || true
+# t265: home wait replaces the fixed sleep 18 — poll for real home markers
+# up to 120s (WebView SPA first load from the runner can be slow cold).
+i=0
+while [ $i -lt 24 ]; do
+  i=$((i + 1))
+  if any_text_on_screen "Hot deals" "Featured products"; then
+    echo "home detected after ~$((i * 5))s"
+    break
+  fi
+  sleep 5
+done
 cap screenshots/02-home.png
 
 log "t229g: owner-named native return flows — bottom-bar Home from web tabs + system Back"
@@ -2200,6 +2260,13 @@ else
   # row + review queue + close action). Same 12s settle + queue-drain guard
   # as 26/27.
   guarded_deeplink "28-admin-rfq-authed" 12 "zylod://admin-rfq"
+  # t265: 45/46-admin-*-authed — two of the eight typed admin-operations
+  # screens this batch owns (AuditLogs + Shipping). Same admin segment,
+  # same 12s settle + queue-drain guard as 26/27/28 — they evidence the
+  # real audit-logs feed and the three-section shipping surface rendering
+  # under the still-valid ADMIN session (no re-injection between).
+  guarded_deeplink "45-admin-audit-logs-authed" 12 "zylod://admin-audit-logs"
+  guarded_deeplink "46-admin-shipping-authed" 12 "zylod://admin-shipping"
   # t250: RE-INJECT the buyer session immediately before capture 29. The
   # admin captures above run with the ADMIN session, and the t249-k finding
   # applies verbatim: mid-flow 401s trigger the app's SessionAuthenticator

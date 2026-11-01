@@ -353,4 +353,14 @@ object ApiClient {
     // SupportPublicApi convention — no sign-in gate).
     fun careersInvestorApi(baseUrl: String): CareersInvestorApi =
         cachedApi(baseUrl, "careersInvestor") { it.create(CareersInvestorApi::class.java) }
+
+    // t265 — native admin-operations surfaces (the eight admin pageIds:
+    // audit-logs, deliveries/{assignments,drivers}, inspections, payments,
+    // reports, settings, shipping/{methods,rates,zones}, categories). A
+    // SEPARATE interface from AdminApi so the t248 admin route set stays
+    // put. Same memoization; every route here is Bearer-authenticated
+    // through the shared OkHttp client and its 401-refresh chain
+    // (requireUserType(['admin']) handlers — 401/403 render the honest gate).
+    fun adminOpsApi(baseUrl: String): AdminOpsApi =
+        cachedApi(baseUrl, "admin-ops") { it.create(AdminOpsApi::class.java) }
 }
