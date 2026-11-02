@@ -301,7 +301,12 @@ adbt () { timeout "${1:-20}" adb shell "${@:2}" || true; }
 # with its supplierId probe, 12s settles each — NO session needed, the
 # pages/endpoints are all public); every skipped capture degrades
 # non-fatally).
-budget_left () { [ $((2820 - SECONDS)) -gt 10 ]; }
+# (t270: raised to 2880s — two more PUBLIC supplier-rail captures join the
+# tail: 62-63 (supplier-onboarding + supplier-resources — both pageIds
+# render the same 4-step register wizard, a public form with no network
+# until submit, 12s settles each); every skipped capture degrades
+# non-fatally).
+budget_left () { [ $((2880 - SECONDS)) -gt 10 ]; }
 budget_stop () {
   if [ "$BUDGET_EXHAUSTED" -eq 0 ] && ! budget_left; then
     BUDGET_EXHAUSTED=1
@@ -2668,6 +2673,15 @@ else
     echo "capture 61: PROBE_SUPPLIER_ID= — SKIPPED (probe returned no supplier id)"
     echo "::warning::capture 61-supplier-listing skipped: /api/suppliers probe yielded no id"
   fi
+  # t270: 62-63 supplier register rails — two PUBLIC captures, NO session
+  # needed (both pageIds render the SAME 4-step supplier register wizard —
+  # the register-supplier-page.tsx port: company info / NID upload / trade
+  # license & TIN / bank details; the form is honest stateful UI and fires
+  # NO network until the user submits). Same plain guarded_deeplink as
+  # 59/60 — no probe, no re-injection; 12s settle + queue-drain guard as
+  # the rest of the rail.
+  guarded_deeplink "62-supplier-onboarding" 12 "zylod://supplier-onboarding"
+  guarded_deeplink "63-supplier-resources" 12 "zylod://supplier-resources"
 fi
 
 log "Screen inventory"

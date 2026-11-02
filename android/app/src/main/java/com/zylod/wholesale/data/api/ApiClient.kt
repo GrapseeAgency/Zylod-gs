@@ -382,4 +382,14 @@ object ApiClient {
     // gates render the screens' honest not-seller state.
     fun supplierCoreApi(baseUrl: String): SupplierCoreApi =
         cachedApi(baseUrl, "supplier-core") { it.create(SupplierCoreApi::class.java) }
+
+    // t270 — native supplier register wizard (the supplier-onboarding +
+    // supplier-resources pageIds render the same 4-step form): the multipart
+    // api/uploads/kyc document upload (file + kind parts, TOP-LEVEL url in
+    // the response) behind ui/suppliercore/SupplierRegisterScreen.kt. The
+    // register POST itself rides the EXISTING authApi accessor above — never
+    // redeclared. Same memoization; the shared OkHttp client adds the Bearer
+    // header (the upload route is public and ignores the header when present).
+    fun supplierFormsApi(baseUrl: String): SupplierFormsApi =
+        cachedApi(baseUrl, "supplier-forms") { it.create(SupplierFormsApi::class.java) }
 }
