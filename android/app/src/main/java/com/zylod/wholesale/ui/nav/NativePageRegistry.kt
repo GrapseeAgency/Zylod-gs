@@ -754,6 +754,13 @@ object NativePageRegistry {
         "supplier-orders" to entry(SupplierOrdersPageMeta) { onBack, openPage, query -> SupplierOrdersScreen(onBack = onBack, openPage = openPage, query = query) },
         "supplier-products" to entry(SupplierProductsPageMeta) { onBack, openPage, query -> SupplierProductsScreen(onBack = onBack, openPage = openPage, query = query) },
         "supplier-profile" to entry(SupplierProfilePageMeta) { onBack, openPage, query -> SupplierProfileScreen(onBack = onBack, openPage = openPage, query = query) },
+        // t268-fix2: "supplier-queries" was the ONE orphan stub — the t233
+        // generation never emitted its row (verified by cross-checking every
+        // ui/screens meta pageId against the registry keys: exactly one miss).
+        // The deeplink fell back to the WebView render; this row hands the
+        // pageId to the typed t268 screen through the same stub delegation
+        // every other supplier row uses.
+        "supplier-queries" to entry(SupplierQueriesPageMeta) { onBack, openPage, query -> SupplierQueriesScreen(onBack = onBack, openPage = openPage, query = query) },
         "supplier-resources" to entry(SupplierResourcesPageMeta) { onBack, openPage, query -> SupplierResourcesScreen(onBack = onBack, openPage = openPage, query = query) },
         "supplier-samples" to entry(SupplierSamplesPageMeta) { onBack, openPage, query -> SupplierSamplesScreen(onBack = onBack, openPage = openPage, query = query) },
         "supplier-storefront" to entry(SupplierStorefrontPageMeta) { onBack, openPage, query -> SupplierStorefrontScreen(onBack = onBack, openPage = openPage, query = query) },
