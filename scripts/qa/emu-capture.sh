@@ -296,7 +296,12 @@ adbt () { timeout "${1:-20}" adb shell "${@:2}" || true; }
 # seller segment: 55-58 (dashboard/storefront/queries/profile, 12s settles
 # each, same fresh SELLER session as 47-54 — no extra re-injection); every
 # skipped capture degrades non-fatally).
-budget_left () { [ $((2760 - SECONDS)) -gt 10 ]; }
+# (t269: raised to 2820s — three PUBLIC supplier-rail finale captures join
+# the tail: 59-61 (guide + agreement static pages + the supplier listing
+# with its supplierId probe, 12s settles each — NO session needed, the
+# pages/endpoints are all public); every skipped capture degrades
+# non-fatally).
+budget_left () { [ $((2820 - SECONDS)) -gt 10 ]; }
 budget_stop () {
   if [ "$BUDGET_EXHAUSTED" -eq 0 ] && ! budget_left; then
     BUDGET_EXHAUSTED=1
@@ -2636,6 +2641,28 @@ else
   guarded_deeplink "56-supplier-storefront-authed" 12 "zylod://supplier-storefront"
   guarded_deeplink "57-supplier-queries-authed" 12 "zylod://supplier-queries"
   guarded_deeplink "58-supplier-profile-authed" 12 "zylod://supplier-profile"
+  # t269: 59-61 supplier rail finale — three PUBLIC captures, NO session
+  # needed (59/60 are static curated pages with no network at all; 61's two
+  # endpoints — GET api/suppliers/{id} + GET api/products?supplierId= — are
+  # public). Same plain guarded_deeplink as the public-ids convention
+  # (43/44/53 — no re-injection before them). 61 fires the supplier-listing
+  # with a REAL supplier id probed from GET api/suppliers?limit=1; an empty
+  # probe SKIPS the shot non-fatally (same guard discipline as capture 06).
+  # URL form: the t207-c applink query style (16-applink-wallet) —
+  # https://zylod.com/?page=<pageId>&<params> — because the zylod:// custom
+  # scheme branch of DeepLinkParser carries only path-segment params, never
+  # query strings; the https branch maps ?page= plus every other query
+  # param onto the openPage contract the listing screen parses.
+  guarded_deeplink "59-supplier-guide" 12 "zylod://supplier-guide"
+  guarded_deeplink "60-supplier-agreement" 12 "zylod://supplier-agreement"
+  PROBE_SUPPLIER_ID=$(timeout 10 curl -s "$HOST_API_BASE/api/suppliers?limit=1" | python3 -c 'import json,sys; d=json.load(sys.stdin); print((d.get("data") or [{}])[0].get("id",""))' 2>/dev/null || true)
+  echo "capture 61: PROBE_SUPPLIER_ID=${PROBE_SUPPLIER_ID:-} (self-fetched from /api/suppliers?limit=1)"
+  if [ -n "$PROBE_SUPPLIER_ID" ]; then
+    guarded_deeplink "61-supplier-listing" 12 "https://zylod.com/?page=supplier-listing&supplierId=$PROBE_SUPPLIER_ID"
+  else
+    echo "capture 61: PROBE_SUPPLIER_ID= — SKIPPED (probe returned no supplier id)"
+    echo "::warning::capture 61-supplier-listing skipped: /api/suppliers probe yielded no id"
+  fi
 fi
 
 log "Screen inventory"

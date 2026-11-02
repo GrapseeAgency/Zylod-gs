@@ -4,6 +4,7 @@ import androidx.compose.runtime.Immutable
 import kotlinx.serialization.Serializable
 import retrofit2.Response
 import retrofit2.http.GET
+import retrofit2.http.Path
 import retrofit2.http.Query
 
 /**
@@ -98,6 +99,22 @@ interface SupplierCoreApi {
 
     @GET("api/supplier/queries")
     suspend fun queries(@Query("status") status: String?): Response<SupplierCoreQueriesEnvelope>
+
+    // t269 — PUBLIC supplier-listing pair behind pageId "supplier-listing"
+    // (NO auth gate on either route: the Bearer header is simply ignored).
+    // GET api/suppliers/{id} answers 404 {error} for an unknown id — the
+    // server's own text renders as the honest not-found state. GET
+    // api/products is the general listing route; ?supplierId=&page=&limit=
+    // scopes it to one supplier with 1-based pagination.
+    @GET("api/suppliers/{id}")
+    suspend fun supplierPublic(@Path("id") id: String): Response<SupplierCorePublicSupplierEnvelope>
+
+    @GET("api/products")
+    suspend fun supplierListingProducts(
+        @Query("supplierId") supplierId: String,
+        @Query("page") page: Int,
+        @Query("limit") limit: Int,
+    ): Response<SupplierCoreListingEnvelope>
 }
 
 /* ── orders (GET api/supplier/orders) ───────────────────────────────────── */
@@ -752,4 +769,139 @@ data class SupplierCoreQueryRow(
     val replyMessage: String? = null,
     /** ISO instant of createdAt. */
     val createdAt: String? = null,
+)
+
+/* ── t269 supplier listing (GET api/suppliers/{id} + GET api/products?supplierId=) ──
+ * Shapes read from src/app/api/suppliers/[id]/route.ts and
+ * src/app/api/products/route.ts (the single source of truth, NOT invented).
+ * Both routes are PUBLIC. The products wire carries the FULL Prisma rows
+ * (supplier/priceTiers/variants included) — only the fields the screen
+ * renders are modeled; ignoreUnknownKeys eats the rest.
+ */
+
+/** Envelope of GET api/suppliers/{id} — 404 answers bare {error} instead. */
+@Immutable
+@Serializable
+data class SupplierCorePublicSupplierEnvelope(
+    val success: Boolean = false,
+    val data: SupplierCorePublicSupplier? = null,
+)
+
+/**
+ * The public supplierProfiles detail projection: identity + verification,
+ * the joined stats (_count products/reviews), the warehouse city/district,
+ * the extra ship-from locations and the newest 10 reviews with their buyers.
+ */
+@Immutable
+@Serializable
+data class SupplierCorePublicSupplier(
+    val id: String? = null,
+    val userId: String? = null,
+    val companyName: String? = null,
+    val tradeLicenseNumber: String? = null,
+    /** pending | under_review | approved | rejected (schema values). */
+    val verificationStatus: String? = null,
+    val ratingAvg: Double = 0.0,
+    /** _count.supplierReviews (route rule — NOT ratingAvg's own count). */
+    val ratingCount: Int = 0,
+    /** _count.products filtered to isActive + isApproved (route rule). */
+    val productCount: Int = 0,
+    /** warehouseAddress.city || "" (route rule). */
+    val warehouseCity: String? = null,
+    /** warehouseAddress.district || "" (route rule). */
+    val warehouseDistrict: String? = null,
+    val additionalLocations: List<SupplierCorePublicLocation> = emptyList(),
+    /** ISO instant of the supplierProfiles.createdAt. */
+    val createdAt: String? = null,
+    /** The owner account's status (users.accountStatus). */
+    val accountStatus: String? = null,
+    /** ISO instant of the owner's createdAt — "member since". */
+    val memberSince: String? = null,
+    /** Newest-first, max 10 (route rule). */
+    val reviews: List<SupplierCorePublicReview> = emptyList(),
+)
+
+/** One warehouseLocations row in the public projection. */
+@Immutable
+@Serializable
+data class SupplierCorePublicLocation(
+    val id: String? = null,
+    val city: String? = null,
+    val district: String? = null,
+    val addressLine1: String? = null,
+)
+
+/** One supplierReview in the public projection. */
+@Immutable
+@Serializable
+data class SupplierCorePublicReview(
+    val id: String? = null,
+    val rating: Int = 0,
+    val comment: String? = null,
+    /** ISO instant of createdAt. */
+    val createdAt: String? = null,
+    val buyer: SupplierCorePublicBuyer? = null,
+)
+
+/** The review author's display mini-shape (name falls back to "Anonymous"). */
+@Immutable
+@Serializable
+data class SupplierCorePublicBuyer(
+    val id: String? = null,
+    val name: String? = null,
+    val businessName: String? = null,
+)
+
+/**
+ * Envelope of GET api/products — a bare-ARRAY data plus the pagination
+ * block, exactly as the route answers ({ success, data, pagination }).
+ */
+@Immutable
+@Serializable
+data class SupplierCoreListingEnvelope(
+    val success: Boolean = false,
+    val data: List<SupplierCoreListingProduct> = emptyList(),
+    val pagination: SupplierCoreListingPagination? = null,
+)
+
+/** The rendered subset of one PUBLIC products row for the listing grid. */
+@Immutable
+@Serializable
+data class SupplierCoreListingProduct(
+    val id: String? = null,
+    val name: String? = null,
+    val basePrice: Double = 0.0,
+    val moq: Double = 0.0,
+    val unit: String? = null,
+    val soldCount: Double = 0.0,
+    /** sortOrder-ordered productImages (route include) — [imageUrl] is first. */
+    val images: List<SupplierCoreListingImage> = emptyList(),
+    val thumbnailUrl: String? = null,
+    val category: SupplierCoreListingCategory? = null,
+)
+
+/** One productImages row — the listing reads only imageUrl. */
+@Immutable
+@Serializable
+data class SupplierCoreListingImage(
+    val imageUrl: String? = null,
+)
+
+/** The joined categories row (id/name/slug only). */
+@Immutable
+@Serializable
+data class SupplierCoreListingCategory(
+    val id: String? = null,
+    val name: String? = null,
+    val slug: String? = null,
+)
+
+/** The route's pagination block (page/limit echoed, total + totalPages). */
+@Immutable
+@Serializable
+data class SupplierCoreListingPagination(
+    val page: Int = 1,
+    val limit: Int = 20,
+    val total: Int = 0,
+    val totalPages: Int = 0,
 )
