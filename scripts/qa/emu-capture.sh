@@ -1255,7 +1255,12 @@ dump_deals_evidence () {
 # tolerated and the capture still runs.
 deeplink () { # name sleep_seconds uri
   if budget_stop; then return 0; fi
-  adbt 15 am start -a android.intent.action.VIEW -d "$3" com.zylod.wholesale.debug >/dev/null 2>&1
+  # t269-fix2: the URI must be single-quoted FOR THE DEVICE SHELL — adb shell
+  # rejoins the host args and /system/bin/sh re-parses them, so an unquoted
+  # '&' split the command and am start lost the package positional (shot 61
+  # resolved to Chrome's first-run instead of the app). Quotes are inert for
+  # the quote-free zylod:// URIs every earlier shot uses.
+  adbt 15 am start -a android.intent.action.VIEW -d "'$3'" com.zylod.wholesale.debug >/dev/null 2>&1
   sleep "$2"
   cap "screenshots/$1.png"
 }
