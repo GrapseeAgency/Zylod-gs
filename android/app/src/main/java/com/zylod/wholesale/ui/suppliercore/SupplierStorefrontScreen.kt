@@ -126,7 +126,7 @@ fun SupplierStorefrontScreen(
 }
 
 @Composable
-private fun StorefrontList(state: SupplierStorefrontUiState, data: SupplierStorefrontData) {
+private fun StorefrontList(state: SupplierStorefrontUiState, data: SupplierCoreStorefrontData) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 12.dp),
@@ -230,7 +230,7 @@ private fun StorefrontList(state: SupplierStorefrontUiState, data: SupplierStore
 
 /** Identity header: logo (when present) + company + badge + rating + since. */
 @Composable
-private fun HeaderCard(data: SupplierStorefrontData) {
+private fun HeaderCard(data: SupplierCoreStorefrontData) {
     val ratingLabel = remember(data) {
         "★ ${supplierCoreRating(data.ratingAvg)} (${supplierCoreCount(data.ratingCount)})"
     }
