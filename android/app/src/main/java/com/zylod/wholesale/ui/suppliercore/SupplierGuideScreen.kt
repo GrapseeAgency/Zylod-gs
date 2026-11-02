@@ -170,13 +170,16 @@ private fun GuideBanner() {
 
 /** The banner gradient built from theme slots only (red/rose family). */
 @Composable
-private fun guideBannerBrush(): Brush = remember {
-    Brush.horizontalGradient(
-        listOf(
-            MaterialTheme.colorScheme.primary,
-            MaterialTheme.colorScheme.error,
-        ),
-    )
+private fun guideBannerBrush(): Brush {
+    // MaterialTheme.colorScheme is a @Composable getter — read it in the
+    // composable scope, then key the brush cache on the resolved colors.
+    val primary = MaterialTheme.colorScheme.primary
+    val error = MaterialTheme.colorScheme.error
+    return remember(primary, error) {
+        Brush.horizontalGradient(
+            listOf(primary, error),
+        )
+    }
 }
 
 /** One numbered verification requirement: icon chip + title + description. */
