@@ -333,7 +333,11 @@ class SupplierListingViewModel(private val appContext: Context) : ViewModel() {
      * too. supplierId WINS over id when both are present.
      */
     private fun parseSupplierId(query: String): String {
-        val raw = query.substringAfter('?', "").trim()
+        // t269-fix3: the hand-off is a BARE "k=v&k2=v2" string (no leading
+        // '?') — substringAfter('?') discarded it wholesale and every deep
+        // link landed on the no-supplier state. Strip an optional leading
+        // '?' and parse the bare form.
+        val raw = query.removePrefix("?").trim()
         if (raw.isBlank()) return ""
         var supplierId = ""
         var id = ""
