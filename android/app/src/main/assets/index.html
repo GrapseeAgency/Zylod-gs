@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Zylod — B2B Wholesale Marketplace</title>
+  <style>
+    :root {
+      --primary: #E11D48;
+      --primary-dark: #BE123C;
+      --bg: #0F172A;
+      --card-bg: #1E293B;
+      --text-main: #F8FAFC;
+      --text-muted: #94A3B8;
+      --border: #334155;
+      --accent-blue: #3B82F6;
+      --accent-green: #10B981;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+
+    html, body {
+      background-color: var(--bg);
+      color: var(--text-main);
+      height: 100%;
+      width: 100%;
+      overflow: hidden;
+    }
+
+    #app-container {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      width: 100vw;
+      justify-content: space-between;
+    }
+
+    /* Top Bar */
+    .top-bar {
+      padding: 16px 20px 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-shrink: 0;
+    }
+
+    .brand-badge {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .brand-logo {
+      height: 28px;
+      width: auto;
+    }
+
+    .lang-toggle {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      color: var(--text-main);
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    /* Carousel Content Area */
+    .onboarding-carousel {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .slide-wrapper {
+      display: flex;
+      width: 300%;
+      height: 100%;
+      transition: transform 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);
+    }
+
+    .slide {
+      width: 33.3333%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 30px;
+    }
+
+    .slide-art {
+      width: 140px;
+      height: 140px;
+      border-radius: 32px;
+      background: var(--card-bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 30px;
+      box-shadow: 0 15px 35px rgba(0,0,0,0.35);
+    }
+
+    .slide-art svg {
+      width: 64px;
+      height: 64px;
+      fill: none;
+    }
+
+    .slide h2 {
+      font-size: 22px;
+      font-weight: 800;
+      margin-bottom: 12px;
+      line-height: 1.3;
+    }
+
+    .slide p {
+      font-size: 14px;
+      color: var(--text-muted);
+      line-height: 1.6;
+      max-width: 280px;
+    }
+
+    /* Controls */
+    .controls {
+      padding: 20px 30px 40px;
+    }
+
+    .dots {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 25px;
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--border);
+      transition: background 0.3s, width 0.3s;
+    }
+
+    .dot.active {
+      background: var(--primary);
+      width: 24px;
+      border-radius: 4px;
+    }
+
+    .action-buttons {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .btn-skip {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      padding: 10px;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: #FFF;
+      border: none;
+      padding: 14px 24px;
+      border-radius: 16px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: 0 8px 24px rgba(225, 29, 72, 0.4);
+      transition: background 0.2s, transform 0.1s;
+    }
+
+    .btn-primary:active {
+      transform: scale(0.98);
+      background: var(--primary-dark);
+    }
+
+    /* ============ OFFLINE HOME ============ */
+    #offline-home {
+      display: none;
+      flex-direction: column;
+      height: 100vh;
+      width: 100vw;
+    }
+
+    .oh-header {
+      padding: 14px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+
+    .oh-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(225, 29, 72, 0.15);
+      border: 1px solid rgba(225, 29, 72, 0.4);
+      color: #FDA4AF;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.4px;
+      padding: 4px 10px;
+      border-radius: 20px;
+    }
+
+    .oh-queue-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(16, 185, 129, 0.12);
+      border: 1px solid rgba(16, 185, 129, 0.35);
+      color: #6EE7B7;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 20px;
+    }
+
+    .oh-status {
+      padding: 14px 16px;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--card-bg);
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+
+    .oh-status-text {
+      font-size: 12px;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    .oh-retry-btn {
+      background: var(--primary);
+      border: none;
+      color: #FFF;
+      font-size: 12px;
+      font-weight: 800;
+      padding: 10px 16px;
+      border-radius: 12px;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .oh-retry-btn:disabled {
+      opacity: 0.6;
+    }
+
+    .oh-search {
+      padding: 12px 16px;
+      flex-shrink: 0;
+    }
+
+    .oh-search input {
+      width: 100%;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      color: var(--text-main);
+      padding: 12px 14px;
+      border-radius: 12px;
+      font-size: 14px;
+      outline: none;
+    }
+
+    .oh-grid {
+      flex: 1;
+      overflow-y: auto;
+      padding: 4px 16px 24px;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      align-content: start;
+    }
+
+    .oh-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .oh-card-name {
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 1.35;
+      min-height: 34px;
+    }
+
+    .oh-card-price {
+      font-size: 15px;
+      font-weight: 900;
+      color: var(--primary);
+    }
+
+    .oh-card-meta {
+      font-size: 11px;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    .oh-card-stock {
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .oh-empty {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 48px 24px;
+      color: var(--text-muted);
+      font-size: 13px;
+      line-height: 1.7;
+    }
+
+    .oh-footer {
+      padding: 12px 16px 20px;
+      border-top: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+
+    .oh-footer-btn {
+      width: 100%;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      color: var(--text-main);
+      font-size: 13px;
+      font-weight: 700;
+      padding: 12px;
+      border-radius: 12px;
+      cursor: pointer;
+    }
+
+    /* Hub Screen */
+    #hub-screen {
+      display: none;
+      height: 100vh;
+      width: 100vw;
+      flex-direction: column;
+      overflow-y: auto;
+      padding: 20px;
+    }
+
+    .hub-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 18px;
+      margin-bottom: 16px;
+    }
+
+    .hub-title {
+      font-size: 16px;
+      font-weight: 800;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .server-input {
+      width: 100%;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      color: #FFF;
+      padding: 12px 14px;
+      border-radius: 12px;
+      font-size: 13px;
+      font-family: monospace;
+      margin: 10px 0;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- MAIN ONBOARDING APP -->
+  <div id="app-container">
+    <!-- Top Bar -->
+    <div class="top-bar">
+      <div class="brand-badge">
+        <img src="zylod-logo.svg" alt="Zylod" class="brand-logo" onerror="this.style.display='none'; document.getElementById('txt-logo').style.display='inline';">
+        <span id="txt-logo" style="display:none; font-size:20px; font-weight:900; color:#FFF;">ZYLOD</span>
+      </div>
+      <div style="display:flex; align-items:center; gap:8px;">
+        <button class="lang-toggle" onclick="toggleLanguage()" id="lang-btn">বাংলা</button>
+        <button onclick="openServerConfig()" style="background:var(--card-bg); border:1px solid var(--border); color:var(--text-muted); padding:6px 10px; border-radius:20px; font-size:12px; cursor:pointer;">⚙️</button>
+      </div>
+    </div>
+
+    <!-- Onboarding Carousel -->
+    <div class="onboarding-carousel" id="carousel-area">
+      <div class="slide-wrapper" id="slide-wrapper">
+
+        <!-- Slide 1 -->
+        <div class="slide">
+          <div class="slide-art">
+            <svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:var(--primary)">
+              <path d="M2 20h20M5 20V8l7-5 7 5v12M9 12h6M9 16h6"/>
+            </svg>
+          </div>
+          <h2 id="s1-title">Source Directly from Factories</h2>
+          <p id="s1-desc">Connect with verified RMG, textile, and industrial manufacturers with direct wholesale tier pricing.</p>
+        </div>
+
+        <!-- Slide 2 -->
+        <div class="slide">
+          <div class="slide-art">
+            <svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:var(--accent-green)">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+              <path d="m9 12 2 2 4-4"/>
+            </svg>
+          </div>
+          <h2 id="s2-title">SafePay™ Escrow Protection</h2>
+          <p id="s2-desc">100% secure payment custody. Funds released only after consignment delivery inspection.</p>
+        </div>
+
+        <!-- Slide 3 -->
+        <div class="slide">
+          <div class="slide-art">
+            <svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:var(--accent-blue)">
+              <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+            </svg>
+          </div>
+          <h2 id="s3-title">Instant RFQ & Smart Logistics</h2>
+          <p id="s3-desc">Broadcast sample requests, pool group-buy orders, and track deliveries with digital challans.</p>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Controls -->
+    <div class="controls">
+      <div class="dots">
+        <div class="dot active" id="dot-0"></div>
+        <div class="dot" id="dot-1"></div>
+        <div class="dot" id="dot-2"></div>
+      </div>
+
+      <div class="action-buttons">
+        <button class="btn-skip" id="btn-skip" onclick="finishOnboarding()">Skip</button>
+        <button class="btn-primary" id="btn-next" onclick="nextSlide()">
+          <span id="next-label">Next</span>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+            <polyline points="12 5 19 12 12 19"></polyline>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- OFFLINE HOME (live server unreachable) -->
+  <div id="offline-home">
+    <div class="oh-header">
+      <div class="brand-badge">
+        <img src="zylod-logo.svg" alt="Zylod" class="brand-logo" style="height:24px;" onerror="this.style.display='none';">
+        <span style="font-size:16px; font-weight:900;">ZYLOD</span>
+      </div>
+      <div style="display:flex; align-items:center; gap:8px;">
+        <span class="oh-queue-chip" id="oh-queue" style="display:none;"></span>
+        <span class="oh-chip" id="oh-mode"></span>
+      </div>
+    </div>
+
+    <div class="oh-status">
+      <div class="oh-status-text" id="oh-status-text"></div>
+      <button class="oh-retry-btn" id="oh-retry" onclick="retryConnection()"></button>
+    </div>
+
+    <div class="oh-search">
+      <input type="text" id="oh-search-input" oninput="onSearchInput(this.value)">
+    </div>
+
+    <div class="oh-grid" id="oh-grid"></div>
+
+    <div class="oh-footer">
+      <button class="oh-footer-btn" id="oh-server-btn" onclick="openServerConfig()"></button>
+    </div>
+  </div>
+
+  <!-- SERVER & OFFLINE HUB SCREEN -->
+  <div id="hub-screen">
+    <div class="top-bar" style="padding: 0 0 16px 0;">
+      <div class="brand-badge">
+        <img src="zylod-logo.svg" alt="Zylod" class="brand-logo" style="height:24px;">
+        <span style="font-size:18px; font-weight:900;">ZYLOD</span>
+      </div>
+      <button onclick="closeServerConfig()" style="background:var(--card-bg); border:1px solid var(--border); color:#FFF; padding:4px 12px; border-radius:12px; font-size:12px;">Close</button>
+    </div>
+
+    <div class="hub-card">
+      <div class="hub-title">
+        <span style="color:var(--primary)">⚡</span> Connect to Live Server
+      </div>
+      <p style="font-size:12px; color:var(--text-muted);" id="hub-desc">
+        Enter your computer's local Wi-Fi IP or production URL:
+      </p>
+      <input type="text" id="server-url-input" class="server-input" placeholder="https://zylod.com">
+
+      <div style="display:flex; flex-direction:column; gap:8px;">
+        <button class="btn-primary" onclick="connectLiveServer()" style="padding:14px; font-size:14px;" id="hub-connect-btn">
+          🚀 Open Live Website (Full App)
+        </button>
+        <button class="btn-primary" onclick="setQuickServer('https://zylod.com')" style="padding:10px; font-size:12px; background:var(--bg); border:1px solid var(--border); box-shadow:none;">
+          Use Production (zylod.com)
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let currentSlide = 0;
+    const totalSlides = 3;
+    let isBengali = false;
+    let searchTimer = null;
+    let retryTimer = null;
+
+    const bridge = () => window.ZylodNativeBridge || null;
+
+    const ui = {
+      en: {
+        s1Title: "Source Directly from Factories",
+        s1Desc: "Connect with verified RMG, textile, and industrial manufacturers with direct wholesale tier pricing.",
+        s2Title: "SafePay™ Escrow Protection",
+        s2Desc: "100% secure payment custody. Funds released only after consignment delivery inspection.",
+        s3Title: "Instant RFQ & Smart Logistics",
+        s3Desc: "Broadcast sample requests, pool group-buy orders, and track deliveries with digital challans.",
+        skip: "Skip",
+        next: "Next",
+        getStarted: "Get Started",
+        offlineMode: "OFFLINE MODE",
+        queued: n => n + " action" + (n === 1 ? "" : "s") + " queued",
+        statusOffline: "Live server unreachable. Actions you take are saved on this device and will sync automatically once the server is back.",
+        statusSearching: "Searching for the live server…",
+        retry: "Retry Connection",
+        retrying: "Searching…",
+        searchPlaceholder: "Search cached products…",
+        emptyNoCache: "No products cached yet.\n\nBrowse the live app while online — products you view are cached here for offline access.",
+        emptyNoMatch: "No cached products match your search.",
+        serverSettings: "⚙️ Server Settings",
+        hubDesc: "Enter your computer's local Wi-Fi IP or production URL:",
+        hubConnect: "🚀 Open Live Website (Full App)",
+        moq: q => "MOQ " + q,
+        inStock: s => s + " in stock",
+        outOfStock: "Out of stock",
+        bdt: v => "৳ " + v.toLocaleString()
+      },
+      bn: {
+        s1Title: "সরাসরি কারখানা থেকে সোর্সিং",
+        s1Desc: "ভেরিফায়েড পোশাক ও পাইকারি প্রস্তুতকারকদের সাথে পাইকারি মূল্যে সরাসরি যুক্ত হোন।",
+        s2Title: "SafePay™ নিরাপদ এসক্রো",
+        s2Desc: "১০০% নিরাপদ লেনদেন। চালান বুঝে পাওয়ার পর যাচাই করে ফান্ড আনলক করুন।",
+        s3Title: "তাৎক্ষণিক RFQ ও স্মার্ট ডেলিভারি",
+        s3Desc: "সরাসরি কোটেশন সংগ্রহ, গ্রুপ-বাই অর্ডার এবং ডিজিটাল চালানের মাধ্যমে ট্র্যাক করুন।",
+        skip: "এড়িয়ে যান",
+        next: "পরবর্তী",
+        getStarted: "শুরু করুন",
+        offlineMode: "অফলাইন মোড",
+        queued: n => n + "টি কাজ অপেক্ষমাণ",
+        statusOffline: "লাইভ সার্ভার পাওয়া যাচ্ছে না। আপনার কাজ এই ডিভাইসে সংরক্ষিত থাকবে এবং সার্ভার ফিরলে স্বয়ংক্রিয়ভাবে সিঙ্ক হবে।",
+        statusSearching: "লাইভ সার্ভার খোঁজা হচ্ছে…",
+        retry: "আবার চেষ্টা করুন",
+        retrying: "খোঁজা হচ্ছে…",
+        searchPlaceholder: "ক্যাশ করা পণ্য খুঁজুন…",
+        emptyNoCache: "এখনো কোনো পণ্য ক্যাশ করা হয়নি।\n\nঅনলাইনে থাকার সময় অ্যাপ ব্রাউজ করুন — দেখা পণ্যগুলো এখানে অফলাইনের জন্য সংরক্ষিত হবে।",
+        emptyNoMatch: "আপনার খোঁজার সাথে কোনো ক্যাশ করা পণ্য মেলেনি।",
+        serverSettings: "⚙️ সার্ভার সেটিংস",
+        hubDesc: "আপনার কম্পিউটারের লোকাল Wi-Fi IP বা প্রোডাকশন URL দিন:",
+        hubConnect: "🚀 লাইভ ওয়েবসাইট খুলুন",
+        moq: q => "সর্বনিম্ন অর্ডার " + q,
+        inStock: s => s + " স্টকে আছে",
+        outOfStock: "স্টকে নেই",
+        bdt: v => "৳ " + v.toLocaleString()
+      }
+    };
+
+    const t = () => isBengali ? ui.bn : ui.en;
+
+    /* ============ Onboarding ============ */
+
+    function updateSlideUI() {
+      const wrapper = document.getElementById('slide-wrapper');
+      wrapper.style.transform = `translateX(-${currentSlide * 33.333333}%)`;
+
+      for (let i = 0; i < totalSlides; i++) {
+        const dot = document.getElementById(`dot-${i}`);
+        if (i === currentSlide) {
+          dot.classList.add('active');
+        } else {
+          dot.classList.remove('active');
+        }
+      }
+
+      const lang = t();
+      const nextLabel = document.getElementById('next-label');
+      if (currentSlide === totalSlides - 1) {
+        nextLabel.innerText = lang.getStarted;
+      } else {
+        nextLabel.innerText = lang.next;
+      }
+
+      if (bridge() && bridge().triggerHaptic) {
+        bridge().triggerHaptic('SELECTION');
+      }
+    }
+
+    function nextSlide() {
+      if (currentSlide < totalSlides - 1) {
+        currentSlide++;
+        updateSlideUI();
+      } else {
+        finishOnboarding();
+      }
+    }
+
+    function toggleLanguage() {
+      isBengali = !isBengali;
+      document.getElementById('lang-btn').innerText = isBengali ? "English" : "বাংলা";
+      document.getElementById('s1-title').innerText = t().s1Title;
+      document.getElementById('s1-desc').innerText = t().s1Desc;
+      document.getElementById('s2-title').innerText = t().s2Title;
+      document.getElementById('s2-desc').innerText = t().s2Desc;
+      document.getElementById('s3-title').innerText = t().s3Title;
+      document.getElementById('s3-desc').innerText = t().s3Desc;
+      document.getElementById('btn-skip').innerText = t().skip;
+      updateSlideUI();
+      renderOfflineHomeStaticText();
+    }
+
+    function finishOnboarding() {
+      localStorage.setItem('zylod-onboarding-completed', 'true');
+      enterOfflineHome();
+    }
+
+    /* ============ Offline Home ============ */
+
+    function enterOfflineHome() {
+      document.getElementById('app-container').style.display = 'none';
+      document.getElementById('offline-home').style.display = 'flex';
+      renderOfflineHomeStaticText();
+      refreshQueueCount();
+      searchOffline('');
+    }
+
+    function renderOfflineHomeStaticText() {
+      const lang = t();
+      document.getElementById('oh-mode').innerText = lang.offlineMode;
+      document.getElementById('oh-status-text').innerText = lang.statusOffline;
+      document.getElementById('oh-retry').innerText = lang.retry;
+      document.getElementById('oh-search-input').placeholder = lang.searchPlaceholder;
+      document.getElementById('oh-server-btn').innerText = lang.serverSettings;
+      document.getElementById('hub-desc').innerText = lang.hubDesc;
+      document.getElementById('hub-connect-btn').innerText = lang.hubConnect;
+    }
+
+    function refreshQueueCount() {
+      const b = bridge();
+      if (!b || !b.getOfflineQueueCount) return;
+      window.__zylodQueueCountCb = function (count) {
+        const chip = document.getElementById('oh-queue');
+        if (typeof count === 'number' && count > 0) {
+          chip.style.display = 'inline-flex';
+          chip.innerText = '⏳ ' + t().queued(count);
+        } else {
+          chip.style.display = 'none';
+        }
+      };
+      try { b.getOfflineQueueCount('window.__zylodQueueCountCb'); } catch (e) { /* best-effort */ }
+    }
+
+    function onSearchInput(value) {
+      if (searchTimer) clearTimeout(searchTimer);
+      searchTimer = setTimeout(() => searchOffline(value), 250);
+    }
+
+    function searchOffline(query) {
+      const b = bridge();
+      const grid = document.getElementById('oh-grid');
+      if (!b || !b.searchOfflineProducts) {
+        grid.innerHTML = '';
+        const empty = document.createElement('div');
+        empty.className = 'oh-empty';
+        empty.innerText = t().emptyNoCache;
+        grid.appendChild(empty);
+        return;
+      }
+      window.__zylodOfflineSearchCb = function (jsonStr) {
+        let rows = [];
+        try { rows = JSON.parse(jsonStr) || []; } catch (e) { rows = []; }
+        renderProducts(rows, query);
+      };
+      try {
+        b.searchOfflineProducts(query || '', 'window.__zylodOfflineSearchCb');
+      } catch (e) {
+        renderProducts([], query);
+      }
+    }
+
+    function renderProducts(rows, query) {
+      const grid = document.getElementById('oh-grid');
+      grid.innerHTML = '';
+
+      if (!rows.length) {
+        const empty = document.createElement('div');
+        empty.className = 'oh-empty';
+        // No query + no rows means the cache itself is empty; a query with
+        // no rows is just a failed search.
+        const hasQuery = query && query.trim().length > 0;
+        empty.innerText = hasQuery ? t().emptyNoMatch : t().emptyNoCache;
+        grid.appendChild(empty);
+        return;
+      }
+
+      const lang = t();
+      rows.forEach(row => {
+        const card = document.createElement('div');
+        card.className = 'oh-card';
+
+        const name = document.createElement('div');
+        name.className = 'oh-card-name';
+        name.innerText = row.name || '';
+
+        const price = document.createElement('div');
+        price.className = 'oh-card-price';
+        price.innerText = lang.bdt(Number(row.priceBDT || 0)) + (row.unit ? ' / ' + row.unit : '');
+
+        const meta = document.createElement('div');
+        meta.className = 'oh-card-meta';
+        const metaParts = [];
+        if (row.categoryName) metaParts.push(row.categoryName);
+        if (row.supplierName) metaParts.push(row.supplierName);
+        if (row.minOrderQuantity) metaParts.push(lang.moq(row.minOrderQuantity));
+        meta.innerText = metaParts.join(' · ');
+
+        const stock = document.createElement('div');
+        stock.className = 'oh-card-stock';
+        const qty = Number(row.stock || 0);
+        if (qty > 0) {
+          stock.innerText = lang.inStock(qty.toLocaleString());
+          stock.style.color = 'var(--accent-green)';
+        } else {
+          stock.innerText = lang.outOfStock;
+          stock.style.color = '#FDA4AF';
+        }
+
+        card.appendChild(name);
+        card.appendChild(price);
+        card.appendChild(meta);
+        card.appendChild(stock);
+        grid.appendChild(card);
+      });
+    }
+
+    function retryConnection() {
+      const b = bridge();
+      const btn = document.getElementById('oh-retry');
+      const status = document.getElementById('oh-status-text');
+      if (!b || !b.retryServerConnection) return;
+      btn.disabled = true;
+      btn.innerText = t().retrying;
+      status.innerText = t().statusSearching;
+      try { b.retryServerConnection(); } catch (e) { /* ignore */ }
+      // If discovery succeeds, native replaces this page entirely. If it
+      // fails, restore the offline messaging after a grace period.
+      if (retryTimer) clearTimeout(retryTimer);
+      retryTimer = setTimeout(() => {
+        btn.disabled = false;
+        btn.innerText = t().retry;
+        status.innerText = t().statusOffline;
+        refreshQueueCount();
+      }, 12000);
+    }
+
+    /* ============ Server config hub ============ */
+
+    function openServerConfig() {
+      document.getElementById('app-container').style.display = 'none';
+      document.getElementById('offline-home').style.display = 'none';
+      document.getElementById('hub-screen').style.display = 'flex';
+    }
+
+    function closeServerConfig() {
+      document.getElementById('hub-screen').style.display = 'none';
+      const completed = localStorage.getItem('zylod-onboarding-completed') === 'true';
+      if (completed) {
+        document.getElementById('offline-home').style.display = 'flex';
+      } else {
+        document.getElementById('app-container').style.display = 'flex';
+      }
+    }
+
+    function setQuickServer(url) {
+      document.getElementById('server-url-input').value = url;
+      connectLiveServer();
+    }
+
+    function connectLiveServer() {
+      const serverUrl = document.getElementById('server-url-input').value.trim();
+      if (!serverUrl) return;
+      if (bridge() && bridge().loadLiveUrl) {
+        bridge().loadLiveUrl(serverUrl);
+      }
+    }
+
+    /* ============ Boot ============ */
+
+    (function init() {
+      const completed = localStorage.getItem('zylod-onboarding-completed') === 'true';
+      if (completed) {
+        enterOfflineHome();
+      }
+      // Refresh the pending-queue badge periodically so synced actions clear it.
+      setInterval(refreshQueueCount, 15000);
+    })();
+
+    /* Touch Swipe */
+    let touchStartX = 0;
+    let touchEndX = 0;
+    const carousel = document.getElementById('carousel-area');
+
+    carousel.addEventListener('touchstart', e => {
+      touchStartX = e.changedTouches[0].screenX;
+    }, {passive: true});
+
+    carousel.addEventListener('touchend', e => {
+      touchEndX = e.changedTouches[0].screenX;
+      if (touchStartX - touchEndX > 45) {
+        if (currentSlide < totalSlides - 1) {
+          currentSlide++;
+          updateSlideUI();
+        }
+      } else if (touchEndX - touchStartX > 45) {
+        if (currentSlide > 0) {
+          currentSlide--;
+          updateSlideUI();
+        }
+      }
+    }, {passive: true});
+  </script>
+</body>
+</html>
