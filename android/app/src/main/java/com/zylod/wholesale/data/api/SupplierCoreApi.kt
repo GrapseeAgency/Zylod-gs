@@ -89,6 +89,15 @@ interface SupplierCoreApi {
         @Query("page") page: Int?,
         @Query("sort") sort: String?,
     ): Response<SupplierCoreDirectoryEnvelope>
+
+    @GET("api/supplier/dashboard")
+    suspend fun dashboard(): Response<SupplierCoreDashboardEnvelope>
+
+    @GET("api/supplier/storefront")
+    suspend fun storefront(): Response<SupplierCoreStorefrontEnvelope>
+
+    @GET("api/supplier/queries")
+    suspend fun queries(@Query("status") status: String?): Response<SupplierCoreQueriesEnvelope>
 }
 
 /* ── orders (GET api/supplier/orders) ───────────────────────────────────── */
@@ -354,4 +363,393 @@ data class SupplierCoreSupplierRow(
     val createdAt: String? = null,
     /** The owner account's status — "suspended" renders its own badge. */
     val accountStatus: String? = null,
+)
+
+/* ── t268 deep-rail DTOs (dashboard / storefront / queries) ──────────────── */
+
+/**
+ * t268 — SUPPLIER DEEP-RAIL surface: three more GET endpoints behind the
+ * typed supplier pageIds (supplier-dashboard, the supplier-profile lens,
+ * supplier-storefront and supplier-queries). Shapes read from the route
+ * handlers (the single source of truth), NOT invented:
+ *
+ *  - GET api/supplier/dashboard — supplier/dashboard/route.ts.
+ *    requireUserType(['supplier','admin']) → 401 ONLY ("Supplier
+ *    authentication required") — this route NEVER 403s: a session without
+ *    a supplier profile falls back to user-keyed scoping and still answers
+ *    success (possibly with zero rows). No query params. Response
+ *    { success, data: { stats, supplier, recentSubOrders, topProducts,
+ *    productPerformance, inventoryAlerts, monthlyRevenue,
+ *    pendingVerifications, customerInsights, storeStats } }:
+ *      stats — totalProducts, totalOrders, pendingOrders, lowStockCount
+ *      (Int counts) + totalRevenueBDT, pendingPaymentBDT,
+ *      thisMonthRevenue (Double money, 'paid' subOrders minus
+ *      cancelled/returned; unpaid volume reported separately as
+ *      pendingPaymentBDT), totalBuyers (distinct buyer ids).
+ *      supplier — companyName, verificationStatus, ratingAvg Double,
+ *      supplierId String|null (the profile id; null without a profile).
+ *      recentSubOrders (max 8, newest first) — id, orderNumber (parent
+ *      order's number falling back to the subOrder id), date ISO, status,
+ *      totalAmount Double (subtotal + shipping), itemCount Int,
+ *      primaryItemName (first item's product name, "Products" fallback).
+ *      topProducts (max 5 by soldCount) — id, name, basePrice Double,
+ *      stockQuantity Double, soldCount Double, category ("General"
+ *      fallback).
+ *      productPerformance (max 5 by soldCount) — id, name, sales Double
+ *      (soldCount), revenue Double (summed orderItem totals), rating
+ *      Double (product ratingAvg), category.
+ *      inventoryAlerts (low-stock stockQuantity ≤ 10, take 10) — id, name,
+ *      currentStock Double, threshold Double (the product moq), severity
+ *      'critical' (stock 0) or 'warning'.
+ *      monthlyRevenue — exactly 6 entries { month 'Jan'-style short label,
+ *      revenue Double (rounded) }, oldest → newest, 'paid' subOrders only.
+ *      pendingVerifications — sellerVerificationDocuments filtered to
+ *      pending | under_review: id, type (documentType), status, date
+ *      'YYYY-MM-DD' (uploadedAt day key).
+ *      customerInsights — newBuyers Int, repeatBuyers Int (buyers with
+ *      one vs multiple subOrders over the last 200) + topRegions (max 5,
+ *      shipping-address cities): region, orders Int, percentage Int.
+ *      storeStats — messages Int (UNREAD messages in this supplier's
+ *      conversations, Task 136), quotes Int (RFQs this supplier has
+ *      quoted on).
+ *  - GET api/supplier/storefront — supplier/storefront/route.ts. PUBLIC:
+ *    with a signed-in seller session and NO explicit supplierId the route
+ *    answers the caller's OWN storefront; a guest with none gets 404 JSON
+ *    { error } ("No storefront specified — pass ?supplierId= to view a
+ *    store", or "Supplier not found" for an unknown id). The Kotlin client
+ *    sends no query params — own store via session. Response
+ *    { success, data: { id, companyName, verificationStatus, ratingAvg,
+ *    ratingCount, memberSince ISO, storeCustomization | null, products
+ *    (max 24, isActive + isApproved only, FULL product rows + priceTiers
+ *    — reuse SupplierCoreProductRow), certificationRollup, warehouses
+ *    (shapeOwner projection — reuse SupplierCoreWarehouseRow), reviews
+ *    (max 50, newest first), counts: { products, supplierReviews } } }.
+ *      storeCustomization is the RAW sellerStoreCustomizations row (only
+ *      the rendered fields are modeled; ignoreUnknownKeys eats the rest).
+ *      certificationRollup — the Task 96 trust rollup over the supplier's
+ *      PUBLIC products: total, active, expiringSoon, expired counts,
+ *      issuers [String] and recent (max 6): id, certName, issuedBy,
+ *      issuedAt ISO, expiresAt String|null, status ('active' |
+ *      'expiring_soon' | 'expired'), productId, productName.
+ *      reviews — id, rating Int, comment String|null, createdAt, buyerName
+ *      (businessName || fullName || "Verified buyer" — never the
+ *      reviewer's email/phone), mine Bool (true only for the viewer's own
+ *      review). NOTE: the wire also carries a duplicate "_count" key with
+ *      the same shape as counts — deliberately NOT modeled; the underscore
+ *      prefix is an ordinary unknown key (ignoreUnknownKeys=true in
+ *      ApiClient.json) and is dropped.
+ *  - GET api/supplier/queries — supplier/queries/route.ts.
+ *    requireUserType(['supplier','admin']) → 401; resolveSupplierProfile
+ *    → 403 (SUPPLIER_PROFILE_REQUIRED). Query param status= has NO server
+ *    validation — the schema's real values are open | replied | resolved
+ *    | closed, and the chip row sends ONLY those tokens or omits the
+ *    param. Response { success, data: [rows] } — data is a BARE ARRAY of
+ *    sellerCustomerQueries rows (take 100, newest first) with the buyer
+ *    and product names resolved server-side: id, buyerId, buyerName
+ *    (businessName || fullName || "Anonymous buyer"), productId
+ *    String|null, productName String|null, queryType (product_question |
+ *    pre_order | custom_request | complaint per the schema comment),
+ *    subject, lastMessage (the query's message), status, replyMessage
+ *    String|null, createdAt ISO.
+ *
+ * Same contract as the t267 cluster: Response<T> wrappers (never a bare
+ * DTO), every field optional-with-default so shape drift degrades
+ * gracefully, Prisma Float columns as Double, counts as Int, and every
+ * nested JSON object pre-declared as its own @Serializable class. All
+ * names stay SupplierCore-prefixed — verified collision-free.
+ */
+
+/* ── dashboard (GET api/supplier/dashboard) ─────────────────────────────── */
+
+@Immutable
+@Serializable
+data class SupplierCoreDashboardEnvelope(
+    val success: Boolean = false,
+    val data: SupplierCoreDashboardData? = null,
+)
+
+/** The whole dashboard payload — cached whole-page as one snapshot. */
+@Immutable
+@Serializable
+data class SupplierCoreDashboardData(
+    val stats: SupplierCoreDashboardStats? = null,
+    val supplier: SupplierCoreDashboardSupplier? = null,
+    val recentSubOrders: List<SupplierCoreRecentSubOrder> = emptyList(),
+    val topProducts: List<SupplierCoreTopProductRow> = emptyList(),
+    val productPerformance: List<SupplierCoreProductPerfRow> = emptyList(),
+    val inventoryAlerts: List<SupplierCoreInventoryAlertRow> = emptyList(),
+    val monthlyRevenue: List<SupplierCoreMonthRevenue> = emptyList(),
+    val pendingVerifications: List<SupplierCorePendingVerification> = emptyList(),
+    val customerInsights: SupplierCoreCustomerInsights? = null,
+    val storeStats: SupplierCoreStoreStats? = null,
+)
+
+/** Derived counts + money aggregates (route Promise.all block). */
+@Immutable
+@Serializable
+data class SupplierCoreDashboardStats(
+    val totalProducts: Int = 0,
+    val totalOrders: Int = 0,
+    val pendingOrders: Int = 0,
+    val lowStockCount: Int = 0,
+    val totalRevenueBDT: Double = 0.0,
+    val pendingPaymentBDT: Double = 0.0,
+    val thisMonthRevenue: Double = 0.0,
+    val totalBuyers: Int = 0,
+)
+
+/** The signed-in supplier's profile mini-shape (or user-keyed fallback). */
+@Immutable
+@Serializable
+data class SupplierCoreDashboardSupplier(
+    val companyName: String? = null,
+    val verificationStatus: String? = null,
+    val ratingAvg: Double = 0.0,
+    /** The canonical supplierProfiles.id — null without a profile row. */
+    val supplierId: String? = null,
+)
+
+/** One recent subOrder for the dashboard rail (max 8, newest first). */
+@Immutable
+@Serializable
+data class SupplierCoreRecentSubOrder(
+    val id: String? = null,
+    /** Parent order number, falling back to the subOrder id (route rule). */
+    val orderNumber: String? = null,
+    /** ISO instant of the subOrder creation. */
+    val date: String? = null,
+    val status: String? = null,
+    /** subtotal + shippingCost (route math). */
+    val totalAmount: Double = 0.0,
+    val itemCount: Int = 0,
+    /** First item's product name — "Products" fallback (route rule). */
+    val primaryItemName: String? = null,
+)
+
+/** One top product by soldCount (max 5). */
+@Immutable
+@Serializable
+data class SupplierCoreTopProductRow(
+    val id: String? = null,
+    val name: String? = null,
+    val basePrice: Double = 0.0,
+    val stockQuantity: Double = 0.0,
+    val soldCount: Double = 0.0,
+    /** category.name — "General" fallback (route rule). */
+    val category: String? = null,
+)
+
+/** One product-performance row: sales + booked revenue + rating (max 5). */
+@Immutable
+@Serializable
+data class SupplierCoreProductPerfRow(
+    val id: String? = null,
+    val name: String? = null,
+    /** products.soldCount (route names it "sales"). */
+    val sales: Double = 0.0,
+    /** Summed orderItem.totalPrice for the product. */
+    val revenue: Double = 0.0,
+    /** products.ratingAvg. */
+    val rating: Double = 0.0,
+    /** category.name — "General" fallback (route rule). */
+    val category: String? = null,
+)
+
+/** One low-stock alert — currentStock ≤ 10; 'critical' when stock is 0. */
+@Immutable
+@Serializable
+data class SupplierCoreInventoryAlertRow(
+    val id: String? = null,
+    val name: String? = null,
+    val currentStock: Double = 0.0,
+    /** The product's moq doubles as the restock threshold (route rule). */
+    val threshold: Double = 0.0,
+    /** 'critical' | 'warning' (route rule). */
+    val severity: String? = null,
+)
+
+/** One month of paid revenue — exactly six entries, oldest first. */
+@Immutable
+@Serializable
+data class SupplierCoreMonthRevenue(
+    /** en-US short month label ("Jan"…"Dec") from the route. */
+    val month: String? = null,
+    val revenue: Double = 0.0,
+)
+
+/** One pending/under_review sellerVerificationDocument. */
+@Immutable
+@Serializable
+data class SupplierCorePendingVerification(
+    val id: String? = null,
+    /** The documentType string. */
+    val type: String? = null,
+    /** pending | under_review (route filter). */
+    val status: String? = null,
+    /** 'YYYY-MM-DD' day key of uploadedAt. */
+    val date: String? = null,
+)
+
+/** Buyer-mix block over the last 200 subOrders (route math). */
+@Immutable
+@Serializable
+data class SupplierCoreCustomerInsights(
+    /** Buyers with exactly one subOrder. */
+    val newBuyers: Int = 0,
+    /** Buyers with more than one subOrder. */
+    val repeatBuyers: Int = 0,
+    /** Top shipping-address cities (max 5, by order count). */
+    val topRegions: List<SupplierCoreRegionRow> = emptyList(),
+)
+
+/** One shipping-city rollup row. */
+@Immutable
+@Serializable
+data class SupplierCoreRegionRow(
+    val region: String? = null,
+    val orders: Int = 0,
+    /** Share of the sampled subOrders, rounded (route math). */
+    val percentage: Int = 0,
+)
+
+/** Unread-message + quoted-RFQ counters (Task 136 honest numbers). */
+@Immutable
+@Serializable
+data class SupplierCoreStoreStats(
+    val messages: Int = 0,
+    val quotes: Int = 0,
+)
+
+/* ── storefront (GET api/supplier/storefront) ───────────────────────────── */
+
+@Immutable
+@Serializable
+data class SupplierCoreStorefrontEnvelope(
+    val success: Boolean = false,
+    val data: SupplierCoreStorefrontData? = null,
+)
+
+/** The PUBLIC storefront projection (Task 96/98/105 shape). */
+@Immutable
+@Serializable
+data class SupplierCoreStorefrontData(
+    val id: String? = null,
+    val companyName: String? = null,
+    val verificationStatus: String? = null,
+    val ratingAvg: Double = 0.0,
+    val ratingCount: Int = 0,
+    /** ISO instant of the supplierProfiles.createdAt. */
+    val memberSince: String? = null,
+    /** Raw sellerStoreCustomizations row — null when never customized. */
+    val storeCustomization: SupplierCoreStoreCustomization? = null,
+    /** Public listings only (isActive + isApproved), max 24 + priceTiers. */
+    val products: List<SupplierCoreProductRow> = emptyList(),
+    val certificationRollup: SupplierCoreCertRollup? = null,
+    /** Active ship-from locations (shapeOwner projection). */
+    val warehouses: List<SupplierCoreWarehouseRow> = emptyList(),
+    /** Newest-first, max 50, display names only. */
+    val reviews: List<SupplierCoreStorefrontReview> = emptyList(),
+    val counts: SupplierCoreCounts? = null,
+)
+
+/** Rendered subset of the raw sellerStoreCustomizations Prisma row. */
+@Immutable
+@Serializable
+data class SupplierCoreStoreCustomization(
+    val bannerUrl: String? = null,
+    val logoUrl: String? = null,
+    val theme: String? = null,
+    val layout: String? = null,
+    val font: String? = null,
+    val showRatings: Boolean = false,
+    val showContactInfo: Boolean = false,
+    val showCategories: Boolean = false,
+)
+
+/** The Task 96 storefront trust rollup over the PUBLIC products. */
+@Immutable
+@Serializable
+data class SupplierCoreCertRollup(
+    val total: Int = 0,
+    val active: Int = 0,
+    val expiringSoon: Int = 0,
+    val expired: Int = 0,
+    /** Distinct trimmed issuer names, sorted (route rule). */
+    val issuers: List<String> = emptyList(),
+    /** Newest six certifications with real product attribution. */
+    val recent: List<SupplierCoreCertRow> = emptyList(),
+)
+
+/** One productCertifications row as the storefront rollup carries it. */
+@Immutable
+@Serializable
+data class SupplierCoreCertRow(
+    val id: String? = null,
+    val certName: String? = null,
+    val issuedBy: String? = null,
+    /** ISO instant of issuedAt. */
+    val issuedAt: String? = null,
+    /** ISO instant — null when the cert has no expiry on file. */
+    val expiresAt: String? = null,
+    /** 'active' | 'expiring_soon' | 'expired' (certificationStatus). */
+    val status: String? = null,
+    val productId: String? = null,
+    val productName: String? = null,
+)
+
+/** One supplierReview as the PUBLIC projection carries it (Task 105). */
+@Immutable
+@Serializable
+data class SupplierCoreStorefrontReview(
+    val id: String? = null,
+    val rating: Int = 0,
+    val comment: String? = null,
+    /** ISO instant of createdAt. */
+    val createdAt: String? = null,
+    /** businessName || fullName || "Verified buyer" (route rule). */
+    val buyerName: String? = null,
+    /** True only when the caller's own buyer id authored the review. */
+    val mine: Boolean = false,
+)
+
+/** Route _count projection: public listings + supplier reviews. */
+@Immutable
+@Serializable
+data class SupplierCoreCounts(
+    val products: Int = 0,
+    val supplierReviews: Int = 0,
+)
+
+/* ── queries (GET api/supplier/queries) ─────────────────────────────────── */
+
+/** Bare-ARRAY data, exactly as the route answers (no count wrapper). */
+@Immutable
+@Serializable
+data class SupplierCoreQueriesEnvelope(
+    val success: Boolean = false,
+    val data: List<SupplierCoreQueryRow> = emptyList(),
+)
+
+/** One sellerCustomerQueries row with the resolved buyer/product names. */
+@Immutable
+@Serializable
+data class SupplierCoreQueryRow(
+    val id: String? = null,
+    val buyerId: String? = null,
+    /** businessName || fullName || "Anonymous buyer" (route rule). */
+    val buyerName: String? = null,
+    val productId: String? = null,
+    /** Resolved product name — null when unset or the row is gone. */
+    val productName: String? = null,
+    /** product_question | pre_order | custom_request | complaint (schema). */
+    val queryType: String? = null,
+    val subject: String? = null,
+    /** The query's message body (route names it lastMessage). */
+    val lastMessage: String? = null,
+    /** open | replied | resolved | closed (schema values). */
+    val status: String? = null,
+    /** The supplier's reply — null until replied. */
+    val replyMessage: String? = null,
+    /** ISO instant of createdAt. */
+    val createdAt: String? = null,
 )

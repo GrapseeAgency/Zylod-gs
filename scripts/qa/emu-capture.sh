@@ -292,7 +292,11 @@ adbt () { timeout "${1:-20}" adb shell "${@:2}" || true; }
 # directory, 12s settles each, same fresh SELLER session as 47/48 — no
 # extra re-injection) and 54-supplier-analytics-authed; every skipped
 # capture degrades non-fatally).
-budget_left () { [ $((2680 - SECONDS)) -gt 10 ]; }
+# (t268: raised to 2760s — four more supplier deep-rail captures join the
+# seller segment: 55-58 (dashboard/storefront/queries/profile, 12s settles
+# each, same fresh SELLER session as 47-54 — no extra re-injection); every
+# skipped capture degrades non-fatally).
+budget_left () { [ $((2760 - SECONDS)) -gt 10 ]; }
 budget_stop () {
   if [ "$BUDGET_EXHAUSTED" -eq 0 ] && ! budget_left; then
     BUDGET_EXHAUSTED=1
@@ -2621,6 +2625,17 @@ else
   guarded_deeplink "52-supplier-warehouse-authed" 12 "zylod://supplier-warehouse"
   guarded_deeplink "53-suppliers-directory" 12 "zylod://suppliers"
   guarded_deeplink "54-supplier-analytics-authed" 12 "zylod://supplier-analytics"
+  # t268: 55-58 supplier deep-rail — four more typed surfaces this batch
+  # owns, captured under the SAME fresh SELLER session as 47-54 (no extra
+  # re-injection): the dashboard lens (401-only gate), the PUBLIC storefront
+  # (own store via session; a no-profile session renders the route's own
+  # 404 text — never invented copy), the buyer-query inbox (401/403 gate)
+  # and the profile lens on the shared dashboard payload. Same 12s settle
+  # + queue-drain guard as 47-54.
+  guarded_deeplink "55-supplier-dashboard-authed" 12 "zylod://supplier-dashboard"
+  guarded_deeplink "56-supplier-storefront-authed" 12 "zylod://supplier-storefront"
+  guarded_deeplink "57-supplier-queries-authed" 12 "zylod://supplier-queries"
+  guarded_deeplink "58-supplier-profile-authed" 12 "zylod://supplier-profile"
 fi
 
 log "Screen inventory"
