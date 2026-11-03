@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.zylod.wholesale.data.api.AddressDto
 import com.zylod.wholesale.data.api.ApiClient
 import com.zylod.wholesale.data.api.CheckoutCouponValidated
+import com.zylod.wholesale.data.api.CheckoutCouponValidatePayload
 import com.zylod.wholesale.data.api.CheckoutCreateItem
 import com.zylod.wholesale.data.api.CheckoutCreatePayload
 import com.zylod.wholesale.data.api.CheckoutCreatedOrder
@@ -225,7 +226,7 @@ class CheckoutViewModel(private val appContext: Context) : ViewModel() {
         resolveGate()
     }
 
-    private fun resolveBase(): String =
+    private suspend fun resolveBase(): String =
         baseUrl ?: ServerConfig.resolve(appContext).also { baseUrl = it }
 
     /* ─── Addresses ─── */

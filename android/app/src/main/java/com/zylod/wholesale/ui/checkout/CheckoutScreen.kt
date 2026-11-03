@@ -27,7 +27,7 @@ import androidx.compose.material.icons.outlined.ErrorOutline
 import androidx.compose.material.icons.outlined.GppMaybe
 import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material.icons.outlined.LocalShipping
-import androidx.compose.material.icons.outlined.Package
+import androidx.compose.material.icons.outlined.Inventory
 import androidx.compose.material.icons.outlined.Place
 import androidx.compose.material.icons.outlined.ReceiptLong
 import androidx.compose.material3.Button
@@ -249,7 +249,7 @@ private fun CheckoutEmptyCartWall(openPage: (pageId: String, query: String) -> U
             color = MaterialTheme.colorScheme.surfaceVariant,
         ) {
             Icon(
-                Icons.Outlined.Package,
+                Icons.Outlined.Inventory,
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier
@@ -678,7 +678,7 @@ private fun CheckoutAddressCard(
 
 @Composable
 private fun CheckoutItemsCard(items: List<CartItemData>) {
-    CheckoutSectionCard(title = "Items", icon = Icons.Outlined.Package) {
+    CheckoutSectionCard(title = "Items", icon = Icons.Outlined.Inventory) {
         Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
             items.forEach { item ->
                 Row(verticalAlignment = Alignment.CenterVertically) {
@@ -691,7 +691,7 @@ private fun CheckoutItemsCard(items: List<CartItemData>) {
                         ) {
                             Box(contentAlignment = Alignment.Center) {
                                 Icon(
-                                    Icons.Outlined.Package,
+                                    Icons.Outlined.Inventory,
                                     contentDescription = null,
                                     tint = MaterialTheme.colorScheme.onSurfaceVariant,
                                     modifier = Modifier.size(20.dp),
