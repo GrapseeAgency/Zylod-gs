@@ -2007,15 +2007,20 @@ elif [ -n "$PRODUCT_ID" ]; then
     #   "In Stock"   — InfoTile (line 925). "BDT" never renders (prices use "৳").
     # All render only when state.product != null — never on PdpLoading.
     PDP_SETTLED=0
-    for i in 1 2 3 4; do
+    # t273d (run 41690776223): 40s window — CI render measured ~28s. The
+    # original needles (MOQ/Add to Cart/In Stock) ALL sit below the fold, so
+    # 'reviews' (rating line, ProductDetailScreen.kt:520, above the fold) is
+    # added as a settle marker — it renders only when state.product != null,
+    # same as the others, but is visible without scrolling.
+    for i in 1 2 3 4 5 6 7 8; do
       sleep 5
-      if any_text_on_screen "MOQ" "Add to Cart" "In Stock"; then
+      if any_text_on_screen "MOQ" "Add to Cart" "In Stock" "reviews"; then
         PDP_SETTLED=1
         break
       fi
     done
     if [ "$PDP_SETTLED" -eq 0 ]; then
-      echo "::warning::capture 06: PDP content not detected within 20s — capturing current state anyway"
+      echo "::warning::capture 06: PDP content not detected within 40s — capturing current state anyway"
     fi
     cap "screenshots/06-product-detail.png"
   else
@@ -2791,13 +2796,22 @@ except Exception:
   if [ -n "$T273_PRODUCT_ID" ] && ensure_home; then
     adbt 15 am start -a android.intent.action.VIEW -d "zylod://product/$T273_PRODUCT_ID" com.zylod.wholesale.debug >/dev/null 2>&1
     PDP_T273_SETTLED=0
-    for i in 1 2 3 4; do
+    # t273d (run 41690776223): 40s window AND a render-gated swipe. The
+    # t273b walk swiped on EVERY miss — including misses against the
+    # still-loading PDP — so 3 blind swipes buried the button below the
+    # reach of the remaining checks and the cart stayed empty (69 skipped,
+    # 70 degraded to 'No order to confirm'). The swipe now fires only when
+    # the PDP has rendered ('reviews' rating line above the fold) but the
+    # button is still out of view.
+    for i in 1 2 3 4 5 6 7 8; do
       sleep 5
       if any_text_on_screen "Add to Cart"; then
         PDP_T273_SETTLED=1
         break
       fi
-      adbt 15 "input swipe 540 1500 540 500 400" >/dev/null 2>&1 || true
+      if any_text_on_screen "reviews"; then
+        adbt 15 "input swipe 540 1500 540 500 400" >/dev/null 2>&1 || true
+      fi
     done
     if [ "$PDP_T273_SETTLED" -eq 1 ]; then
       tap_clickable_text "Add to Cart" || true
@@ -2833,7 +2847,8 @@ except Exception:
   # as its target text is visible (uiautomator sees visible nodes only).
   if any_text_on_screen "Review Order"; then
     PAY_T273_READY=0
-    for i in 1 2 3 4; do
+    # t273d: 6 rounds (was 4) — slow CI forms get more walk margin
+    for i in 1 2 3 4 5 6; do
       if any_text_on_screen "Bank Transfer"; then
         PAY_T273_READY=1
         break
@@ -2847,7 +2862,8 @@ except Exception:
     fi
     sleep 1
     CTA_T273_READY=0
-    for i in 1 2 3 4; do
+    # t273d: 6 rounds (was 4)
+    for i in 1 2 3 4 5 6; do
       if any_text_on_screen "Place Order"; then
         CTA_T273_READY=1
         break
