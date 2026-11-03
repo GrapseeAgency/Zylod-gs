@@ -2823,13 +2823,19 @@ except Exception:
     echo "capture 68: home-card needle=${T273_NAME:-none}"
     TAP_T273_FIRED=0
     if [ -n "$T273_NAME" ]; then
-      for i in 1 2 3 4 5 6; do
+      # t274b (run 41720404142 logcat): the walk polled 21:58:44–59 while the
+      # freshly cold-started feed was still empty — ServerConfig resolved at
+      # 21:58:35 and the featured cards' images only hit the wire at
+      # 21:58:59, the exact second the walk gave up. Sleep every round so
+      # the poll window outlives the feed render (~30s post-cold-start).
+      for i in 1 2 3 4 5 6 7 8; do
         if any_text_on_screen "$T273_NAME"; then
           tap_clickable_text "$T273_NAME" || true
           TAP_T273_FIRED=1
           break
         fi
         adbt 15 "input swipe 540 1500 540 500 400" >/dev/null 2>&1 || true
+        sleep 3
       done
     fi
     echo "capture 68: home-card tap fired=$TAP_T273_FIRED"
@@ -2867,11 +2873,37 @@ except Exception:
         echo "capture 68: PDP deeplink attempt $T273_ATTEMPT did not render"
       done
     fi
+    if [ "$PDP_T273_SETTLED" -eq 0 ]; then
+      # t274b FINAL fallback — the proven-mature path: every run's capture 06
+      # deeplinks the SAME product on a process that has been up for
+      # minutes and lands the NATIVE PDP first try. Force-stop + relaunch +
+      # a 35s maturity window (ServerConfig resolve + feed render + the
+      # process state the 06 deeplink always finds) + ensure_home + one
+      # more deeplink with the full render-gated walk.
+      log "capture 68: maturing the app (force-stop + relaunch + 35s) for the proven deeplink path"
+      adbt 15 am force-stop com.zylod.wholesale.debug >/dev/null 2>&1 || true
+      adbt 20 monkey -p com.zylod.wholesale.debug -c android.intent.category.LAUNCHER 1 >/dev/null 2>&1 || true
+      sleep 35
+      if ensure_home; then
+        adbt 15 am start -a android.intent.action.VIEW -d "zylod://product/$T273_PRODUCT_ID" com.zylod.wholesale.debug >/dev/null 2>&1
+        for i in 1 2 3 4 5 6; do
+          sleep 5
+          if any_text_on_screen "Add to Cart"; then
+            PDP_T273_SETTLED=1
+            break
+          fi
+          if any_text_on_screen "reviews"; then
+            adbt 15 "input swipe 540 1500 540 500 400" >/dev/null 2>&1 || true
+          fi
+        done
+        echo "capture 68: matured-app deeplink settled=$PDP_T273_SETTLED"
+      fi
+    fi
     if [ "$PDP_T273_SETTLED" -eq 1 ]; then
       tap_clickable_text "Add to Cart" || true
       sleep 3
     else
-      echo "::warning::capture 68: PDP 'Add to Cart' not detected (home-card tap + 2 deeplink attempts) — cart may stay empty (captures proceed honestly)"
+      echo "::warning::capture 68: PDP 'Add to Cart' not detected (card tap + deeplinks + matured relaunch) — cart may stay empty (captures proceed honestly)"
     fi
   fi
   # t273 (e): fire the typed checkout. guarded_deeplink enforces the
