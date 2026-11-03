@@ -2784,6 +2784,10 @@ except Exception:
   # t273 (d): build a cart — PDP → settle for the Add to Cart button (up to
   # 20s, the capture-06 needle) → tap it → sleep 3 for the toast flow. The
   # seeded product merges into whatever the cart already holds.
+  # t273b: the button sits BELOW THE FOLD on the tall PDP (run 41669332981:
+  # the 06 needle missed on a fully rendered PDP — uiautomator only sees
+  # visible nodes) — every missed poll now swipes up once before the next
+  # check, so the poll itself walks the button into view.
   if [ -n "$T273_PRODUCT_ID" ] && ensure_home; then
     adbt 15 am start -a android.intent.action.VIEW -d "zylod://product/$T273_PRODUCT_ID" com.zylod.wholesale.debug >/dev/null 2>&1
     PDP_T273_SETTLED=0
@@ -2793,6 +2797,7 @@ except Exception:
         PDP_T273_SETTLED=1
         break
       fi
+      adbt 15 "input swipe 540 1500 540 500 400" >/dev/null 2>&1 || true
     done
     if [ "$PDP_T273_SETTLED" -eq 1 ]; then
       tap_clickable_text "Add to Cart" || true
@@ -2823,10 +2828,37 @@ except Exception:
   # settle up to 30s for the inline success title ("Order <num> Created"
   # contains 'Created'); timeout → capture the current state anyway + dump
   # the last 200 logcat lines as place-order evidence. Never fatal.
+  # t273b: the payment radios and the Place Order CTA are BELOW THE FOLD on
+  # the tall form — each tap is preceded by a swipe walk that stops as soon
+  # as its target text is visible (uiautomator sees visible nodes only).
   if any_text_on_screen "Review Order"; then
-    tap_clickable_text "Bank Transfer" || true
+    PAY_T273_READY=0
+    for i in 1 2 3 4; do
+      if any_text_on_screen "Bank Transfer"; then
+        PAY_T273_READY=1
+        break
+      fi
+      adbt 15 "input swipe 540 1400 540 600 400" >/dev/null 2>&1 || true
+      sleep 2
+    done
+    echo "capture 69: Bank Transfer visible=$PAY_T273_READY"
+    if [ "$PAY_T273_READY" -eq 1 ]; then
+      tap_clickable_text "Bank Transfer" || true
+    fi
     sleep 1
-    tap_clickable_text "Place Order" || true
+    CTA_T273_READY=0
+    for i in 1 2 3 4; do
+      if any_text_on_screen "Place Order"; then
+        CTA_T273_READY=1
+        break
+      fi
+      adbt 15 "input swipe 540 1400 540 600 400" >/dev/null 2>&1 || true
+      sleep 2
+    done
+    echo "capture 69: Place Order visible=$CTA_T273_READY"
+    if [ "$CTA_T273_READY" -eq 1 ]; then
+      tap_clickable_text "Place Order" || true
+    fi
     PLACED_T273_SETTLED=0
     for i in 1 2 3 4 5 6; do
       sleep 5
