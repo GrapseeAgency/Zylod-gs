@@ -11,7 +11,8 @@ import retrofit2.http.Path
 /**
  * t274 — the typed BUYER ORDER-DETAIL surfaces behind ui/orderdetail/ (the
  * Kotlin port of order-detail-page.tsx). Routes verified against the server
- * contracts in src/app/api/orders/[id]/*/route.ts:
+ * contracts under src/app/api/orders/[id] (route.ts plus the cancel,
+ * payment-submit, payments/initiate and receipt sub-routes):
  *
  *  - GET api/orders/{orderId} — the full detail projection: payments[] (newest
  *    first), per-supplier subOrders[] each with items[] (product + variant
