@@ -2789,35 +2789,49 @@ except Exception:
   # t273 (d): build a cart — PDP → settle for the Add to Cart button (up to
   # 20s, the capture-06 needle) → tap it → sleep 3 for the toast flow. The
   # seeded product merges into whatever the cart already holds.
-  # t273b: the button sits BELOW THE FOLD on the tall PDP (run 41669332981:
-  # the 06 needle missed on a fully rendered PDP — uiautomator only sees
-  # visible nodes) — every missed poll now swipes up once before the next
-  # check, so the poll itself walks the button into view.
+  # t273b/t273d/t273e: the button sits BELOW THE FOLD on the tall PDP and
+  # the deeplink races the injection's cold start — the block below re-fires
+  # the link until the PDP renders, then walks the button into view
+  # (render-gated swipes; uiautomator sees visible nodes only).
   if [ -n "$T273_PRODUCT_ID" ] && ensure_home; then
-    adbt 15 am start -a android.intent.action.VIEW -d "zylod://product/$T273_PRODUCT_ID" com.zylod.wholesale.debug >/dev/null 2>&1
+    # t273e (run 41698812091): the deeplink fired 2s after the injection's
+    # cold start (pid 17558 born 19:40:01, deeplink 19:40:15.9) — logcat
+    # shows ServerConfig resolve completing at 19:40:20 and then 78s of
+    # total radio silence: the PDP never rendered (the t273d render-gate
+    # correctly never swiped, and no round ever saw the button). The link
+    # was either swallowed by the mid-cold-start drain race (ZylodRoot
+    # drains DeepLinkBus only when route==home) or the PDP opened and its
+    # fetch died on the not-yet-resolved endpoint. Either way the
+    # deterministic fix is script-side: re-fire the deeplink until the PDP
+    # ACTUALLY renders — max 3 attempts, 15s render check each; a re-fired
+    # link lands on a warm, ServerConfig-resolved app (singleTask +
+    # onNewIntent + bus drain, same delivery path as the first attempt).
     PDP_T273_SETTLED=0
-    # t273d (run 41690776223): 40s window AND a render-gated swipe. The
-    # t273b walk swiped on EVERY miss — including misses against the
-    # still-loading PDP — so 3 blind swipes buried the button below the
-    # reach of the remaining checks and the cart stayed empty (69 skipped,
-    # 70 degraded to 'No order to confirm'). The swipe now fires only when
-    # the PDP has rendered ('reviews' rating line above the fold) but the
-    # button is still out of view.
-    for i in 1 2 3 4 5 6 7 8; do
-      sleep 5
-      if any_text_on_screen "Add to Cart"; then
-        PDP_T273_SETTLED=1
+    for T273_ATTEMPT in 1 2 3; do
+      adbt 15 am start -a android.intent.action.VIEW -d "zylod://product/$T273_PRODUCT_ID" com.zylod.wholesale.debug >/dev/null 2>&1
+      for i in 1 2 3; do
+        sleep 5
+        if any_text_on_screen "Add to Cart"; then
+          PDP_T273_SETTLED=1
+          break
+        fi
+        # swipe ONLY when the PDP has rendered ('reviews' rating line above
+        # the fold) but the button is still out of view — swiping against a
+        # loading skeleton accumulates scroll before content exists
+        if any_text_on_screen "reviews"; then
+          adbt 15 "input swipe 540 1500 540 500 400" >/dev/null 2>&1 || true
+        fi
+      done
+      if [ "$PDP_T273_SETTLED" -eq 1 ]; then
         break
       fi
-      if any_text_on_screen "reviews"; then
-        adbt 15 "input swipe 540 1500 540 500 400" >/dev/null 2>&1 || true
-      fi
+      echo "capture 68: PDP attempt $T273_ATTEMPT did not render — re-firing deeplink"
     done
     if [ "$PDP_T273_SETTLED" -eq 1 ]; then
       tap_clickable_text "Add to Cart" || true
       sleep 3
     else
-      echo "::warning::capture 68: PDP 'Add to Cart' not detected within 20s — cart may stay empty (captures proceed honestly)"
+      echo "::warning::capture 68: PDP 'Add to Cart' not detected within 3 deeplink attempts — cart may stay empty (captures proceed honestly)"
     fi
   fi
   # t273 (e): fire the typed checkout. guarded_deeplink enforces the
