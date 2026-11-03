@@ -306,7 +306,12 @@ adbt () { timeout "${1:-20}" adb shell "${@:2}" || true; }
 # render the same 4-step register wizard, a public form with no network
 # until submit, 12s settles each); every skipped capture degrades
 # non-fatally).
-budget_left () { [ $((2880 - SECONDS)) -gt 10 ]; }
+# (t271: raised to 2940s — one more SELLER-authed capture joins:
+# 64-supplier-add-product (the typed product-creation form; needs the
+# dhaka.textile seller session injected for the 47-58 block; GET
+# api/categories is public and fills the picker; the form fires NO network
+# until Publish); every skipped capture degrades non-fatally).
+budget_left () { [ $((2940 - SECONDS)) -gt 10 ]; }
 budget_stop () {
   if [ "$BUDGET_EXHAUSTED" -eq 0 ] && ! budget_left; then
     BUDGET_EXHAUSTED=1
@@ -2651,6 +2656,9 @@ else
   guarded_deeplink "56-supplier-storefront-authed" 12 "zylod://supplier-storefront"
   guarded_deeplink "57-supplier-queries-authed" 12 "zylod://supplier-queries"
   guarded_deeplink "58-supplier-profile-authed" 12 "zylod://supplier-profile"
+  # t271: 64-supplier-add-product — the typed product-creation form port; the SELLER session
+  # injected for the 47-58 block must still be active; GET api/categories is public and fills the picker.
+  guarded_deeplink "64-supplier-add-product" 12 "zylod://supplier-add-product"
   # t269: 59-61 supplier rail finale — three PUBLIC captures, NO session
   # needed (59/60 are static curated pages with no network at all; 61's two
   # endpoints — GET api/suppliers/{id} + GET api/products?supplierId= — are
