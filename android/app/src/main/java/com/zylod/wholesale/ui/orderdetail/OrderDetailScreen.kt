@@ -8,8 +8,10 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -483,7 +485,7 @@ private fun OrderDetailStepper(stepPacked: Boolean, stepShipped: Boolean, stepDe
     }
 
     @Composable
-    fun Bar(done: Boolean) {
+    fun RowScope.Bar(done: Boolean) {
         Box(
             Modifier
                 .weight(1f)
@@ -793,9 +795,10 @@ private fun OrderDetailTimelineRow(row: OrderDetailTracking, isLast: Boolean) {
     }
 }
 
-/** Task 80 timeline colors — honest dot/chip/text triple per real status. */
+/** Task 80 timeline colors — honest dot/chip/text triple per real status.
+ *  Pure color math (no Composition reads) — the pending fallback matches the
+ *  web's slate palette. */
 private fun timelineColors(status: String): Triple<androidx.compose.ui.graphics.Color, androidx.compose.ui.graphics.Color, androidx.compose.ui.graphics.Color> {
-    val c = MaterialTheme.colorScheme
     return when (status) {
         "delivered" -> Triple(
             androidx.compose.ui.graphics.Color(0xFF10B981),
@@ -819,8 +822,8 @@ private fun timelineColors(status: String): Triple<androidx.compose.ui.graphics.
         )
         else -> Triple(
             androidx.compose.ui.graphics.Color(0xFF94A3B8),
-            c.surfaceVariant,
-            c.onSurfaceVariant,
+            androidx.compose.ui.graphics.Color(0xFFF1F5F9),
+            androidx.compose.ui.graphics.Color(0xFF475569),
         )
     }
 }
