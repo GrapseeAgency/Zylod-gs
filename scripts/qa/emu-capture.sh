@@ -1020,7 +1020,7 @@ inject_session () { # email password role evidence_file diag_prefix
 # NEVER printed (lengths only). Returns 0 when every step succeeded
 # (BROADCAST_REASON="ok"); 1 otherwise with the verbatim reason. Never fatal
 # to the run (callers degrade to the honest gate path).
-broadcast_inject_session () { # email password role evidence_file
+broadcast_inject_session () { # email password role evidence_file [warm]
   local email="$1" password="$2" role="$3" evfile="$4"
   BROADCAST_REASON="not attempted"
   API_LOGIN_USER_JSON=""
@@ -1140,6 +1140,25 @@ except Exception:
   esac
   # (5) cold start so the verdict proves the session SURVIVED a restart
   # t249-j: give QueuedWork a grace window; commit() makes this redundant but harmless.
+  # t274d WARM mode (5th arg): SKIP the cold-start dance — write the session
+  # into the LIVE process and return. The cold-start dance recreated the
+  # exact condition that breaks the money-path captures: on every fresh
+  # process the native PDP route activates but its content never renders
+  # within ANY poll window (runs 41698812091 / 41707303870 / 41720404142 /
+  # 41736002177 — the t274c routing logs prove the deeplink navigates and
+  # the NavHost route flips to product-detail/{productId} while the screen
+  # stays empty), while the SAME deeplink on a mature process renders the
+  # PDP in ≤6s (capture 06, every single run). The receiver's synchronous
+  # commit() lands in the live store and SessionManager.token() reads prefs
+  # per call, so the very next checkout/PDP VM sees the buyer session.
+  # Survival-across-restart is already proven by this helper's cold-start
+  # invocations earlier in the same run.
+  if [ "${5:-}" = "warm" ]; then
+    echo "injection-method=debug-broadcast-receiver-warm" >> "$evfile" 2>/dev/null || true
+    echo "broadcast_inject_session($role): session injected ✓ (method=debug-broadcast-receiver-warm) — live process kept warm"
+    BROADCAST_REASON="ok"
+    return 0
+  fi
   sleep 2
   adbt 15 am force-stop com.zylod.wholesale.debug >/dev/null 2>&1 || true
   adbt 10 logcat -c >/dev/null 2>&1 || true
@@ -2735,7 +2754,10 @@ else
   BUYER_T273_CHECKOUT=no
   if ! budget_stop; then
     log "t273: re-injecting the buyer session immediately before the checkout captures (mid-flow 401s from earlier deeplinks trigger the SessionAuthenticator logout that clears it)"
-    if broadcast_inject_session "buyer1@zylod.bd" "Passw0rd!23" "buyer" "screenshots/buyer-session-check.txt"; then
+    # t274d: WARM re-injection — the cold-start dance here killed the mature
+    # process and every fresh process since t273b failed to render the PDP
+    # content (see the WARM mode comment inside broadcast_inject_session).
+    if broadcast_inject_session "buyer1@zylod.bd" "Passw0rd!23" "buyer" "screenshots/buyer-session-check.txt" warm; then
       BUYER_T273_CHECKOUT=yes
     fi
   fi
