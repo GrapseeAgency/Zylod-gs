@@ -2789,49 +2789,85 @@ except Exception:
   # t273 (d): build a cart — PDP → settle for the Add to Cart button (up to
   # 20s, the capture-06 needle) → tap it → sleep 3 for the toast flow. The
   # seeded product merges into whatever the cart already holds.
-  # t273b/t273d/t273e: the button sits BELOW THE FOLD on the tall PDP and
-  # the deeplink races the injection's cold start — the block below re-fires
-  # the link until the PDP renders, then walks the button into view
-  # (render-gated swipes; uiautomator sees visible nodes only).
+  # t273b→f: the button sits BELOW THE FOLD on the tall PDP and the product
+  # deeplink dies silently in a freshly cold-started process — the block
+  # below builds the cart via a real home-feed card tap first, then falls
+  # back to the deeplink, and walks the button into view with render-gated
+  # swipes (uiautomator sees visible nodes only).
   if [ -n "$T273_PRODUCT_ID" ] && ensure_home; then
-    # t273e (run 41698812091): the deeplink fired 2s after the injection's
-    # cold start (pid 17558 born 19:40:01, deeplink 19:40:15.9) — logcat
-    # shows ServerConfig resolve completing at 19:40:20 and then 78s of
-    # total radio silence: the PDP never rendered (the t273d render-gate
-    # correctly never swiped, and no round ever saw the button). The link
-    # was either swallowed by the mid-cold-start drain race (ZylodRoot
-    # drains DeepLinkBus only when route==home) or the PDP opened and its
-    # fetch died on the not-yet-resolved endpoint. Either way the
-    # deterministic fix is script-side: re-fire the deeplink until the PDP
-    # ACTUALLY renders — max 3 attempts, 15s render check each; a re-fired
-    # link lands on a warm, ServerConfig-resolved app (singleTask +
-    # onNewIntent + bus drain, same delivery path as the first attempt).
+    # t273f (runs 41698812091 + 41707303870): zylod://product/<id> navigates
+    # reliably on a MATURE process (capture 06 proves it every run) but dies
+    # SILENTLY in a freshly cold-started one — three delivered intents
+    # (result code=3 → onNewIntent → DeepLinkBus.open, verified in logcat)
+    # produced zero navigation and zero app logs across 85s, while the
+    # zylod://checkout link 30s later navigated fine. The bus drain never
+    # fired for the product links. The fix stops depending on the bus for
+    # THIS capture: build the cart the way a real buyer does — tap the
+    # featured card on the NATIVE home feed (HomeScreen.kt:435
+    # FeaturedCard.clickable → openPage → resolver → native PDP; direct
+    # Compose navigation, no deeplink, no bus). The card needle is the
+    # product NAME (both the AsyncImage contentDescription and the title
+    # Text carry it); the featured rail sits below the fold so the tap is
+    # preceded by a walk. The proven deeplink stays as the fallback.
     PDP_T273_SETTLED=0
-    for T273_ATTEMPT in 1 2 3; do
-      adbt 15 am start -a android.intent.action.VIEW -d "zylod://product/$T273_PRODUCT_ID" com.zylod.wholesale.debug >/dev/null 2>&1
-      for i in 1 2 3; do
+    T273_NAME=$(timeout 10 curl -s "$HOST_API_BASE/api/products?limit=1" | python3 -c 'import json,sys
+try:
+    d = json.load(sys.stdin)
+    print((d["data"][0].get("name") or "").strip()[:40])
+except Exception:
+    pass' 2>/dev/null || true)
+    echo "capture 68: home-card needle=${T273_NAME:-none}"
+    TAP_T273_FIRED=0
+    if [ -n "$T273_NAME" ]; then
+      for i in 1 2 3 4 5 6; do
+        if any_text_on_screen "$T273_NAME"; then
+          tap_clickable_text "$T273_NAME" || true
+          TAP_T273_FIRED=1
+          break
+        fi
+        adbt 15 "input swipe 540 1500 540 500 400" >/dev/null 2>&1 || true
+      done
+    fi
+    echo "capture 68: home-card tap fired=$TAP_T273_FIRED"
+    if [ "$TAP_T273_FIRED" -eq 1 ]; then
+      # settle the PDP + walk the button (render-gated: 'reviews' rating
+      # line above the fold proves state.product != null)
+      for i in 1 2 3 4 5 6; do
         sleep 5
         if any_text_on_screen "Add to Cart"; then
           PDP_T273_SETTLED=1
           break
         fi
-        # swipe ONLY when the PDP has rendered ('reviews' rating line above
-        # the fold) but the button is still out of view — swiping against a
-        # loading skeleton accumulates scroll before content exists
         if any_text_on_screen "reviews"; then
           adbt 15 "input swipe 540 1500 540 500 400" >/dev/null 2>&1 || true
         fi
       done
-      if [ "$PDP_T273_SETTLED" -eq 1 ]; then
-        break
-      fi
-      echo "capture 68: PDP attempt $T273_ATTEMPT did not render — re-firing deeplink"
-    done
+    fi
+    if [ "$PDP_T273_SETTLED" -eq 0 ]; then
+      # fallback: the deeplink path (proven on mature processes; 2 attempts)
+      for T273_ATTEMPT in 1 2; do
+        adbt 15 am start -a android.intent.action.VIEW -d "zylod://product/$T273_PRODUCT_ID" com.zylod.wholesale.debug >/dev/null 2>&1
+        for i in 1 2 3; do
+          sleep 5
+          if any_text_on_screen "Add to Cart"; then
+            PDP_T273_SETTLED=1
+            break
+          fi
+          if any_text_on_screen "reviews"; then
+            adbt 15 "input swipe 540 1500 540 500 400" >/dev/null 2>&1 || true
+          fi
+        done
+        if [ "$PDP_T273_SETTLED" -eq 1 ]; then
+          break
+        fi
+        echo "capture 68: PDP deeplink attempt $T273_ATTEMPT did not render"
+      done
+    fi
     if [ "$PDP_T273_SETTLED" -eq 1 ]; then
       tap_clickable_text "Add to Cart" || true
       sleep 3
     else
-      echo "::warning::capture 68: PDP 'Add to Cart' not detected within 3 deeplink attempts — cart may stay empty (captures proceed honestly)"
+      echo "::warning::capture 68: PDP 'Add to Cart' not detected (home-card tap + 2 deeplink attempts) — cart may stay empty (captures proceed honestly)"
     fi
   fi
   # t273 (e): fire the typed checkout. guarded_deeplink enforces the
