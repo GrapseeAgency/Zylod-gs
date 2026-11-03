@@ -629,12 +629,17 @@ class SupplierAddProductFormViewModel(private val appContext: Context) : ViewMod
         when (val stock = parseOptionalAny(form.stockQuantity)) {
             SupplierFormsNum.Empty -> issues["stockQuantity"] = "Stock quantity is required"
             is SupplierFormsNum.Garbage -> issues["stockQuantity"] = "Stock quantity must be a valid number"
+            // parseOptionalAny never answers NonPositive — listed for sealed exhaustiveness.
+            SupplierFormsNum.NonPositive -> issues["stockQuantity"] = "Stock cannot be negative"
             is SupplierFormsNum.Value -> if (stock.n < 0.0) issues["stockQuantity"] = "Stock cannot be negative"
         }
 
         when (val alert = parseOptionalAny(form.stockAlertThreshold)) {
             is SupplierFormsNum.Garbage ->
                 issues["stockAlertThreshold"] = "Low-stock threshold must be a valid number"
+            // parseOptionalAny never answers NonPositive — listed for sealed exhaustiveness.
+            SupplierFormsNum.NonPositive ->
+                issues["stockAlertThreshold"] = "Low-stock threshold cannot be negative"
             is SupplierFormsNum.Value -> if (alert.n < 0.0) {
                 issues["stockAlertThreshold"] = "Low-stock threshold cannot be negative"
             }
@@ -648,6 +653,9 @@ class SupplierAddProductFormViewModel(private val appContext: Context) : ViewMod
             when (val stock = parseOptionalAny(row.stockQuantity)) {
                 SupplierFormsNum.Empty, is SupplierFormsNum.Garbage ->
                     issues["variants.$formIndex.stockQuantity"] = "Variant stock must be a valid number"
+                // parseOptionalAny never answers NonPositive — listed for sealed exhaustiveness.
+                SupplierFormsNum.NonPositive ->
+                    issues["variants.$formIndex.stockQuantity"] = "Variant stock cannot be negative"
                 is SupplierFormsNum.Value -> if (stock.n < 0.0) {
                     issues["variants.$formIndex.stockQuantity"] = "Variant stock cannot be negative"
                 }
