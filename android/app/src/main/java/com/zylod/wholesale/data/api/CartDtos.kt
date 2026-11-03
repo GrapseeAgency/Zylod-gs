@@ -35,6 +35,8 @@ data class CartItemData(
     val supplierSlug: String = "",
     val unit: String = "",
     val priceTiers: List<PriceTierDto> = emptyList(),
+    /** Task 95 checkout: kg per ONE purchasable unit; null = honestly unquotable. */
+    val weightKg: Double? = null,
 ) {
     val mergeKey: String get() = "$productId::${variantId ?: "null"}"
 }

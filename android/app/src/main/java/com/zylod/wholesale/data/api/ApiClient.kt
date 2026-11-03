@@ -392,4 +392,14 @@ object ApiClient {
     // header (the upload route is public and ignores the header when present).
     fun supplierFormsApi(baseUrl: String): SupplierFormsApi =
         cachedApi(baseUrl, "supplier-forms") { it.create(SupplierFormsApi::class.java) }
+
+    // t273 — native checkout money-path (POST api/orders, GET
+    // api/shipping/quote, POST api/coupons/validate + the confirmation
+    // projection of GET api/orders/{orderId}). A SEPARATE interface from
+    // OrdersApi so the t252 tracking route set stays put. Same memoization;
+    // every route here is Bearer-authenticated through the shared OkHttp
+    // client and its 401-refresh chain (the orders route requires the buyer
+    // session — 401 renders the screens' honest sign-in wall).
+    fun checkoutApi(baseUrl: String): CheckoutApi =
+        cachedApi(baseUrl, "checkout") { it.create(CheckoutApi::class.java) }
 }

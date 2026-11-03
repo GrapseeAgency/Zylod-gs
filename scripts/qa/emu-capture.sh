@@ -316,7 +316,15 @@ adbt () { timeout "${1:-20}" adb shell "${@:2}" || true; }
 # data + gate) and 65/67 in the PUBLIC tail (supplier-directory and the
 # supplier- edge alias both render the public suppliers directory);
 # every skipped capture degrades non-fatally).
-budget_left () { [ $((3000 - SECONDS)) -gt 10 ]; }
+# (t273: raised to 3180s — the typed checkout money-path joins the tail:
+# the BUYER session is re-injected first, an address is seeded via the REAL
+# api/addresses when the book is empty, the PDP → Add to Cart flow builds a
+# cart, then 68-checkout (settle-poll for Review Order / Your cart is empty
+# / Sign in required), 69-checkout-placed (Bank Transfer → Place Order →
+# settle for 'Created') and 70-checkout-success (the placed order's
+# confirmation via its orderId); every skipped capture degrades
+# non-fatally).
+budget_left () { [ $((3180 - SECONDS)) -gt 10 ]; }
 budget_stop () {
   if [ "$BUDGET_EXHAUSTED" -eq 0 ] && ! budget_left; then
     BUDGET_EXHAUSTED=1
@@ -2705,6 +2713,161 @@ else
   # screen; NO session needed, GET api/suppliers is public.
   guarded_deeplink "65-supplier-directory" 12 "zylod://supplier-directory"
   guarded_deeplink "67-supplier-alias" 12 "zylod://supplier-"
+  # t273 — typed checkout money-path: 68-checkout, 69-checkout-placed and
+  # 70-checkout-success. The seller captures above left the SELLER session
+  # committed, and the t249-k finding applies verbatim (mid-flow 401s
+  # trigger the SessionAuthenticator logout that clears roles) — so the
+  # exact same broadcast_inject_session runs here FIRST, swapping in a
+  # freshly committed BUYER session on a cold-started home seconds before
+  # the checkout deeplink (evidence appends to buyer-session-check.txt;
+  # this run's keys are the authoritative ones for the t273 shots).
+  # Non-fatal: on failure the marker below records it and capture 68 keeps
+  # its honest sign-in wall verdict.
+  BUYER_T273_CHECKOUT=no
+  if ! budget_stop; then
+    log "t273: re-injecting the buyer session immediately before the checkout captures (mid-flow 401s from earlier deeplinks trigger the SessionAuthenticator logout that clears it)"
+    if broadcast_inject_session "buyer1@zylod.bd" "Passw0rd!23" "buyer" "screenshots/buyer-session-check.txt"; then
+      BUYER_T273_CHECKOUT=yes
+    fi
+  fi
+  echo "buyer-checkout-reinjection=$BUYER_T273_CHECKOUT" >> screenshots/buyer-session-check.txt 2>/dev/null || true
+  # t273 (b): ensure an address exists via the REAL api/addresses using the
+  # buyer token the injection just logged in for ($TOKEN is set by the
+  # api_login_token call inside broadcast_inject_session). GET the book;
+  # when it is EMPTY, POST the seeded HQ address. Every http code is
+  # recorded to screenshots/checkout-address-check.txt and NEVER fatal —
+  # a missing address only means capture 68 shows its honest Add-Address
+  # state (and 69 is skipped by its own Review Order guard).
+  : > screenshots/checkout-address-check.txt 2>/dev/null || true
+  if [ "$BUYER_T273_CHECKOUT" = "yes" ] && [ -n "${TOKEN:-}" ]; then
+    ADDR_GET_CODE=$(timeout 10 curl -s -o screenshots/checkout-addresses.json -w "%{http_code}" -H "Authorization: Bearer $TOKEN" "$HOST_API_BASE/api/addresses" 2>/dev/null || echo err)
+    ADDR_COUNT=$(python3 -c 'import json,sys
+try:
+    d = json.load(open("screenshots/checkout-addresses.json", encoding="utf-8", errors="ignore"))
+    print(len(d.get("data") or []))
+except Exception:
+    print(-1)' 2>/dev/null || echo -1)
+    ADDR_POST_CODE=skipped
+    if [ "$ADDR_COUNT" = "0" ]; then
+      ADDR_POST_CODE=$(timeout 10 curl -s -o screenshots/checkout-address-post.json -w "%{http_code}" -X POST "$HOST_API_BASE/api/addresses" -H "Authorization: Bearer $TOKEN" -H 'Content-Type: application/json' -d '{"label":"HQ","address_line1":"12 Farmgate Road","city":"Dhaka","district":"Dhaka","postal_code":"1205","country":"Bangladesh","is_default":true}' 2>/dev/null || echo err)
+    fi
+    {
+      echo "=== t273 checkout address check $(date -u '+%Y-%m-%dT%H:%M:%SZ') ==="
+      echo "addresses-get=$ADDR_GET_CODE"
+      echo "addresses-count=$ADDR_COUNT"
+      echo "addresses-post=$ADDR_POST_CODE"
+    } >> screenshots/checkout-address-check.txt 2>/dev/null || true
+    echo "capture 68: address check get=$ADDR_GET_CODE count=$ADDR_COUNT post=$ADDR_POST_CODE"
+  else
+    {
+      echo "=== t273 checkout address check $(date -u '+%Y-%m-%dT%H:%M:%SZ') ==="
+      echo "addresses-get=skipped (buyer injection failed — no token)"
+    } >> screenshots/checkout-address-check.txt 2>/dev/null || true
+  fi
+  # t273 (c): resolve PRODUCT_ID the capture-06 way — reuse the saved id
+  # when present, else self-fetch from /api/products?limit=1 (same probe
+  # discipline as capture 06; an empty result degrades capture 68 to
+  # whatever the existing cart holds, never fatal).
+  T273_PRODUCT_ID=""
+  if [ -s screenshots/product-id.txt ]; then
+    T273_PRODUCT_ID=$(tr -d '[:space:]' < screenshots/product-id.txt 2>/dev/null || true)
+  fi
+  if [ -z "$T273_PRODUCT_ID" ]; then
+    T273_PRODUCT_ID=$(timeout 10 curl -s "$HOST_API_BASE/api/products?limit=1" | python3 -c 'import json,sys
+try:
+    d = json.load(sys.stdin)
+    print(d["data"][0]["id"])
+except Exception:
+    pass' 2>/dev/null || true)
+  fi
+  echo "capture 68: T273_PRODUCT_ID=${T273_PRODUCT_ID:-} (product-id.txt or fresh /api/products?limit=1)"
+  # t273 (d): build a cart — PDP → settle for the Add to Cart button (up to
+  # 20s, the capture-06 needle) → tap it → sleep 3 for the toast flow. The
+  # seeded product merges into whatever the cart already holds.
+  if [ -n "$T273_PRODUCT_ID" ] && ensure_home; then
+    adbt 15 am start -a android.intent.action.VIEW -d "zylod://product/$T273_PRODUCT_ID" com.zylod.wholesale.debug >/dev/null 2>&1
+    PDP_T273_SETTLED=0
+    for i in 1 2 3 4; do
+      sleep 5
+      if any_text_on_screen "Add to Cart"; then
+        PDP_T273_SETTLED=1
+        break
+      fi
+    done
+    if [ "$PDP_T273_SETTLED" -eq 1 ]; then
+      tap_clickable_text "Add to Cart" || true
+      sleep 3
+    else
+      echo "::warning::capture 68: PDP 'Add to Cart' not detected within 20s — cart may stay empty (captures proceed honestly)"
+    fi
+  fi
+  # t273 (e): fire the typed checkout. guarded_deeplink enforces the
+  # HOME_ROUTE queue-drain guard and caps after its 10s settle; the extra
+  # poll below waits up to 15s more for ANY of the three honest typed
+  # states (any one proves the typed screen) and re-caps the settled shot
+  # — on timeout the guarded_deeplink cap stands (capture regardless).
+  guarded_deeplink "68-checkout" 10 "zylod://checkout"
+  CHECKOUT_T273_SETTLED=0
+  for i in 1 2 3; do
+    sleep 5
+    if any_text_on_screen "Review Order" "Your cart is empty" "Sign in required"; then
+      CHECKOUT_T273_SETTLED=1
+      break
+    fi
+  done
+  if [ "$CHECKOUT_T273_SETTLED" -eq 1 ]; then
+    cap "screenshots/68-checkout.png"
+  fi
+  echo "capture 68: checkout settled=$CHECKOUT_T273_SETTLED (Review Order / Your cart is empty / Sign in required)"
+  # t273 (f): on the REAL form — pick Bank Transfer, place the order,
+  # settle up to 30s for the inline success title ("Order <num> Created"
+  # contains 'Created'); timeout → capture the current state anyway + dump
+  # the last 200 logcat lines as place-order evidence. Never fatal.
+  if any_text_on_screen "Review Order"; then
+    tap_clickable_text "Bank Transfer" || true
+    sleep 1
+    tap_clickable_text "Place Order" || true
+    PLACED_T273_SETTLED=0
+    for i in 1 2 3 4 5 6; do
+      sleep 5
+      if any_text_on_screen "Created"; then
+        PLACED_T273_SETTLED=1
+        break
+      fi
+    done
+    cap "screenshots/69-checkout-placed.png"
+    if [ "$PLACED_T273_SETTLED" -eq 0 ]; then
+      echo "::warning::capture 69: 'Created' not detected within 30s — captured current state + logcat evidence"
+      timeout 10 adb logcat -d 2>/dev/null | tail -200 > screenshots/checkout-place-log.txt || true
+    fi
+    echo "capture 69: placed settled=$PLACED_T273_SETTLED"
+  else
+    echo "capture 69: SKIPPED — 'Review Order' never visible (empty cart / sign-in wall / still loading)"
+  fi
+  # t273 (g): extract the placed orderId from the VM's capture-evidence log
+  # line ("order placed id=..."). logcat-full.txt is only dumped at the
+  # very END of the script, so grep the LIVE buffer the way the neighbor
+  # blocks do. No id → the confirmation URL still fires without one and
+  # capture 70 shows the honest No-order-to-confirm state.
+  T273_ORDER_ID=$(timeout 10 adb logcat -d 2>/dev/null | grep -o "order placed id=[0-9a-f-]*" | tail -1 | cut -d= -f2 || true)
+  echo "capture 70: T273_ORDER_ID=${T273_ORDER_ID:-} (grep 'order placed id=' over adb logcat -d)"
+  if [ -n "$T273_ORDER_ID" ]; then
+    guarded_deeplink "70-checkout-success" 10 "https://zylod.com/?page=checkout-success&orderId=$T273_ORDER_ID"
+  else
+    guarded_deeplink "70-checkout-success" 10 "https://zylod.com/?page=checkout-success"
+  fi
+  SUCCESS_T273_SETTLED=0
+  for i in 1 2 3; do
+    sleep 5
+    if any_text_on_screen "Order Received" "No order to confirm"; then
+      SUCCESS_T273_SETTLED=1
+      break
+    fi
+  done
+  if [ "$SUCCESS_T273_SETTLED" -eq 1 ]; then
+    cap "screenshots/70-checkout-success.png"
+  fi
+  echo "capture 70: confirmation settled=$SUCCESS_T273_SETTLED (Order Received / No order to confirm)"
 fi
 
 log "Screen inventory"

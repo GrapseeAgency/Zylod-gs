@@ -79,6 +79,8 @@ data class ProductDetailDto(
     val moq: Int = 1,
     val maxOrderQty: Int? = null,
     val stockQuantity: Int = 0,
+    /** Task 95 checkout: kg per ONE purchasable unit; null = honestly unquotable. */
+    val weightKg: Double? = null,
     val thumbnailUrl: String? = null,
     val ratingAvg: Double = 0.0,
     val reviewCount: Int = 0,

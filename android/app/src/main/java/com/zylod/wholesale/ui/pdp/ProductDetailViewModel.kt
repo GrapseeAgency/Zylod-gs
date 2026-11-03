@@ -378,6 +378,7 @@ class ProductDetailViewModel(private val appContext: Context) : ViewModel() {
                 supplierSlug = product.supplier?.slug.orEmpty(),
                 unit = product.unit ?: "piece",
                 priceTiers = product.priceTiers,
+                weightKg = product.weightKg,
             ),
         )
         _state.update { it.copy(justAdded = true, toast = "Added to cart — ${product.name}") }
