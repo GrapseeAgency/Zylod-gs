@@ -324,7 +324,11 @@ adbt () { timeout "${1:-20}" adb shell "${@:2}" || true; }
 # settle for 'Created') and 70-checkout-success (the placed order's
 # confirmation via its orderId); every skipped capture degrades
 # non-fatally).
-budget_left () { [ $((3180 - SECONDS)) -gt 10 ]; }
+# (t274: raised to 3240s — capture 71-order-detail joins the tail: with the
+# placed orderId from 69, zylod://orders/<id> opens the TYPED detail screen
+# (status stepper, shipments, payment summary); without one it skips
+# non-fatally).
+budget_left () { [ $((3240 - SECONDS)) -gt 10 ]; }
 budget_stop () {
   if [ "$BUDGET_EXHAUSTED" -eq 0 ] && ! budget_left; then
     BUDGET_EXHAUSTED=1
@@ -2966,6 +2970,34 @@ except Exception:
     cap "screenshots/70-checkout-success.png"
   fi
   echo "capture 70: confirmation settled=$SUCCESS_T273_SETTLED (Order Received / No order to confirm)"
+
+  # t274: the TYPED order-detail capture — the placed order's real detail
+  # (status stepper, per-supplier shipments with line items + tracking, the
+  # payment summary with the manual-payment leg). zylod://orders/<id> maps
+  # to the order-detail pageId with the orderId param (DeepLinkParser t206
+  # B5). Needs the buyer session (re-injected above) and the real orderId
+  # from the 69 place-order — without one the capture SKIPS (the honest
+  # no-order wall is already proven by the web suite).
+  if [ -n "$T273_ORDER_ID" ]; then
+    guarded_deeplink "71-order-detail" 10 "zylod://orders/$T273_ORDER_ID"
+    DETAIL_T274_SETTLED=0
+    for i in 1 2 3 4 5 6; do
+      sleep 5
+      if any_text_on_screen "Items in Order" "Sign in required" "Order not found" "No order selected"; then
+        DETAIL_T274_SETTLED=1
+        break
+      fi
+      # render-gated walk: the payment summary sits below the fold — swipe
+      # only once the detail screen has rendered (its own header text)
+      if any_text_on_screen "Placed" "Track Order"; then
+        adbt 15 "input swipe 540 1400 540 600 400" >/dev/null 2>&1 || true
+      fi
+    done
+    cap "screenshots/71-order-detail.png"
+    echo "capture 71: detail settled=$DETAIL_T274_SETTLED (Items in Order / Sign in required / Order not found / No order selected)"
+  else
+    echo "capture 71: SKIPPED — T273_ORDER_ID empty (the 69 place-order never landed)"
+  fi
 fi
 
 log "Screen inventory"

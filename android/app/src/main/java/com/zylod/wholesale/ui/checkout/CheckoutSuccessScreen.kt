@@ -560,6 +560,20 @@ private fun CheckoutSuccessContent(
         ) {
             Text("Track Order", fontSize = 13.sp, fontWeight = FontWeight.Bold)
         }
+        // t274: the typed order-detail surface — the placed order's full
+        // detail (items, payments, tracking, the manual-payment leg) is one
+        // tap away from the confirmation, matching the web confirmation's
+        // order link.
+        OutlinedButton(
+            onClick = { openPage("order-detail", "orderId=${order.id}") },
+            shape = RoundedCornerShape(14.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 10.dp)
+                .heightIn(min = 48.dp),
+        ) {
+            Text("View Order Details", fontSize = 13.sp, fontWeight = FontWeight.Bold)
+        }
         OutlinedButton(
             onClick = { openPage("home", "") },
             shape = RoundedCornerShape(14.dp),
