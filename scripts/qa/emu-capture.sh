@@ -310,8 +310,13 @@ adbt () { timeout "${1:-20}" adb shell "${@:2}" || true; }
 # 64-supplier-add-product (the typed product-creation form; needs the
 # dhaka.textile seller session injected for the 47-58 block; GET
 # api/categories is public and fills the picker; the form fires NO network
-# until Publish); every skipped capture degrades non-fatally).
-budget_left () { [ $((2940 - SECONDS)) -gt 10 ]; }
+# until Publish).
+# (t272: raised to 3000s — three alias-delegation captures join: 66 in the
+# SELLER segment (supplier-center delegates to the typed dashboard, authed
+# data + gate) and 65/67 in the PUBLIC tail (supplier-directory and the
+# supplier- edge alias both render the public suppliers directory);
+# every skipped capture degrades non-fatally).
+budget_left () { [ $((3000 - SECONDS)) -gt 10 ]; }
 budget_stop () {
   if [ "$BUDGET_EXHAUSTED" -eq 0 ] && ! budget_left; then
     BUDGET_EXHAUSTED=1
@@ -2659,6 +2664,10 @@ else
   # t271: 64-supplier-add-product — the typed product-creation form port; the SELLER session
   # injected for the 47-58 block must still be active; GET api/categories is public and fills the picker.
   guarded_deeplink "64-supplier-add-product" 12 "zylod://supplier-add-product"
+  # t272: 66-supplier-center-authed — the supplier-center pageId delegates to the
+  # typed dashboard screen (the web lazy-loads supplier-dashboard-page for it);
+  # the SELLER session must still be active for the authed dashboard data.
+  guarded_deeplink "66-supplier-center-authed" 12 "zylod://supplier-center"
   # t269: 59-61 supplier rail finale — three PUBLIC captures, NO session
   # needed (59/60 are static curated pages with no network at all; 61's two
   # endpoints — GET api/suppliers/{id} + GET api/products?supplierId= — are
@@ -2690,6 +2699,12 @@ else
   # the rest of the rail.
   guarded_deeplink "62-supplier-onboarding" 12 "zylod://supplier-onboarding"
   guarded_deeplink "63-supplier-resources" 12 "zylod://supplier-resources"
+  # t272: 65 + 67 — PUBLIC alias captures on the typed suppliers directory:
+  # supplier-directory (the t233 renderer replaced) and the supplier- edge
+  # pageId (kept for its RouteOwnership) both delegate to the same shared
+  # screen; NO session needed, GET api/suppliers is public.
+  guarded_deeplink "65-supplier-directory" 12 "zylod://supplier-directory"
+  guarded_deeplink "67-supplier-alias" 12 "zylod://supplier-"
 fi
 
 log "Screen inventory"
