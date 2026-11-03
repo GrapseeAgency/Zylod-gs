@@ -1,6 +1,7 @@
 package com.zylod.wholesale.ui.nav
 
 import android.net.Uri
+import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -274,6 +275,7 @@ fun ZylodRoot() {
                     // product id still stacks (launchSingleTop compares args).
                     launchSingleTop = true
                 }
+                .also { Log.i("ZylodDeepLink", "navigate product-detail/${destination.productId} from route=$route") }
             is Destination.Auth ->
                 navController.navigate(destination.route) { launchSingleTop = true }
             is Destination.NativePage -> {
@@ -317,6 +319,7 @@ fun ZylodRoot() {
                     }
                     launchSingleTop = true
                 }
+                .also { Log.i("ZylodDeepLink", "navigate WEB pageId=${destination.pageId} query=${destination.query} from route=$route") }
         }
     }
 
@@ -360,6 +363,12 @@ fun ZylodRoot() {
     // gate (first run) must not be skipped by a cold-start link, and nothing
     // may navigate behind it. The tick re-runs this when a link arrives
     // while home is already the top surface.
+    // t274c DIAGNOSTIC: the capture script's product deeplinks correlate
+    // 5ms with a WebView construction on every young process while the same
+    // link lands the native PDP on mature ones (runs 41698812091 /
+    // 41707303870 / 41720404142 logcat) — these one-line logs make the
+    // routing decision observable: whether the link DRAINED, on which
+    // route, and what the resolver returned. Never fatal, debug-only value.
     val deepLinkTick = DeepLinkBus.tick
     LaunchedEffect(route, deepLinkTick) {
         if (route == HOME_ROUTE) {
@@ -367,8 +376,11 @@ fun ZylodRoot() {
                 val query = link.params.entries.joinToString("&") { (k, v) ->
                     "${Uri.encode(k)}=${Uri.encode(v)}"
                 }
+                Log.i("ZylodDeepLink", "drained pageId=${link.targetPage} query=$query route=$route")
                 openPage(link.targetPage, query)
             }
+        } else {
+            Log.i("ZylodDeepLink", "link HELD: route=$route tick=$deepLinkTick")
         }
     }
 
