@@ -2446,13 +2446,50 @@ except Exception:
     else
       echo "capture 69: SKIPPED — 'Review Order' never visible (empty cart / sign-in wall / still loading)"
     fi
-    # t273 (g): extract the placed orderId from the VM's capture-evidence log
-    # line ("order placed id=..."). logcat-full.txt is only dumped at the
-    # very END of the script, so grep the LIVE buffer the way the neighbor
-    # blocks do. No id → the confirmation URL still fires without one and
-    # capture 70 shows the honest No-order-to-confirm state.
-    T273_ORDER_ID=$(timeout 10 adb logcat -d 2>/dev/null | grep -o "order placed id=[0-9a-f-]*" | tail -1 | cut -d= -f2 || true)
-    echo "capture 70: T273_ORDER_ID=${T273_ORDER_ID:-} (grep 'order placed id=' over adb logcat -d)"
+    # t276: extract the placed orderId — API-FIRST (deterministic), logcat
+    # fallback. Run 41850252960 proved the old logcat grep doubly broken:
+    # (1) the pattern class '[0-9a-f-]' truncates a cuid at the first char
+    # outside a-f ('cmw28...' → 'c' — 'm','w','s' are not hex), so 70/71
+    # fired with orderId=c and both screens honestly answered "Order not
+    # found"; (2) the line itself had rotated out of the main buffer by the
+    # time the END-of-run logcat-full.txt was dumped (order placed 14:59,
+    # dump 15:26 — 2.2MB of chatty main-buffer logs in between), so the
+    # defect was even invisible in the artifact. PRIMARY: the script already
+    # holds the buyer's REAL token ($TOKEN from the warm injection) —
+    # GET /api/orders?page=1&limit=1 (authResult.user.id-scoped, orderBy
+    # createdAt desc = the order THIS run just placed) returns the full row
+    # including the cuid id + orderNumber. FALLBACK (API down/empty): grep
+    # the LIVE buffer with the FIXED class [A-Za-z0-9_-]+ which captures a
+    # cuid or an ORD- number whole. Both paths + the resolved id/orderNumber
+    # land in screenshots/order-id-check.txt. No id → the confirmation URL
+    # still fires without one and capture 70 shows the honest
+    # No-order-to-confirm state; capture 71 skips as before.
+    : > screenshots/order-id-check.txt 2>/dev/null || true
+    T273_ORDER_ID=""
+    T273_ORDER_NUM=""
+    if [ "$BUYER_T273_CHECKOUT" = "yes" ] && [ -n "${TOKEN:-}" ]; then
+      timeout 10 curl -s -o screenshots/orders-newest.json -H "Authorization: Bearer $TOKEN" "$HOST_API_BASE/api/orders?page=1&limit=1" 2>/dev/null || true
+      # column-0 try discipline (t275-fix2: indented try: bodies never ran)
+      T273_EXTRACT=$(python3 -c 'import json
+try:
+    d = json.load(open("screenshots/orders-newest.json", encoding="utf-8", errors="ignore"))
+    row = (d.get("data") or [None])[0]
+    if row:
+        print((row.get("id") or "") + " " + (row.get("orderNumber") or ""))
+except Exception:
+    pass' 2>/dev/null || true)
+      T273_ORDER_ID=$(echo "$T273_EXTRACT" | awk '{print $1}')
+      T273_ORDER_NUM=$(echo "$T273_EXTRACT" | awk '{print $2}')
+      echo "order-id-source=api-newest id=${T273_ORDER_ID:-} orderNumber=${T273_ORDER_NUM:-}" >> screenshots/order-id-check.txt 2>/dev/null || true
+    else
+      echo "order-id-source=api-skipped (no buyer token)" >> screenshots/order-id-check.txt 2>/dev/null || true
+    fi
+    if [ -z "$T273_ORDER_ID" ]; then
+      T273_ORDER_ID=$(timeout 10 adb logcat -d 2>/dev/null | grep -oE "order placed id=[A-Za-z0-9_-]+" | tail -1 | cut -d= -f2 || true)
+      echo "order-id-source=logcat-fixedregex id=${T273_ORDER_ID:-}" >> screenshots/order-id-check.txt 2>/dev/null || true
+    fi
+    echo "=== t276 order id check $(date -u '+%Y-%m-%dT%H:%M:%SZ') ===" >> screenshots/order-id-check.txt 2>/dev/null || true
+    echo "capture 70: T273_ORDER_ID=${T273_ORDER_ID:-} (api-newest first, logcat fixed-regex fallback)"
     if [ -n "$T273_ORDER_ID" ]; then
       guarded_deeplink "70-checkout-success" 10 "https://zylod.com/?page=checkout-success&orderId=$T273_ORDER_ID"
     else

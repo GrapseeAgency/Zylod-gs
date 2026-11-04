@@ -4,10 +4,12 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.util.Log
+import android.webkit.CookieManager
 import com.zylod.wholesale.BuildConfig
 import com.zylod.wholesale.ZylodApp
 import com.zylod.wholesale.data.api.ApiClient
 import com.zylod.wholesale.data.api.AuthUserDto
+import com.zylod.wholesale.data.api.ServerConfig
 import com.zylod.wholesale.data.api.UserProfileSeed
 import com.zylod.wholesale.data.api.toUserProfileSeed
 
@@ -115,11 +117,59 @@ class DebugSessionReceiver : BroadcastReceiver() {
                     "session injected user_type=${seed?.userType ?: userType.ifEmpty { "unknown" }} " +
                         "token_len=${token.length} profile=${source.label} committed=true",
                 )
+                bridgeWebviewCookie(context, token)
             } else {
                 Log.e(TAG, "session injection failed: securePrefs commit() returned false committed=false")
             }
         } catch (e: Exception) {
             Log.e(TAG, "session injection failed: ${e.javaClass.simpleName}: ${e.message} committed=false")
+        }
+    }
+
+    /**
+     * t276 — bridge the SAME session into the WebView cookie jar.
+     *
+     * WHY: web pages the shell renders (checkout-success, order
+     * confirmation, receipts) authenticate their credentials-include
+     * fetches with the auth-token COOKIE (src/lib/auth.ts:134 — name
+     * auth-token, SameSite Lax, secure in prod), not with the native
+     * bearer session. Run 41850252960: the money-path confirmation fired
+     * with a valid orderId but the page still answered Order-not-found —
+     * the fetch was 401 because the injected session existed ONLY in
+     * securePrefs. This bridge writes the web app's own cookie name with
+     * the same token into the global CookieManager for every origin the
+     * app can bind to (the persisted ServerConfig base plus every
+     * SERVER_ENDPOINTS candidate — cookies for unused origins are
+     * inert). No Secure attribute so the cookie survives on the http
+     * 10.0.2.2 CI endpoint AND on https hosts; SameSite Lax matches the
+     * server's own cookie. This is exactly the state a real web login
+     * produces, only reached without typing.
+     *
+     * SAFETY: debug-variant-only (this whole class); the token alphabet
+     * was already validated by the caller (A-Za-z0-9._- only — no cookie
+     * metacharacters possible).
+     */
+    private fun bridgeWebviewCookie(context: Context?, token: String) {
+        if (context == null) {
+            Log.w(TAG, "webview cookie bridge skipped: onReceive context was null")
+            return
+        }
+        try {
+            val origins = LinkedHashSet<String>()
+            ServerConfig.cached(context.applicationContext)?.let { origins += it }
+            origins += BuildConfig.SERVER_ENDPOINTS.toList()
+            val cookieManager = CookieManager.getInstance()
+            var written = 0
+            for (origin in origins) {
+                val ok = runCatching {
+                    cookieManager.setCookie(origin, "auth-token=$token; Path=/; SameSite=Lax")
+                }.getOrDefault(false)
+                if (ok) written++
+            }
+            cookieManager.flush()
+            Log.i(TAG, "webview cookie bridge origins=${origins.size} written=$written")
+        } catch (e: Exception) {
+            Log.e(TAG, "webview cookie bridge failed: ${e.javaClass.simpleName}: ${e.message}")
         }
     }
 
