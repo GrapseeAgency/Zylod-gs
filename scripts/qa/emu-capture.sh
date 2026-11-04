@@ -2079,6 +2079,12 @@ money_path_captures () {
     # this run's keys are the authoritative ones for the t273 shots).
     # Non-fatal: on failure the marker below records it and capture 68 keeps
     # its honest sign-in wall verdict.
+    # t275: the cart itself is now SEEDED SERVER-SIDE (POST /api/cart with
+    # the buyer token, quantity = the product's own MOQ) and re-pulled by a
+    # fresh zylod://cart composition — the t273(d) UI cart-build below only
+    # runs when the seed/re-pull fails (it failed every way in run
+    # 41749441741: card walk, 2 deeplinks, matured relaunch — cart empty,
+    # 69/71 skipped).
     BUYER_T273_CHECKOUT=no
     if ! budget_stop; then
       log "t273: re-injecting the buyer session immediately before the checkout captures (mid-flow 401s from earlier deeplinks trigger the SessionAuthenticator logout that clears it)"
@@ -2107,9 +2113,15 @@ money_path_captures () {
   except Exception:
       print(-1)' 2>/dev/null || echo -1)
       ADDR_POST_CODE=skipped
-      if [ "$ADDR_COUNT" = "0" ]; then
-        ADDR_POST_CODE=$(timeout 10 curl -s -o screenshots/checkout-address-post.json -w "%{http_code}" -X POST "$HOST_API_BASE/api/addresses" -H "Authorization: Bearer $TOKEN" -H 'Content-Type: application/json' -d '{"label":"HQ","address_line1":"12 Farmgate Road","city":"Dhaka","district":"Dhaka","postal_code":"1205","country":"Bangladesh","is_default":true}' 2>/dev/null || echo err)
-      fi
+      # t275: POST when the count is not a POSITIVE integer — the old `= 0`
+      # gate left the book unseeded whenever the GET body failed to parse
+      # (run 41749441741: get=200 count=-1 post=skipped). A duplicate HQ row
+      # is harmless; a missing address is not (69's place-order needs one).
+      case "$ADDR_COUNT" in
+        ''|*[!0-9]*|0)
+          ADDR_POST_CODE=$(timeout 10 curl -s -o screenshots/checkout-address-post.json -w "%{http_code}" -X POST "$HOST_API_BASE/api/addresses" -H "Authorization: Bearer $TOKEN" -H 'Content-Type: application/json' -d '{"label":"HQ","address_line1":"12 Farmgate Road","city":"Dhaka","district":"Dhaka","postal_code":"1205","country":"Bangladesh","is_default":true}' 2>/dev/null || echo err)
+          ;;
+      esac
       {
         echo "=== t273 checkout address check $(date -u '+%Y-%m-%dT%H:%M:%SZ') ==="
         echo "addresses-get=$ADDR_GET_CODE"
@@ -2140,15 +2152,104 @@ money_path_captures () {
       pass' 2>/dev/null || true)
     fi
     echo "capture 68: T273_PRODUCT_ID=${T273_PRODUCT_ID:-} (product-id.txt or fresh /api/products?limit=1)"
-    # t273 (d): build a cart — PDP → settle for the Add to Cart button (up to
-    # 20s, the capture-06 needle) → tap it → sleep 3 for the toast flow. The
-    # seeded product merges into whatever the cart already holds.
+    # t275 (a): SERVER-SIDE CART SEED — the UI was the only cart builder and
+    # it is the flaky leg (41749441741: capture 06 renders the PDP but 68's
+    # every path never re-rendered it). The script already holds the buyer's
+    # REAL token (api_login_token inside broadcast_inject_session) and
+    # already writes through the REAL backend for the address seed — so
+    # build the cart the same way: POST /api/cart {productId, quantity}
+    # (route.ts POST contract: buyer-only, MOQ enforced server-side, merged
+    # line re-checks stock). Quantity = the product's own MOQ (>=1, rejected
+    # when stock < MOQ or MOQ > maxOrderQty — an infeasible seed degrades to
+    # the UI fallback below, never fatal). Evidence → cart-seed-check.txt.
+    T273_NAME=""
+    T275_QTY=""
+    CART_T275_SEEDED=no
+    T275_SEED_CODE=skipped
+    T275_PROD_CODE=skipped
+    : > screenshots/cart-seed-check.txt 2>/dev/null || true
+    if [ -n "$T273_PRODUCT_ID" ] && [ "$BUYER_T273_CHECKOUT" = "yes" ] && [ -n "${TOKEN:-}" ]; then
+      T275_PROD_CODE=$(timeout 10 curl -s -o screenshots/cart-seed-product.json -w "%{http_code}" "$HOST_API_BASE/api/products/$T273_PRODUCT_ID" 2>/dev/null || echo err)
+      # the detail route spreads the full row: name/moq/stockQuantity/maxOrderQty
+      T273_NAME=$(python3 -c 'import json,sys
+  try:
+      d = json.load(open("screenshots/cart-seed-product.json", encoding="utf-8", errors="ignore")).get("data") or {}
+      print((d.get("name") or "").strip()[:40])
+  except Exception:
+      pass' 2>/dev/null || true)
+      T275_QTY=$(python3 -c 'import json,sys
+  try:
+      d = json.load(open("screenshots/cart-seed-product.json", encoding="utf-8", errors="ignore")).get("data") or {}
+      moq = int(d.get("moq") or 0); stock = int(d.get("stockQuantity") or 0)
+      maxq = d.get("maxOrderQty")
+      if maxq is not None: maxq = int(maxq)
+      qty = moq if moq >= 1 else 1
+      print(qty if (stock >= qty and (maxq is None or qty <= maxq)) else 0)
+  except Exception:
+      print(0)' 2>/dev/null || echo 0)
+      if [ -n "$T275_QTY" ] && [ "$T275_QTY" -ge 1 ] 2>/dev/null; then
+        T275_SEED_CODE=$(timeout 10 curl -s -o screenshots/cart-seed-post.json -w "%{http_code}" -X POST "$HOST_API_BASE/api/cart" -H "Authorization: Bearer $TOKEN" -H 'Content-Type: application/json' -d "{\"productId\":\"$T273_PRODUCT_ID\",\"quantity\":$T275_QTY}" 2>/dev/null || echo err)
+        if [ "$T275_SEED_CODE" = "200" ] || [ "$T275_SEED_CODE" = "201" ]; then
+          CART_T275_SEEDED=yes
+        fi
+      else
+        T275_SEED_CODE=skipped-infeasible
+      fi
+    else
+      T275_SEED_CODE=skipped-no-token
+    fi
+    {
+      echo "=== t275 cart seed $(date -u '+%Y-%m-%dT%H:%M:%SZ') ==="
+      echo "product-get=$T275_PROD_CODE"
+      echo "product-name=${T273_NAME:-none}"
+      echo "seed-qty=${T275_QTY:-0}"
+      echo "cart-post=$T275_SEED_CODE"
+      echo "seeded=$CART_T275_SEEDED"
+    } >> screenshots/cart-seed-check.txt 2>/dev/null || true
+    echo "capture 68: cart seed post=$T275_SEED_CODE qty=${T275_QTY:-0} seeded=$CART_T275_SEEDED"
+    # t275 (b): CART RE-PULL with the fresh buyer session. Capture 07's
+    # zylod://cart composed BEFORE the injection, so its LaunchedEffect pull
+    # (CartScreen.kt:94) ran on the pre-money-path session; CartStore still
+    # holds whatever that pull returned. ensure_home → zylod://cart gives a
+    # FRESH composition whose pull runs with the just-injected token and
+    # lands the server-seeded line via CartStore.replaceItems (server rows
+    # win their merge key). Settle needles: the seeded product's NAME (the
+    # row's title Text) and the cart's item-state CTA "Proceed to Checkout"
+    # (CartScreen.kt literal — renders ONLY with items; "Total" is skipped
+    # on purpose: a failed navigation would false-positive on home's wallet
+    # "Total" card). Settled → the whole t273(d) UI block below is SKIPPED;
+    # not settled → it still runs as the fallback.
+    CART_T275_SETTLED=no
+    if [ "$CART_T275_SEEDED" = "yes" ] && ensure_home; then
+      adbt 15 am start -a android.intent.action.VIEW -d "zylod://cart" com.zylod.wholesale.debug >/dev/null 2>&1
+      for i in 1 2 3 4 5 6 7 8; do
+        sleep 5
+        if [ -n "$T273_NAME" ]; then
+          if any_text_on_screen "$T273_NAME" "Proceed to Checkout"; then
+            CART_T275_SETTLED=yes
+            break
+          fi
+        else
+          if any_text_on_screen "Proceed to Checkout"; then
+            CART_T275_SETTLED=yes
+            break
+          fi
+        fi
+      done
+      echo "capture 68: cart re-pull settled=$CART_T275_SETTLED (name/Proceed-to-Checkout)"
+    else
+      echo "capture 68: cart re-pull skipped (seeded=$CART_T275_SEEDED)"
+    fi
+    # t273 (d): build a cart via the UI — FALLBACK ONLY now (t275): PDP →
+    # settle for the Add to Cart button (up to 20s, the capture-06 needle)
+    # → tap it → sleep 3 for the toast flow. The seeded product merges into
+    # whatever the cart already holds.
     # t273b→f: the button sits BELOW THE FOLD on the tall PDP and the product
     # deeplink dies silently in a freshly cold-started process — the block
     # below builds the cart via a real home-feed card tap first, then falls
     # back to the deeplink, and walks the button into view with render-gated
     # swipes (uiautomator sees visible nodes only).
-    if [ -n "$T273_PRODUCT_ID" ] && ensure_home; then
+    if [ "$CART_T275_SETTLED" = "no" ] && [ -n "$T273_PRODUCT_ID" ] && ensure_home; then
       # t273f (runs 41698812091 + 41707303870): zylod://product/<id> navigates
       # reliably on a MATURE process (capture 06 proves it every run) but dies
       # SILENTLY in a freshly cold-started one — three delivered intents
