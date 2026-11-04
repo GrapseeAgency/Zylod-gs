@@ -402,12 +402,4 @@ object ApiClient {
     // session — 401 renders the screens' honest sign-in wall).
     fun checkoutApi(baseUrl: String): CheckoutApi =
         cachedApi(baseUrl, "checkout") { it.create(CheckoutApi::class.java) }
-
-    // t274 — typed buyer order detail (GET api/orders/{id} full projection,
-    // POST cancel, POST payment-submit, POST payments/initiate, GET receipt).
-    // A SEPARATE interface from CheckoutApi so the confirmation projection
-    // stays put; the GET redeclares the SAME route with the richer shape the
-    // detail screen needs. Same memoization + Bearer/401-refresh chain.
-    fun orderDetailApi(baseUrl: String): OrderDetailApi =
-        cachedApi(baseUrl, "order-detail") { it.create(OrderDetailApi::class.java) }
 }
