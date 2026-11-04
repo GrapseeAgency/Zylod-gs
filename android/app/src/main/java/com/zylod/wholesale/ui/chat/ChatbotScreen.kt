@@ -48,6 +48,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -90,7 +91,8 @@ fun ChatbotScreen(
     }
     val state by vm.state.collectAsStateWithLifecycle()
 
-    var input by remember { mutableStateOf("") }
+    // rememberSaveable — rotation-safe chat draft.
+    var input by rememberSaveable { mutableStateOf("") }
 
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,

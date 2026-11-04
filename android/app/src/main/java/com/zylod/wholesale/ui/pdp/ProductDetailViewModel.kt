@@ -348,15 +348,52 @@ class ProductDetailViewModel(private val appContext: Context) : ViewModel() {
             return
         }
         val quantity = _state.value.quantity
-        if (product.stockQuantity in 1 until quantity) {
-            _state.update { it.copy(toast = "Quantity exceeds available stock (${product.stockQuantity})") }
+        // Variant-aware stock contract (mobile-product-detail-page.tsx:260-266
+        // currentVariantStock, :291-299 zero-stock gate, :317-319 honest cap):
+        // the SELECTED variant's own stock governs add-to-cart — the product
+        // row's stock is only the no-variant fallback. The old guard read
+        // product.stockQuantity, so a variant holding 5 under a product row
+        // of 100 passed the gate, the line landed in the local store, and
+        // the server 400 arrived too late — a phantom unshippable row that
+        // re-POSTed (and re-failed) on every later cart entry.
+        val variant = selectedVariant()
+        val stock = variant?.stockQuantity ?: product.stockQuantity
+        if (stock <= 0) {
+            val variantLabel = variant?.let { v ->
+                listOfNotNull(v.variantName, v.variantValue)
+                    .joinToString(": ")
+                    .replace(Regex("\\s+"), " ")
+                    .trim()
+                    .takeIf(String::isNotBlank)
+            }
+            _state.update {
+                it.copy(
+                    toast = if (variantLabel != null) {
+                        "$variantLabel is out of stock — pick another option"
+                    } else {
+                        "Out of stock — set a restock watch to be notified when it returns"
+                    },
+                )
+            }
+            return
+        }
+        if (stock in 1 until quantity) {
+            _state.update { it.copy(toast = "Quantity exceeds available stock ($stock)") }
             return
         }
         if (quantity < product.moq) {
             _state.update { it.copy(toast = "Minimum order quantity is ${product.moq}") }
             return
         }
-        val variant = selectedVariant()
+        // The line's honest cap (web parity: currentVariantStock, never the
+        // product row's stock), still respecting a server-set per-order max.
+        val honestCap = product.maxOrderQty?.let { minOf(it, stock) } ?: stock
+        // Pre-add snapshot for the server-rejection rollback: addItem MERGES
+        // by productId::variantId, so a blind removeItem would also delete a
+        // previously valid quantity — restore the exact pre-add line instead.
+        val mergeKeyValue = "${product.id}::${variant?.id ?: "null"}"
+        val existingBefore = com.zylod.wholesale.ui.cart.CartStore.state.value.items
+            .firstOrNull { it.mergeKey == mergeKeyValue }
         val unitPrice = applicablePrice()
         val stored = CartStore.addItem(
             com.zylod.wholesale.data.api.CartItemData(
@@ -372,7 +409,7 @@ class ProductDetailViewModel(private val appContext: Context) : ViewModel() {
                 unitPrice = unitPrice,
                 totalPrice = unitPrice * quantity,
                 moq = product.moq,
-                maxOrderQty = product.maxOrderQty ?: product.stockQuantity,
+                maxOrderQty = honestCap,
                 supplierId = product.supplier?.id.orEmpty(),
                 supplierName = product.supplier?.companyName.orEmpty(),
                 supplierSlug = product.supplier?.slug.orEmpty(),
@@ -408,14 +445,34 @@ class ProductDetailViewModel(private val appContext: Context) : ViewModel() {
                 )
                 if (!response.isSuccessful) {
                     val err = com.zylod.wholesale.data.api.parseErrorBody(response.errorBody())
-                    _state.update {
-                        it.copy(
-                            toast = when {
-                                err.stockAvailable != null -> "Only ${err.stockAvailable} available in stock"
-                                err.moq != null -> "Minimum order quantity is ${err.moq}"
-                                else -> err.error ?: "Cart sync failed — kept locally"
-                            },
-                        )
+                    if (err.stockAvailable != null) {
+                        // The server's stock is the truth this line violated —
+                        // roll the local line back (merge-aware: restore the
+                        // pre-add quantity when the add landed on an existing
+                        // line) instead of leaving a phantom unshippable row,
+                        // and clamp the stepper to the honest ceiling.
+                        val available = err.stockAvailable ?: 0
+                        if (existingBefore != null) {
+                            CartStore.updateQuantity(stored.id, existingBefore.quantity)
+                        } else {
+                            CartStore.removeItem(stored.id)
+                        }
+                        if (available >= product.moq) setQuantity(minOf(quantity, available))
+                        _state.update {
+                            it.copy(
+                                justAdded = false,
+                                toast = "Only $available available in stock — the item was not added",
+                            )
+                        }
+                    } else {
+                        _state.update {
+                            it.copy(
+                                toast = when {
+                                    err.moq != null -> "Minimum order quantity is ${err.moq}"
+                                    else -> err.error ?: "Cart sync failed — kept locally"
+                                },
+                            )
+                        }
                     }
                 }
             } catch (ce: CancellationException) {

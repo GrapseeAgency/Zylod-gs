@@ -45,6 +45,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -150,9 +151,10 @@ fun SupportCenterScreen(
 private fun SupportContent(state: SupportCenterUiState, vm: SupportCenterViewModel) {
     // Form state is hoisted ABOVE the LazyColumn: item compositions are
     // disposed when scrolled off-screen, so per-item remember would silently
-    // wipe a half-written ticket. Nothing here allocates per frame.
-    var subject by remember { mutableStateOf("") }
-    var description by remember { mutableStateOf("") }
+    // wipe a half-written ticket. rememberSaveable also survives rotation /
+    // process death. Nothing here allocates per frame.
+    var subject by rememberSaveable { mutableStateOf("") }
+    var description by rememberSaveable { mutableStateOf("") }
 
     LazyColumn(
         modifier = Modifier

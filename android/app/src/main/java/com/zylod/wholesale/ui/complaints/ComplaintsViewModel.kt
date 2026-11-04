@@ -102,7 +102,10 @@ class ComplaintsViewModel(
     /**
      * Status chip tap — swaps the filter and re-fetches (the route filters
      * server-side by the exact status value; "all" is the skip token).
-     * Same-filter taps are no-ops.
+     * Same-filter taps are no-ops. The previous chip's in-flight fetch is
+     * CANCELLED first (RfqListViewModel.setStatusFilter pattern): without
+     * that, a slow "all" response can land after a fast "open" one and
+     * overwrite the filtered rows while the chip says "Open".
      */
     fun setFilter(status: String) {
         if (status == activeFilter) return
@@ -111,8 +114,9 @@ class ComplaintsViewModel(
             _state.value = _state.value.copy(loading = false, filter = activeFilter, needsAuth = true)
             return
         }
+        loadJob?.cancel()
         _state.value = _state.value.copy(loading = _state.value.rows.isEmpty(), filter = activeFilter, error = null)
-        viewModelScope.launch { fetch() }
+        loadJob = viewModelScope.launch { fetch() }
     }
 
     /* ─── file-a-complaint form (dispute-center family, web handlers 1:1) ── */

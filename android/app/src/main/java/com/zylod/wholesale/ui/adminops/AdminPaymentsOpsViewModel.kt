@@ -9,6 +9,7 @@ import com.zylod.wholesale.data.api.AdminOpsPaymentRow
 import com.zylod.wholesale.data.api.AdminOpsPaymentStats
 import com.zylod.wholesale.data.api.AdminOpsPaymentsEnvelope
 import com.zylod.wholesale.data.api.ApiClient
+import com.zylod.wholesale.data.api.Pagination
 import com.zylod.wholesale.data.api.ServerConfig
 import com.zylod.wholesale.data.api.parseErrorBody
 import kotlinx.coroutines.CancellationException
@@ -175,9 +176,12 @@ class AdminPaymentsOpsViewModel(private val appContext: Context) : ViewModel() {
                 notAdmin = false,
             )
             // Save cache ONLY on success with non-empty rows (wire DTOs —
-            // the offline render maps through the same objects).
+            // the offline render maps through the same objects). The wire
+            // pagination travels WITH the cache so the offline meta line
+            // ("Page X of Y · N payments") and the Load-more affordance
+            // survive a degrade instead of collapsing to "Page 1 of 1 · 0".
             if (replace && incoming.isNotEmpty()) {
-                persistCache(incoming, body.stats)
+                persistCache(incoming, body.stats, body.pagination)
             }
         } catch (ce: CancellationException) {
             throw ce
@@ -216,9 +220,20 @@ class AdminPaymentsOpsViewModel(private val appContext: Context) : ViewModel() {
         }
     }
 
-    /** Persist the page's wire DTOs — the offline render matches the online one. */
-    private fun persistCache(rows: List<AdminOpsPaymentRow>, stats: AdminOpsPaymentStats?) {
-        val payload = CachedPaymentsOpsPage(rows = rows, stats = stats)
+    /** Persist the page's wire DTOs — the offline render matches the online one,
+     * including the pagination meta the offline header renders. */
+    private fun persistCache(
+        rows: List<AdminOpsPaymentRow>,
+        stats: AdminOpsPaymentStats?,
+        pagination: Pagination?,
+    ) {
+        val payload = CachedPaymentsOpsPage(
+            rows = rows,
+            stats = stats,
+            page = pagination?.page ?: 1,
+            totalPages = pagination?.totalPages?.takeIf { it > 0 } ?: 1,
+            total = pagination?.total ?: rows.size,
+        )
         viewModelScope.launch(Dispatchers.IO) {
             PaymentsOpsCacheStore.write(appContext, payload)
         }

@@ -74,6 +74,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -1096,8 +1097,10 @@ private fun QaTab(
     askingQuestion: Boolean,
     vm: ProductDetailViewModel,
 ) {
-    var askOpen by remember { mutableStateOf(false) }
-    var draft by remember { mutableStateOf("") }
+    // rememberSaveable — the ask dialog and its draft survive rotation /
+    // process death (every other form in the PDP family already does).
+    var askOpen by rememberSaveable { mutableStateOf(false) }
+    var draft by rememberSaveable { mutableStateOf("") }
 
     Column {
         Row(verticalAlignment = Alignment.CenterVertically) {

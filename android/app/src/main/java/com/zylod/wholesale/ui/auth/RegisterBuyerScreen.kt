@@ -137,6 +137,13 @@ class RegisterBuyerViewModel(private val appContext: Context) : ViewModel() {
         if (!usePhone && !email.contains("@")) return "Please enter a valid email address"
         if (password.isBlank()) return "Please enter a password"
         if (password.length < 8) return "Password must be at least 8 characters"
+        // Server register/route.ts:88-91 mirrors this exact blocklist — checking
+        // it HERE means a weak password fails BEFORE the OTP round-trip; the
+        // server 400 used to land only in completeRegistration, clearing the
+        // pending registration and dumping the buyer back on a blank form
+        // after the whole phone/email OTP journey.
+        val weakPasswords = listOf("password", "12345678", "qwerty123", "password123", "admin123", "letmein123")
+        if (password.lowercase() in weakPasswords) return "This password is too common. Choose a stronger one."
         return null
     }
 }

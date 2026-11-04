@@ -18,12 +18,19 @@ import java.util.TimeZone
 private val wholeFormat: NumberFormat = NumberFormat.getIntegerInstance(Locale.US)
 
 /** Wallet transaction types that move money INTO the wallet. The wire
- * contract (schema.prisma walletTransactions.type comment + balance route
- * aggregation): deposit | withdrawal | payment | refund | cashback — the
- * amount column itself is always a positive magnitude. */
-fun walletTxIsCredit(type: String?): Boolean = when (type?.trim()?.lowercase()) {
-    "deposit", "refund", "cashback" -> true
-    else -> false
+ * contract signs the amount column itself (server writers: payments and
+ * withdrawals are NEGATIVE; deposit/credit/payout/cashback inflows are
+ * positive — same rule the web my-wallet page signs rows by), so the amount
+ * sign is the ground truth and this type whitelist is only the fallback
+ * for zero-amount rows. 'credit' = loyalty points redemption
+ * (api/rewards POST) and 'payout' = supplier escrow release
+ * (api/supplier/orders/[id]) — both money IN. */
+fun walletTxIsCredit(type: String?, amount: Double? = null): Boolean {
+    if (amount != null && amount != 0.0) return amount > 0
+    return when (type?.trim()?.lowercase()) {
+        "deposit", "refund", "cashback", "credit", "payout" -> true
+        else -> false
+    }
 }
 
 /** BDT amount format: ৳ + thousands separators (12,500 → "৳12,500"; 99.5 → "৳99.50"). */
@@ -32,13 +39,14 @@ fun formatBdt(value: Double): String =
     else "৳" + String.format(Locale.US, "%.2f", value)
 
 /**
- * "+৳1,200" / "-৳500" — the sign comes from the transaction DIRECTION, not
- * the raw wire value (the amount column is a positive magnitude; a negative
- * wire value is treated as a magnitude too).
+ * "+৳1,200" / "-৳500" — web parity: the sign follows the SIGNED wire amount
+ * (negative = money out, positive = money in; the type whitelist is the
+ * zero-amount fallback), so a loyalty 'credit' of ৳50 renders "+৳50", not
+ * "-৳50".
  */
 fun formatSignedBdt(type: String?, amount: Double): String {
     val magnitude = if (amount < 0) -amount else amount
-    return (if (walletTxIsCredit(type)) "+" else "-") + formatBdt(magnitude)
+    return (if (walletTxIsCredit(type, amount)) "+" else "-") + formatBdt(magnitude)
 }
 
 /**

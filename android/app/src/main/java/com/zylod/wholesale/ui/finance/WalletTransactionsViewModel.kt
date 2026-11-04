@@ -30,11 +30,12 @@ import kotlinx.coroutines.withContext
  *    crash).
  *  - TYPE FILTER: the route's REAL contract — `type` is an exact match on
  *    the walletTransactions.type column (deposit | withdrawal | payment |
- *    refund | cashback) and is SKIPPED when "all"/absent. The screen's
- *    chips send those exact wire values; "All" sends "all" (the route's
- *    documented skip token). There are no "credit"/"debit" wire values —
- *    credit/debit is a client-side DERIVATION (WalletFormat
- *    walletTxIsCredit), not a filter the server supports, so no such chip.
+ *    refund | cashback | credit | payout) and is SKIPPED when
+ *    "all"/absent. The screen's chips send those exact wire values; "All"
+ *    sends "all" (the route's documented skip token). "credit"/"debit" row
+ *    direction is a client-side DERIVATION (WalletFormat
+ *    walletTxIsCredit, amount-sign first), not a filter the server
+ *    supports, so no such chip.
  *  - AUTH: no token → no call at all, the honest sign-in gate. A 401 (the
  *    shared OkHttp authenticator already tried one refresh) → needsAuth
  *    with rendered data cleared.

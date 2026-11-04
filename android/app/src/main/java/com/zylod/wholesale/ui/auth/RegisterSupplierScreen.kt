@@ -654,6 +654,28 @@ fun RegisterSupplierScreen(
                             )
                             return@ZylodButton
                         }
+                        // Server contract (auth/register/route.ts:82-92 — the
+                        // SAME route this wizard's final submit hits): password
+                        // length ≥ 8 + the common-password blocklist, checked at
+                        // step 1 instead of failing the whole NID/KYC journey's
+                        // final POST. Email format matches the buyer screen's rule.
+                        if (!email.contains("@")) {
+                            vm.setValidationError("Please enter a valid email address")
+                            return@ZylodButton
+                        }
+                        if (phone.filter(Char::isDigit).length < 8) {
+                            vm.setValidationError("Please enter a valid phone number")
+                            return@ZylodButton
+                        }
+                        if (password.length < 8) {
+                            vm.setValidationError("Password must be at least 8 characters")
+                            return@ZylodButton
+                        }
+                        val weakPasswords = listOf("password", "12345678", "qwerty123", "password123", "admin123", "letmein123")
+                        if (password.lowercase() in weakPasswords) {
+                            vm.setValidationError("This password is too common. Choose a stronger one.")
+                            return@ZylodButton
+                        }
                         vm.setStep(2)
                     },
                     modifier = Modifier.fillMaxWidth(),

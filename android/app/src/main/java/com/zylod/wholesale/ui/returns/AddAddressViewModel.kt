@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.zylod.wholesale.data.api.AddressDto
 import com.zylod.wholesale.data.api.AddressSaveBody
 import com.zylod.wholesale.data.api.ApiClient
 import com.zylod.wholesale.data.api.ServerConfig
@@ -40,10 +41,15 @@ import kotlinx.coroutines.launch
  *  - EDITING: an entry query carrying "addressId=…" (or a bare id pair,
  *    the web edit-address-page's `addressId || id` resolution) flips the
  *    VM into edit mode: PUT api/addresses/{addressId} on save and DELETE
- *    on the delete affordance, mirroring the web edit page. The web
- *    prefill GETs api/addresses/{id} — a route the server does NOT
- *    implement (405; its form starts blank) — so the native edit form
- *    honestly starts blank too: no invented read, no fabricated fields.
+ *    on the delete affordance, mirroring the web edit page. PREFILL: the
+ *    web edit page GETs api/addresses/{id} — a route the server does NOT
+ *    implement (405; its form starts blank) — so the native address-book
+ *    pencil attaches the FULL wire row it already holds via
+ *    [AddressEditDraft] and the form opens PRE-FILLED. A PUT from a blank
+ *    form would silently null every optional field the buyer did not
+ *    retype (company_name/contact_name are written from the body, `??
+ *    null`). No draft (process death / a cold external link) → the honest
+ *    blank edit form, same as the web.
  *  - ERRORS: client validation first; then the routes' REAL 400 text
  *    ("Missing required field(s): …" / "address_line1, city and
  *    postal_code are required") is surfaced verbatim in the server error
@@ -54,6 +60,30 @@ import kotlinx.coroutines.launch
  *    book on re-entry. Delete success jumps back to the address book (the
  *    web edit page's navigate('shipping-address')).
  */
+/**
+ * Process-lifetime edit draft — the address-book pencil hands the FULL wire
+ * row to the add-address form (the book's display model drops postalCode /
+ * addressLine2, and the server exposes no GET-by-id to prefill from). The
+ * old pencil opened a BLANK edit form whose PUT silently nulled every field
+ * the buyer did not retype. Consumed once by the first matching load; a
+ * process death mid-edit falls back to the honest blank edit form.
+ */
+object AddressEditDraft {
+    @Volatile
+    var row: AddressDto? = null
+
+    /** One-shot consume: returns the row ONLY when it matches the target id. */
+    fun take(addressId: String): AddressDto? {
+        val current = row ?: return null
+        return if (current.id == addressId) {
+            row = null
+            current
+        } else {
+            null
+        }
+    }
+}
+
 data class AddAddressForm(
     val fullName: String = "",
     val businessName: String = "",
@@ -124,14 +154,34 @@ class AddAddressViewModel(
         if (entryQuery != null) lastQuery = entryQuery
         val addressId = addressIdFromQuery(lastQuery).orEmpty()
         if (addressId != _state.value.addressId) {
-            // Different target → a fresh form for the new mode (edit forms
-            // start blank: the server has no GET-by-id to prefill from).
-            _state.value = AddAddressUiState(addressId = addressId)
+            // Different target → a fresh form for the new mode. Edit forms
+            // prefill from the in-memory draft the address-book pencil
+            // attached (the server exposes no GET-by-id; the draft carries
+            // the full row the book already holds). No draft → the honest
+            // blank edit form (web parity).
+            val draft = addressId.takeIf(String::isNotBlank)?.let { AddressEditDraft.take(it) }
+            _state.value = AddAddressUiState(
+                addressId = addressId,
+                form = draft?.let(::prefillFrom) ?: AddAddressForm(),
+            )
         }
         // The gate tracks the LIVE token (a signed-out state clears itself
         // on re-entry with a fresh session, like the web authChecking probe).
         _state.update { it.copy(needsAuth = SessionManager.token() == null) }
     }
+
+    /** The pencil's wire row → the form's exact field set. */
+    private fun prefillFrom(d: AddressDto) = AddAddressForm(
+        fullName = d.contactName?.takeIf(String::isNotBlank) ?: d.label.orEmpty(),
+        businessName = d.companyName.orEmpty(),
+        phone = d.contactPhone.orEmpty(),
+        country = d.country.orEmpty(),
+        streetLine1 = d.addressLine1.orEmpty(),
+        streetLine2 = d.addressLine2.orEmpty(),
+        city = d.city.orEmpty(),
+        postalCode = d.postalCode.orEmpty(),
+        setAsDefault = d.isDefault,
+    )
 
     /** One typed keystroke — clears that field's validation error (web). */
     fun setField(key: String, value: String) {

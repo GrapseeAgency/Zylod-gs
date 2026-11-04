@@ -197,7 +197,14 @@ private fun AddressContent(
                         row = row,
                         isSelected = state.selectedId == row.id,
                         onSelect = { vm.select(row.id) },
-                        onEdit = { openPage("add-address", "addressId=${row.id}") },
+                        onEdit = {
+                            // t278: attach the full wire row BEFORE opening the
+                            // editor — the add-address form prefills from this
+                            // draft (a blank edit form's PUT silently nulled the
+                            // fields the buyer did not retype).
+                            vm.attachEditDraft(row.id)
+                            openPage("add-address", "addressId=${row.id}")
+                        },
                     )
                 }
             }

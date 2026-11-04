@@ -260,6 +260,15 @@ object ApiClient {
     fun chatApi(baseUrl: String): ChatApi =
         cachedApi(baseUrl, "chat") { it.create(ChatApi::class.java) }
 
+    // t278 — native buyer↔supplier DM conversations (GET list / create-or-
+    // reuse / thread messages / send). Same memoization; every route here
+    // is Bearer-authenticated through the shared OkHttp client and its
+    // 401-refresh chain — this is the family the web's chat pages ride, and
+    // the native chat family previously (wrongly) funneled into chatApi's
+    // SUPPORT sessions instead.
+    fun chatConversationApi(baseUrl: String): ChatConversationApi =
+        cachedApi(baseUrl, "chatConversation") { it.create(ChatConversationApi::class.java) }
+
     // t252 — native logistics surfaces (PUBLIC delivery-methods / warehouses
     // / shipping-quote + the buyer's order detail for tracking, which sits
     // on OrdersApi above). Same memoization; the shared OkHttp client adds

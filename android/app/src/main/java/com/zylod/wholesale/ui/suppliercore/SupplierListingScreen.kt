@@ -435,7 +435,18 @@ private fun ProfileCard(
             StatsStrip(profile)
             Spacer(Modifier.height(10.dp))
             Button(
-                onClick = { openPage("live-chat", "") },
+                onClick = {
+                    // t278 WRONG-RECIPIENT FIX: this button opened the
+                    // live-SUPPORT chat ("Zylod Live Support") — the message
+                    // landed with the support team and the supplier never saw
+                    // it. It now opens the buyer↔supplier DM thread
+                    // (chat-detail), which create-or-reuses the conversation
+                    // against THIS supplier's real user id.
+                    openPage(
+                        "chat-detail",
+                        "supplierUserId=${profile.userId.orEmpty()}&supplierName=${java.net.URLEncoder.encode(profile.companyName.orEmpty(), Charsets.UTF_8.name())}",
+                    )
+                },
                 shape = RoundedCornerShape(14.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.primary,

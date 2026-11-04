@@ -776,4 +776,4 @@ private fun formatExpiry(iso: String?): String? {
 }
 
 private fun formatPoints(points: Int): String =
-    java.text.NumberFormat.getIntegerInstance().format(points.toLong())
+    java.text.NumberFormat.getIntegerInstance(Locale.US).format(points.toLong())

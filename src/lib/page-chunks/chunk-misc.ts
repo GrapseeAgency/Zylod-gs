@@ -120,11 +120,16 @@ export async function loadChunkPage(pageId: string): Promise<PageLoadResult> {
     'buyer-settings': () => import('@/components/pages/account-settings-page'),
     'buyer-favorites': () => import('@/components/pages/favorite-suppliers-page'),
     'buyer-returns': () => import('@/components/pages/return-request-page'),
-    // chat-list/chat-detail are in CHUNK_MISC; header notifications, the
-    // supplier sidebar and buyer-profile link them — real surface is the
-    // live support chat (conversationId deep-link handled by the page).
-    'chat-list': () => import('@/components/pages/live-chat-page'),
-    'chat-detail': () => import('@/components/pages/live-chat-page'),
+    // t278 WRONG-RECIPIENT FIX: chat-list/chat-detail previously aliased to
+    // the live SUPPORT chat — the buyer↔supplier DM components in
+    // generic-info-page (ChatListPage/ChatDetailPage over
+    // api/chat/conversations) were dead code, so the PDP's "Chat with
+    // Supplier" and the header's Messages rail both landed in "Zylod Live
+    // Support" and the supplier never saw the message. live-chat/
+    // instant-chat/chat-support KEEP the support family; 'chat' notifications
+    // carry the DM conversation id and now deep-link correctly.
+    'chat-list': () => import('@/components/pages/generic-info-page'),
+    'chat-detail': () => import('@/components/pages/generic-info-page'),
 
     // Core Notifications Pages 171-178
     'notifications': () => import('@/components/pages/notifications-page'),

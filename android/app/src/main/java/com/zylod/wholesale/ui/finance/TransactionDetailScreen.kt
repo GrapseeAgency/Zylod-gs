@@ -141,7 +141,7 @@ private fun DetailTopBar(onBack: (() -> Unit)?) {
 
 @Composable
 private fun DetailContent(detail: com.zylod.wholesale.data.api.WalletTransactionDetailDto, offlineFromCache: Boolean) {
-    val credit = remember(detail) { walletTxIsCredit(detail.type) }
+    val credit = remember(detail) { walletTxIsCredit(detail.type, detail.amount) }
     val amountLabel = remember(detail) { formatSignedBdt(detail.type, detail.amount ?: 0.0) }
     val createdLabel = remember(detail) { formatRelativeDate(detail.createdAt) }
     val balanceLabel = remember(detail) { detail.balanceAfter?.let { formatBdt(it) } }

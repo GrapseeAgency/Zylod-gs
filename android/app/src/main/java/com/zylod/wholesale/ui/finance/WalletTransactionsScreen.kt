@@ -329,7 +329,7 @@ private fun HistoryContent(
  */
 @Composable
 private fun HistoryRow(tx: WalletTransactionDto, onOpen: (String) -> Unit) {
-    val credit = remember(tx) { walletTxIsCredit(tx.type) }
+    val credit = remember(tx) { walletTxIsCredit(tx.type, tx.amount) }
     val amountLabel = remember(tx) { formatSignedBdt(tx.type, tx.amount ?: 0.0) }
     val dateLabel = remember(tx) { formatRelativeDate(tx.createdAt) }
     val typeLabel = remember(tx) { tx.type.orEmpty().uppercase().ifBlank { "TRANSACTION" } }

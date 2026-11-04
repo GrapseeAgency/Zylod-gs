@@ -33,7 +33,12 @@ import kotlinx.coroutines.launch
  *    PUT /api/cart/{itemId} {quantity}; a 400 carrying {stockAvailable}/{moq}
  *    reverts and surfaces an inline per-item error (web checkout fields).
  *  - Deletes on server rows: optimistic remove, then DELETE /api/cart/{itemId};
- *    failure re-inserts the row and surfaces the error.
+ *    a 404 is an idempotent SUCCESS (the row is gone server-side — the
+ *    first tap of a rapid double-tap, or a delete from another surface);
+ *    real failure re-inserts the row and surfaces the error. A per-item
+ *    in-flight guard keeps a double-tap from firing a second DELETE whose
+ *    404 would resurrect the row under a fresh "local-" id (which the sync
+ *    loop then re-POSTs, recreating the server row the buyer just removed).
  *
  * All network calls are best-effort: offline/local-cart behavior always keeps
  * working (web parity — cart is NOT in the offline exclusion list).
@@ -55,6 +60,9 @@ class CartViewModel(private val appContext: Context) : ViewModel() {
 
     private val _syncing = MutableStateFlow(false)
     val syncing: StateFlow<Boolean> = _syncing.asStateFlow()
+
+    /** DELETEs in flight (cartItem ids) — the remove double-tap guard. */
+    private val removing = mutableSetOf<String>()
 
     private var baseUrl: String? = null
 
@@ -228,21 +236,32 @@ class CartViewModel(private val appContext: Context) : ViewModel() {
             CartStore.removeItem(item.id)
             return
         }
+        // Double-tap guard: without it the second tap of a rapid double-tap
+        // fired a second DELETE after the first one succeeded; its 404 was
+        // treated as failure and re-inserted the row with a fresh "local-"
+        // id, which pullServerCart then re-POSTed — recreating the server
+        // row the buyer had just removed.
+        if (!removing.add(item.id)) return
         // Optimistic remove, then DELETE; re-insert on failure.
         CartStore.removeItem(item.id)
         viewModelScope.launch {
             try {
                 val base = baseUrl ?: ServerConfig.resolve(appContext).also { baseUrl = it }
                 val response = ApiClient.cartApi(base).deleteItem(item.id)
-                if (!response.isSuccessful) {
+                if (!response.isSuccessful && response.code() != 404) {
                     CartStore.addItem(item)
                     _notice.value = parseErrorBody(response.errorBody()).error ?: "Could not remove the item"
                 }
+                // 404 → the row is already gone server-side: idempotent
+                // success, NOT a failure — re-inserting would resurrect a
+                // phantom the next sync re-POSTs.
             } catch (ce: CancellationException) {
                 throw ce
             } catch (_: Exception) {
                 CartStore.addItem(item)
                 _notice.value = "Network error — item kept in cart"
+            } finally {
+                removing.remove(item.id)
             }
         }
     }

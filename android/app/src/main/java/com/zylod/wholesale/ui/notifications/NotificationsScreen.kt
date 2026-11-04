@@ -52,6 +52,7 @@ import com.zylod.wholesale.ui.pages.NativePageKind
 import com.zylod.wholesale.ui.pages.NativePageLink
 import com.zylod.wholesale.ui.pages.NativePageMeta
 import com.zylod.wholesale.ui.theme.LocalZylodExtra
+import com.zylod.wholesale.ui.wallet.formatRelativeDate
 
 /** t233 page metadata — Kotlin registry entry for the notifications pageIds. */
 data object NotificationsPageMeta : NativePageMeta() {
@@ -92,6 +93,15 @@ fun NotificationsScreen(
 
     LaunchedEffect(Unit) { vm.refresh() }
 
+    // Row tap — web openNotification parity: optimistic mark-read + deep-link
+    // to the notification's REAL target (order / product / ticket), never the
+    // generic card when a relatedId exists.
+    val openNotification: (NativeNotificationDto) -> Unit = { notification ->
+        vm.markRead(notification.id)
+        val (targetPage, targetQuery) = vm.openTarget(notification)
+        openPage(targetPage, targetQuery)
+    }
+
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
         topBar = {
@@ -122,7 +132,14 @@ fun NotificationsScreen(
                 }
                 state.needsAuth -> NeedsAuthState(openPage = openPage)
                 state.error != null -> ErrorState(onRetry = vm::refresh)
-                else -> NotificationsList(state = state, onToggleUnread = vm::toggleUnreadOnly, openPage = openPage)
+                else -> NotificationsList(
+                    state = state,
+                    onToggleUnread = vm::toggleUnreadOnly,
+                    onMarkAllRead = vm::markAllRead,
+                    onLoadMore = vm::loadMore,
+                    onOpenNotification = openNotification,
+                    openPage = openPage,
+                )
             }
         }
     }
@@ -132,6 +149,9 @@ fun NotificationsScreen(
 private fun NotificationsList(
     state: NotificationsUiState,
     onToggleUnread: () -> Unit,
+    onMarkAllRead: () -> Unit,
+    onLoadMore: () -> Unit,
+    onOpenNotification: (NativeNotificationDto) -> Unit,
     openPage: (pageId: String, query: String) -> Unit,
 ) {
     LazyColumn(
@@ -151,15 +171,25 @@ private fun NotificationsList(
                     onClick = { openPage("notification-preferences", "") },
                     label = { Text("Preferences", fontSize = 11.sp) },
                 )
+                // Web "Mark all read" (notifications-page.tsx:139-147) —
+                // the feed's unread state finally clears IN the app.
+                if (state.unreadCount > 0) {
+                    FilterChip(
+                        selected = false,
+                        onClick = onMarkAllRead,
+                        label = { Text("Mark all read", fontSize = 11.sp) },
+                    )
+                }
             }
         }
         if (state.offline) {
             item(key = "offline-banner", contentType = "banner") { OfflineBanner() }
         }
         item(key = "meta", contentType = "meta") {
+            val inFeed = if (state.total > 0) state.total else state.notifications.size
             Text(
-                if (state.unreadCount > 0) "${state.unreadCount} unread • ${state.notifications.size} in feed"
-                else "${state.notifications.size} in feed",
+                if (state.unreadCount > 0) "${state.unreadCount} unread • $inFeed in feed"
+                else "$inFeed in feed",
                 fontSize = 11.sp,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
@@ -174,7 +204,35 @@ private fun NotificationsList(
             }
         } else {
             items(state.notifications, key = { "notif-${it.id}" }, contentType = { "notification" }) { notification ->
-                NotificationRow(notification, openPage)
+                NotificationRow(notification, onOpenNotification)
+            }
+            if (state.canLoadMore) {
+                item(key = "load-more", contentType = "load-more") {
+                    Surface(
+                        shape = RoundedCornerShape(12.dp),
+                        color = MaterialTheme.colorScheme.surfaceContainer,
+                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable(onClick = onLoadMore),
+                    ) {
+                        Box(Modifier.fillMaxWidth().padding(vertical = 12.dp), contentAlignment = Alignment.Center) {
+                            if (state.loadingMore) {
+                                CircularProgressIndicator(
+                                    strokeWidth = 2.dp,
+                                    modifier = Modifier.size(18.dp),
+                                )
+                            } else {
+                                Text(
+                                    "Load more (${state.page}/${state.totalPages})",
+                                    fontSize = 12.sp,
+                                    fontWeight = FontWeight.SemiBold,
+                                    color = MaterialTheme.colorScheme.primary,
+                                )
+                            }
+                        }
+                    }
+                }
             }
         }
         item(key = "spacer", contentType = "spacer") { Spacer(Modifier.height(4.dp)) }
@@ -184,7 +242,7 @@ private fun NotificationsList(
 @Composable
 private fun NotificationRow(
     notification: NativeNotificationDto,
-    openPage: (pageId: String, query: String) -> Unit,
+    onOpenNotification: (NativeNotificationDto) -> Unit,
 ) {
     val unread = !notification.isRead
     Surface(
@@ -194,7 +252,7 @@ private fun NotificationRow(
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)),
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { openPage("notification-detail", "notificationId=${notification.id}") },
+            .clickable { onOpenNotification(notification) },
     ) {
         Row(modifier = Modifier.padding(12.dp)) {
             Box(
@@ -227,7 +285,10 @@ private fun NotificationRow(
                         Spacer(Modifier.width(6.dp))
                     }
                     Text(
-                        notification.timestamp ?: "",
+                        // Web relative-time parity ("just now / 5m ago /
+                        // 3h ago") — the raw ISO instant used to render
+                        // verbatim.
+                        formatRelativeDate(notification.timestamp),
                         fontSize = 10.sp,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         maxLines = 1,

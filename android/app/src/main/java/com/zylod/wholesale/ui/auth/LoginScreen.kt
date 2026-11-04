@@ -678,8 +678,8 @@ private fun SocialConsentDialog(
     onDismiss: () -> Unit,
     onConfirm: (email: String, name: String) -> Unit,
 ) {
-    var email by remember { mutableStateOf("") }
-    var name by remember { mutableStateOf("") }
+    var email by rememberSaveable { mutableStateOf("") }
+    var name by rememberSaveable { mutableStateOf("") }
     AlertDialog(
         onDismissRequest = onDismiss,
         title = {

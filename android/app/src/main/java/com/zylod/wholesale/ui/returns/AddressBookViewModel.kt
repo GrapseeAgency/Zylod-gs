@@ -95,6 +95,8 @@ class AddressBookViewModel(
 
     private var baseUrl: String? = null
     private var initJob: Job? = null
+    /** The last fetched wire rows — the pencil's edit-draft source. */
+    private var lastDtos: List<AddressDto> = emptyList()
 
     init {
         // 401→refresh→logout chain: a dropped session moves the screen to
@@ -135,6 +137,17 @@ class AddressBookViewModel(
         _state.update { it.copy(selectedId = addressId) }
     }
 
+    /**
+     * The pencil's edit hand-off (t278): attaches the FULL wire row (the
+     * AddressRow display model drops postalCode/addressLine2) to the
+     * process-lifetime draft consumed by AddAddressViewModel's edit mode —
+     * the editor opens PRE-FILLED instead of blank, so the PUT can no
+     * longer silently null fields the buyer did not retype.
+     */
+    fun attachEditDraft(addressId: String) {
+        AddressEditDraft.row = lastDtos.firstOrNull { it.id == addressId }
+    }
+
     private suspend fun fetchAddresses() {
         try {
             Log.i(TAG, "fetch addresses")
@@ -158,6 +171,7 @@ class AddressBookViewModel(
                 return
             }
             Log.i(TAG, "addresses loaded rows=${rows.size}")
+            lastDtos = payload?.data.orEmpty()
             _state.value = AddressBookUiState(
                 loading = false,
                 addresses = rows,
@@ -189,6 +203,7 @@ class AddressBookViewModel(
             AddressCacheStore.read(appContext, AddressCacheKeys.BOOK, CachedAddressBook.serializer())
         }
         val rows = cached?.rows.orEmpty().map { it.toRow() }
+        lastDtos = cached?.rows.orEmpty()
         if (rows.isNotEmpty()) {
             Log.i(TAG, "degrade → cache rows=${rows.size}")
             _state.value = AddressBookUiState(

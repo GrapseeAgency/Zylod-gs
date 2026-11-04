@@ -407,7 +407,7 @@ private fun QuickAction(
  */
 @Composable
 private fun TransactionRow(tx: WalletTransactionDto) {
-    val credit = remember(tx) { walletTxIsCredit(tx.type) }
+    val credit = remember(tx) { walletTxIsCredit(tx.type, tx.amount) }
     val amountLabel = remember(tx) { formatSignedBdt(tx.type, tx.amount ?: 0.0) }
     val dateLabel = remember(tx) { formatRelativeDate(tx.createdAt) }
     val balanceLine = remember(tx) { tx.balanceAfter?.let { formatBdt(it) + " balance" } }

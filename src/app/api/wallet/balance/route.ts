@@ -42,6 +42,8 @@ export async function GET(request: NextRequest) {
     let totalPayments = 0
     let totalRefunds = 0
     let totalCashback = 0
+    let totalCredits = 0
+    let totalPayouts = 0
 
     txAgg.forEach((item) => {
       const sum = item._sum.amount || 0
@@ -50,6 +52,8 @@ export async function GET(request: NextRequest) {
       else if (item.type === 'payment') totalPayments = sum
       else if (item.type === 'refund') totalRefunds = sum
       else if (item.type === 'cashback') totalCashback = sum
+      else if (item.type === 'credit') totalCredits = sum
+      else if (item.type === 'payout') totalPayouts = sum
     })
 
     return NextResponse.json({
@@ -59,8 +63,13 @@ export async function GET(request: NextRequest) {
         currency: wallet.currency,
         heldInEscrow: heldEscrow._sum.amount || 0,
         releasedEscrow: releasedEscrow._sum.amount || 0,
-        totalInflow: totalDeposits + totalRefunds + totalCashback,
-        totalOutflow: totalWithdrawals + totalPayments,
+        // Wire rows are SIGNED (payments/withdrawals negative, inflows
+        // positive) — the summary mirrors that: inflow counts EVERY
+        // money-in type (loyalty 'credit' redemptions, escrow 'payout'
+        // releases included) and outflow is the magnitude of the money-out
+        // types, so both stats render as positive magnitudes.
+        totalInflow: totalDeposits + totalRefunds + totalCashback + totalCredits + totalPayouts,
+        totalOutflow: -(totalWithdrawals + totalPayments),
         totalDeposits,
         totalWithdrawals,
         totalPayments,

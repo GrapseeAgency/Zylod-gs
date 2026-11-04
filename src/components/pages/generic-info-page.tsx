@@ -3810,9 +3810,14 @@ function CategoryBrowserPage() {
 
 // ========== MAIN COMPONENT ==========
 
-export function GenericInfoPage({ pageId }: { pageId: string }) {
-  const { navigate } = useNavigationStore()
-  const config = getInfoConfig(pageId)
+export function GenericInfoPage({ pageId }: { pageId?: string }) {
+  const { navigate, currentPage } = useNavigationStore()
+  // t278: chunk-direct mounts (the chat-list/chat-detail rows in
+  // chunk-misc now point HERE) render this component with NO props — the
+  // live pageId comes from the navigation store in that case; the
+  // generic-'info' loader path still passes it explicitly.
+  const resolvedPageId = pageId ?? currentPage ?? ''
+  const config = getInfoConfig(resolvedPageId)
   // Owner-published support contact (Admin → System Settings). Section text
   // that mentions support is resolved against it at render time — honest
   // absence, never a fabricated address.

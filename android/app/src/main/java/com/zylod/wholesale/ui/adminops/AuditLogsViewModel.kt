@@ -8,6 +8,7 @@ import com.zylod.wholesale.data.api.AdminOpsApi
 import com.zylod.wholesale.data.api.AdminOpsAuditLogRow
 import com.zylod.wholesale.data.api.AdminOpsAuditLogsEnvelope
 import com.zylod.wholesale.data.api.ApiClient
+import com.zylod.wholesale.data.api.Pagination
 import com.zylod.wholesale.data.api.ServerConfig
 import com.zylod.wholesale.data.api.parseErrorBody
 import kotlinx.coroutines.CancellationException
@@ -182,9 +183,12 @@ class AuditLogsViewModel(private val appContext: Context) : ViewModel() {
                 notAdmin = false,
             )
             // Save cache ONLY on success with non-empty rows (wire DTOs —
-            // the offline render maps through the same mappers).
+            // the offline render maps through the same mappers). The wire
+            // pagination travels WITH the cache so the offline meta line
+            // ("Page X of Y · N entries") and Load-more survive a degrade
+            // instead of collapsing to "Page 1 of 1 · 0".
             if (replace && incoming.isNotEmpty()) {
-                persistCache(incoming, body.pagination?.page ?: pageNumber)
+                persistCache(incoming, body.pagination, pageNumber)
             }
         } catch (ce: CancellationException) {
             throw ce
@@ -222,9 +226,15 @@ class AuditLogsViewModel(private val appContext: Context) : ViewModel() {
         }
     }
 
-    /** Persist the page's wire DTOs — the offline render matches the online one. */
-    private fun persistCache(rows: List<AdminOpsAuditLogRow>, page: Int) {
-        val payload = CachedAuditLogsPage(rows = rows, page = page)
+    /** Persist the page's wire DTOs — the offline render matches the online one,
+     * including the pagination meta the offline header renders. */
+    private fun persistCache(rows: List<AdminOpsAuditLogRow>, pagination: Pagination?, pageNumber: Int) {
+        val payload = CachedAuditLogsPage(
+            rows = rows,
+            page = pagination?.page ?: pageNumber,
+            totalPages = pagination?.totalPages?.takeIf { it > 0 } ?: 1,
+            total = pagination?.total ?: rows.size,
+        )
         viewModelScope.launch(Dispatchers.IO) {
             AuditLogsCacheStore.write(appContext, payload)
         }

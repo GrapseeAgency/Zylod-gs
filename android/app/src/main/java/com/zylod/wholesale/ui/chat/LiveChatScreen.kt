@@ -46,6 +46,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -95,7 +96,9 @@ fun LiveChatScreen(
     // buyer was elsewhere appear at once.
     LaunchedEffect(Unit) { vm.load(query) }
 
-    var input by remember { mutableStateOf("") }
+    // rememberSaveable — a rotation or process-death mid-sentence must not
+    // wipe the typed draft (the VM state survives; the local did not).
+    var input by rememberSaveable { mutableStateOf("") }
 
     // Failed send → the optimistic bubble is gone; restore the typed text.
     LaunchedEffect(state.draftRestore) {
