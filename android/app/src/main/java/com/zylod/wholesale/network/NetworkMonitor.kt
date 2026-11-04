@@ -23,7 +23,12 @@ class NetworkMonitor(context: Context) {
         }
 
         override fun onLost(network: Network) {
-            _isConnected.value = false
+            // t277-1b: WiFi→cellular handover fires onLost for the WiFi network
+            // while cellular is ALREADY active — blindly setting false starved
+            // the offline-sync pipeline (the drain only fires on false→true
+            // edges, which never came after a handover). Re-evaluate what is
+            // actually still connected.
+            _isConnected.value = checkInitialConnection()
         }
     }
 

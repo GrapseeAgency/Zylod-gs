@@ -212,6 +212,24 @@ class NativeMainActivity : FragmentActivity(), WebViewHost {
         } else {
             url
         }
+        // t277-1c: the value arrives from the JS bridge (loadLiveUrl) — without
+        // a guard a compromised page could repoint the whole app's server base
+        // at its own host (and cleartext default broke release builds where
+        // usesCleartextTraffic=false). Accept only hosts the build already
+        // trusts (SERVER_ENDPOINTS); http(s) scheme allowed per build type.
+        run {
+            val trusted = BuildConfig.SERVER_ENDPOINTS.any { ep ->
+                val epHost = runCatching { java.net.URI(ep).host }.getOrNull()
+                val inHost = runCatching { java.net.URI(cleanUrl).host }.getOrNull()
+                epHost != null && epHost.equals(inHost, ignoreCase = true)
+            }
+            val httpsOk = cleanUrl.startsWith("https://")
+            val httpOk = BuildConfig.DEBUG && cleanUrl.startsWith("http://")
+            if (!trusted || !(httpsOk || httpOk)) {
+                android.util.Log.w("ZylodNative", "loadCustomUrl rejected untrusted url host")
+                return
+            }
+        }
         getSharedPreferences("zylod_config", Context.MODE_PRIVATE).edit()
             .putString("custom_server_url", cleanUrl)
             .putString("active_server_url", cleanUrl)

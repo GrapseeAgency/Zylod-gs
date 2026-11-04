@@ -57,6 +57,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.zylod.wholesale.data.api.CartItemData
+import com.zylod.wholesale.ui.wallet.formatBdt
 import kotlinx.coroutines.launch
 
 /**
@@ -260,7 +261,7 @@ private fun CartItemCard(
                                 .crossfade(200)
                                 .build(),
                             contentDescription = item.productName,
-                            contentScale = ContentScale.Crop,
+                            contentScale = ContentScale.Fit, // t277-1d: product art never crops (web object-contain parity)
                             modifier = Modifier.fillMaxSize(),
                         )
                     } else {
@@ -285,26 +286,40 @@ private fun CartItemCard(
                         overflow = TextOverflow.Ellipsis,
                         modifier = Modifier.clickable(onClick = onOpenProduct),
                     )
-                    Text(
-                        "${item.supplierName.ifBlank { "Supplier" }} · MOQ ${item.moq} ${item.unit.ifBlank { "units" }}",
-                        fontSize = 10.sp,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                        modifier = Modifier.padding(top = 2.dp),
-                    )
-                    Row(verticalAlignment = Alignment.Bottom, modifier = Modifier.padding(top = 6.dp)) {
+                    if (item.pricingIssue != null) {
+                        // t277: server could not price this line — show the
+                        // honest problem, never a fabricated price.
                         Text(
-                            formatBdt(item.unitPrice),
-                            fontSize = 14.sp,
-                            fontWeight = FontWeight.Black,
-                            color = MaterialTheme.colorScheme.primary,
+                            item.pricingIssue,
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            color = MaterialTheme.colorScheme.error,
+                            maxLines = 2,
+                            overflow = TextOverflow.Ellipsis,
+                            modifier = Modifier.padding(top = 4.dp),
                         )
+                    } else {
                         Text(
-                            " / ${item.unit.ifBlank { "unit" }}",
+                            "${item.supplierName.ifBlank { "Supplier" }} · MOQ ${item.moq} ${item.unit.ifBlank { "units" }}",
                             fontSize = 10.sp,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                            modifier = Modifier.padding(top = 2.dp),
                         )
+                        Row(verticalAlignment = Alignment.Bottom, modifier = Modifier.padding(top = 6.dp)) {
+                            Text(
+                                formatBdt(item.unitPrice),
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.Black,
+                                color = MaterialTheme.colorScheme.primary,
+                            )
+                            Text(
+                                " / ${item.unit.ifBlank { "unit" }}",
+                                fontSize = 10.sp,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
+                        }
                     }
                 }
             }
@@ -321,11 +336,13 @@ private fun CartItemCard(
                 )
                 Spacer(Modifier.weight(1f))
                 Column(horizontalAlignment = Alignment.End) {
-                    Text(
-                        formatBdt(item.totalPrice),
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.Black,
-                    )
+                    if (item.pricingIssue == null) {
+                        Text(
+                            formatBdt(item.totalPrice),
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.Black,
+                        )
+                    }
                     Text(
                         "${item.quantity} ${item.unit.ifBlank { "units" }}",
                         fontSize = 10.sp,
@@ -557,11 +574,9 @@ private fun resolveImageUrl(raw: String?): String? {
     return server.trimEnd('/') + raw
 }
 
-private fun formatBdt(value: Double): String =
-    if (value % 1.0 == 0.0) "৳" + java.text.NumberFormat.getIntegerInstance().format(value.toLong())
-    else "৳" + String.format(java.util.Locale.US, "%.2f", value)
-
-// ── t233 native page metadata ──────────────────────────────────────────────
+// t277-1d: the private copy used the device-default locale (Bengali digits on
+// bn devices, diverging from checkout/wallet) — the shared Locale.US-pinned
+// formatter in ui/wallet/WalletFormat.kt is now imported above.
 // Kotlin registry entry for the SPA pageId "cart" (the Cart tab root).
 // Appended by t233 without touching the screen above.
 

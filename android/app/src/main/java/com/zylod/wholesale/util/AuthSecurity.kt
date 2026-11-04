@@ -5,7 +5,10 @@ import kotlin.math.abs
 
 /** BDT price formatting — currency-store formatPrice semantics (৳, en-BD rounding). */
 fun formatBdt(value: Double): String =
-    if (value % 1.0 == 0.0) "৳" + java.text.NumberFormat.getIntegerInstance().format(value.toLong())
+    // t277-1b: pin Locale.US for BOTH branches — the default-locale integer
+    // branch rendered Bengali/Arabic-Indic digits on bn/ar devices while the
+    // decimal branch stayed Latin: mixed digit systems in ONE price string.
+    if (value % 1.0 == 0.0) "৳" + java.text.NumberFormat.getIntegerInstance(java.util.Locale.US).format(value.toLong())
     else "৳" + String.format(java.util.Locale.US, "%.2f", value)
 
 fun compactCount(count: Int): String =

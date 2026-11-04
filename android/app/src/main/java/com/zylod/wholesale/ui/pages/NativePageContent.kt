@@ -3,6 +3,7 @@ package com.zylod.wholesale.ui.pages
 import android.net.Uri
 import com.zylod.wholesale.data.api.ServerConfig
 import com.zylod.wholesale.ZylodApp
+import com.zylod.wholesale.ui.wallet.formatBdt as sharedFormatBdt
 import org.json.JSONArray
 import org.json.JSONObject
 
@@ -17,10 +18,11 @@ import org.json.JSONObject
  */
 object NativePageContent {
 
-    /** Price formatter — BDT, whole taka without decimals (OrdersScreen convention). */
-    fun formatBdt(value: Double): String =
-        if (value % 1.0 == 0.0) "৳" + java.text.NumberFormat.getIntegerInstance().format(value.toLong())
-        else "৳" + String.format(java.util.Locale.US, "%.2f", value)
+    /** Price formatter — BDT, whole taka without decimals (OrdersScreen convention).
+     *  t277-1d: delegates to the shared Locale.US-pinned formatter (ui/wallet/
+     *  WalletFormat.kt) — the default-locale copy here rendered Bengali digits
+     *  on bn devices, diverging from checkout/wallet in the same flow. */
+    fun formatBdt(value: Double): String = sharedFormatBdt(value)
 
     /**
      * Relative image path ("/images/…") → absolute against the persisted

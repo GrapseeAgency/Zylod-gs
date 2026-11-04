@@ -29,7 +29,7 @@ fun TimedAsyncImage(
     modifier: Modifier = Modifier,
     placeholder: Painter? = null,
     error: Painter? = null,
-    contentScale: ContentScale = ContentScale.Crop,
+    contentScale: ContentScale = ContentScale.Fit, // t277-1d: product art never crops (web object-contain parity)
 ) {
     val context = LocalContext.current
     val startMs = remember(url) { longArrayOf(0L) }

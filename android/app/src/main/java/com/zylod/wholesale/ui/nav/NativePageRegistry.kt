@@ -119,7 +119,11 @@ object NativePageRegistry {
         "affiliate-program" to entry(AffiliateProgramPageMeta) { onBack, openPage, query -> AffiliateProgramScreen(onBack = onBack, openPage = openPage, query = query) },
         "agriculture-food" to entry(AgricultureFoodPageMeta) { onBack, openPage, query -> AgricultureFoodScreen(onBack = onBack, openPage = openPage, query = query) },
         "ai-assistant" to entry(AiAssistantPageMeta) { onBack, openPage, query -> AiAssistantScreen(onBack = onBack, openPage = openPage, query = query) },
-        "all-orders" to entry(AllOrdersPageMeta) { onBack, openPage, query -> AllOrdersScreen(onBack = onBack, openPage = openPage, query = query) },
+        // t277-1c: the orders-family ids now route to the TYPED orders screen
+        // (real GET api/orders/my-orders list) instead of curated stubs —
+        // checkout/checkout-success/track-order all openPage("orders") after
+        // placing an order and used to land on marketing bullets.
+        "all-orders" to entry(AllOrdersPageMeta, tabLike = true) { onBack, openPage, _ -> com.zylod.wholesale.ui.orders.OrdersScreen(onBack = onBack, openPage = openPage, openAuth = { openPage("login", "") }) },
         "all-products" to entry(AllProductsPageMeta) { onBack, openPage, query -> AllProductsScreen(onBack = onBack, openPage = openPage, query = query) },
         "all-reviews" to entry(AllReviewsPageMeta) { onBack, openPage, query -> AllReviewsScreen(onBack = onBack, openPage = openPage, query = query) },
         "analytics-dashboard" to entry(AnalyticsDashboardPageMeta) { onBack, openPage, query -> AnalyticsDashboardScreen(onBack = onBack, openPage = openPage, query = query) },
@@ -172,7 +176,11 @@ object NativePageRegistry {
         "bulk-upload-template" to entry(BulkUploadTemplatePageMeta) { onBack, openPage, query -> BulkUploadTemplateScreen(onBack = onBack, openPage = openPage, query = query) },
         "business-directory" to entry(BusinessDirectoryPageMeta) { onBack, openPage, query -> BusinessDirectoryScreen(onBack = onBack, openPage = openPage, query = query) },
         "business-profile" to entry(BusinessProfilePageMeta) { onBack, openPage, query -> BusinessProfileScreen(onBack = onBack, openPage = openPage, query = query) },
-        "buy-now" to entry(BuyNowPageMeta) { onBack, openPage, query -> BuyNowScreen(onBack = onBack, openPage = openPage, query = query) },
+        // t277-1c P0: the "buy-now" row REMOVED — it rendered a curated marketing
+        // stub that dropped productId/quantity entirely (the PDP Buy Now button
+        // landed on marketing bullets). The id now falls through to WebScreen →
+        // the SPA's REAL buy-now flow (chunk-cart.ts:34, reads productId +
+        // quantity from the page params).
         "buyer" to entry(BuyerPageMeta) { onBack, openPage, query -> BuyerScreen(onBack = onBack, openPage = openPage, query = query) },
         "buyer-" to entry(BuyerPageMeta2) { onBack, openPage, query -> BuyerScreen2(onBack = onBack, openPage = openPage, query = query) },
         "buyer-complaints" to entry(BuyerComplaintsPageMeta) { onBack, openPage, query -> BuyerComplaintsScreen(onBack = onBack, openPage = openPage, query = query) },
@@ -433,7 +441,7 @@ object NativePageRegistry {
         "mobile-accessories" to entry(MobileAccessoriesPageMeta) { onBack, openPage, query -> MobileAccessoriesScreen(onBack = onBack, openPage = openPage, query = query) },
         "mobile-app" to entry(MobileAppPageMeta) { onBack, openPage, query -> MobileAppScreen(onBack = onBack, openPage = openPage, query = query) },
         "my-coupons" to entry(MyCouponsPageMeta) { onBack, openPage, query -> com.zylod.wholesale.ui.coupons.CouponsScreen(onBack = onBack, openPage = openPage, query = query) },
-        "my-orders" to entry(MyOrdersPageMeta) { onBack, openPage, query -> MyOrdersScreen(onBack = onBack, openPage = openPage, query = query) },
+        "my-orders" to entry(MyOrdersPageMeta, tabLike = true) { onBack, openPage, _ -> com.zylod.wholesale.ui.orders.OrdersScreen(onBack = onBack, openPage = openPage, openAuth = { openPage("login", "") }) },
         "my-profile" to entry(MyProfilePageMeta) { onBack, openPage, query -> MyProfileScreen(onBack = onBack, openPage = openPage, query = query) },
         "my-queries" to entry(MyQueriesPageMeta) { onBack, openPage, query -> MyQueriesScreen(onBack = onBack, openPage = openPage, query = query) },
         "my-samples" to entry(MySamplesPageMeta) { onBack, openPage, query -> MySamplesScreen(onBack = onBack, openPage = openPage, query = query) },
@@ -477,8 +485,8 @@ object NativePageRegistry {
         "order-tracking" to entry(OrderTrackingPageMeta) { onBack, openPage, query -> OrderTrackingScreen(onBack = onBack, openPage = openPage, query = query) },
         "order-update-detail" to entry(OrderUpdateDetailPageMeta) { onBack, openPage, query -> OrderUpdateDetailScreen(onBack = onBack, openPage = openPage, query = query) },
         "order-updates" to entry(OrderUpdatesPageMeta) { onBack, openPage, query -> OrderUpdatesScreen(onBack = onBack, openPage = openPage, query = query) },
-        "orders" to entry(OrdersPageMeta) { onBack, openPage, query -> OrdersScreen(onBack = onBack, openPage = openPage, query = query) },
-        "orders-history" to entry(OrdersHistoryPageMeta) { onBack, openPage, query -> OrdersHistoryScreen(onBack = onBack, openPage = openPage, query = query) },
+        "orders" to entry(OrdersPageMeta, tabLike = true) { onBack, openPage, _ -> com.zylod.wholesale.ui.orders.OrdersScreen(onBack = onBack, openPage = openPage, openAuth = { openPage("login", "") }) },
+        "orders-history" to entry(OrdersHistoryPageMeta, tabLike = true) { onBack, openPage, _ -> com.zylod.wholesale.ui.orders.OrdersScreen(onBack = onBack, openPage = openPage, openAuth = { openPage("login", "") }) },
         "otp-verification" to entry(OtpVerificationPageMeta) { onBack, openPage, query -> OtpVerificationScreen(onBack = onBack, openPage = openPage, query = query) },
         "packaging" to entry(PackagingPageMeta) { onBack, openPage, query -> PackagingScreen(onBack = onBack, openPage = openPage, query = query) },
         "page-suggestions" to entry(PageSuggestionsPageMeta) { onBack, openPage, query -> PageSuggestionsScreen(onBack = onBack, openPage = openPage, query = query) },
@@ -682,7 +690,14 @@ object NativePageRegistry {
         "seller-signup" to entry(SellerSignupPageMeta) { onBack, openPage, query -> SellerSignupScreen(onBack = onBack, openPage = openPage, query = query) },
         "seller-store-customization" to entry(SellerStoreCustomizationPageMeta) { onBack, openPage, query -> SellerStoreCustomizationScreen(onBack = onBack, openPage = openPage, query = query) },
         "seller-store-settings" to entry(SellerStoreSettingsPageMeta) { onBack, openPage, query -> SellerStoreSettingsScreen(onBack = onBack, openPage = openPage, query = query) },
-        "seller-storefront" to entry(SellerStorefrontPageMeta) { onBack, openPage, query -> SellerStorefrontScreen(onBack = onBack, openPage = openPage, query = query) },
+        // t277-1c: "seller-storefront" REMOVED — it rendered the stub (id/
+        // supplierId dropped) while the typed storefront screen is the
+        // SIGNED-IN-SELLER'S OWN store (storefront() with no supplierId — it
+        // answers 404 for public viewers). The public supplier profile now
+        // falls through to WebScreen → the SPA's real seller-storefront page
+        // (chunk-seller.ts:108 — reads supplierId/id and fetches the public
+        // storefront), which is what FavoritesScreen/PickupPointsScreen and
+        // the zylod://supplier/<id> deep link actually mean.
         "seller-support" to entry(SellerSupportPageMeta) { onBack, openPage, query -> SellerSupportScreen(onBack = onBack, openPage = openPage, query = query) },
         "seller-tax-invoices" to entry(SellerTaxInvoicesPageMeta) { onBack, openPage, query -> SellerTaxInvoicesScreen(onBack = onBack, openPage = openPage, query = query) },
         "seller-terms" to entry(SellerTermsPageMeta) { onBack, openPage, query -> SellerTermsScreen(onBack = onBack, openPage = openPage, query = query) },
@@ -808,7 +823,9 @@ object NativePageRegistry {
         "trust-center" to entry(TrustCenterPageMeta) { onBack, openPage, query -> TrustCenterScreen(onBack = onBack, openPage = openPage, query = query) },
         "trust-safety" to entry(TrustSafetyPageMeta) { onBack, openPage, query -> TrustSafetyScreen(onBack = onBack, openPage = openPage, query = query) },
         "two-factor-auth" to entry(TwoFactorAuthPageMeta) { onBack, openPage, query -> TwoFactorAuthScreen(onBack = onBack, openPage = openPage, query = query) },
-        "undefined" to entry(UndefinedPageMeta) { onBack, openPage, query -> UndefinedScreen(onBack = onBack, openPage = openPage, query = query) },
+        // t277-1c: "undefined" REMOVED — JS openPage(undefined) arrived as the
+        // literal "undefined" and rendered the UndefinedScreen stub, masking
+        // real bridge bugs; it now falls through to the honest web fallback.
         "upcoming-products" to entry(UpcomingProductsPageMeta) { onBack, openPage, query -> UpcomingProductsScreen(onBack = onBack, openPage = openPage, query = query) },
         "update-changelog" to entry(UpdateChangelogPageMeta) { onBack, openPage, query -> UpdateChangelogScreen(onBack = onBack, openPage = openPage, query = query) },
         "update-history" to entry(UpdateHistoryPageMeta) { onBack, openPage, query -> UpdateHistoryScreen(onBack = onBack, openPage = openPage, query = query) },
@@ -875,7 +892,10 @@ object NativePageRegistry {
         "profile" to entry(ProfilePageMeta, tabLike = true) { onBack, openPage, _ -> com.zylod.wholesale.ui.profile.ProfileScreen(onBack = onBack, openPage = openPage) },
         "search" to entry(SearchPageMeta, tabLike = true) { onBack, openPage, _ -> com.zylod.wholesale.ui.search.SearchScreen(onBack = onBack, openPage = openPage) },
         "search-home" to entry(SearchPageMeta, tabLike = true) { onBack, openPage, _ -> com.zylod.wholesale.ui.search.SearchScreen(onBack = onBack, openPage = openPage) },
-        "search-results" to entry(SearchPageMeta, tabLike = true) { onBack, openPage, _ -> com.zylod.wholesale.ui.search.SearchScreen(onBack = onBack, openPage = openPage) },
+        // t277-1c: search-results now forwards the ?query= param into the
+        // typed search (saved-search taps + ?page=search-results deep links
+        // landed on the bare search tab with the query discarded).
+        "search-results" to entry(SearchPageMeta, tabLike = true) { onBack, openPage, query -> com.zylod.wholesale.ui.search.SearchScreen(onBack = onBack, openPage = openPage, initialQuery = com.zylod.wholesale.ui.nav.RouteOwnership.queryParam(query, "query")) },
         "wishlist" to entry(WishlistPageMeta, tabLike = false) { onBack, openPage, _ -> com.zylod.wholesale.ui.wishlist.WishlistScreen(onBack = onBack, openPage = openPage) },
         "wishlist-page" to entry(WishlistPageMeta, tabLike = false) { onBack, openPage, _ -> com.zylod.wholesale.ui.wishlist.WishlistScreen(onBack = onBack, openPage = openPage) },
     )

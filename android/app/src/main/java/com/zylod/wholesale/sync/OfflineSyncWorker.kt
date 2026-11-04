@@ -11,6 +11,7 @@ import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.zylod.wholesale.NativeMainActivity
 import com.zylod.wholesale.ZylodApp
+import com.zylod.wholesale.data.api.ServerConfig
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.MediaType.Companion.toMediaType
@@ -27,10 +28,20 @@ import java.util.concurrent.TimeUnit
  *
  * - HTTP 2xx  -> action marked synced, then deleted by clearCompleted()
  * - HTTP 4xx  -> server rejected it; retryCount is bumped and the action is
- *                skipped once it exceeds [MAX_RETRIES] (kept, not deleted)
+ *                skipped once it exceeds [MAX_RETRIES] (kept, not deleted);
+ *                401/403 are TRANSIENT (a signed-out period must not burn
+ *                the retries of queued actions — t277-1b)
  * - IO error  -> transient; the worker retries with WorkManager backoff
  *
  * A notification on the orders channel confirms delivery to the user.
+ *
+ * t277-1b P0: the server base is read from ServerConfig.cached() FIRST —
+ * this worker used to read "active_server_url"/"custom_server_url", keys
+ * only the manual custom-server action writes, while ServerConfig persists
+ * "native_base_url" — on every normal install the worker saw no key and
+ * Result.failure()d, so the offline queue could NEVER drain and the unique
+ * work was not even retried on the next connectivity edge. With no base at
+ * all yet, Result.retry() keeps the work alive until resolve() lands.
  */
 class OfflineSyncWorker(context: Context, params: WorkerParameters) :
     CoroutineWorker(context, params) {
@@ -42,9 +53,17 @@ class OfflineSyncWorker(context: Context, params: WorkerParameters) :
 
     override suspend fun doWork(): Result = withContext(Dispatchers.IO) {
         val prefs = applicationContext.getSharedPreferences("zylod_config", Context.MODE_PRIVATE)
-        val server = prefs.getString("active_server_url", null)
-            ?: prefs.getString("custom_server_url", null)
-            ?: return@withContext Result.failure()
+        // t277-1b P0: ServerConfig.cached() is the KEY ServerConfig.resolve()
+        // actually writes ("native_base_url"); the legacy keys remain as a
+        // fallback for installs that only ever used the manual custom-server
+        // action. No base yet -> retry (resolve() may land any moment), never
+        // failure() — failure killed the unique work until the next
+        // offline->online edge, starving the queue indefinitely.
+        val server = (ServerConfig.cached(applicationContext)
+            ?: prefs.getString("active_server_url", null)
+            ?: prefs.getString("custom_server_url", null))
+            ?.trimEnd('/')
+            ?: return@withContext Result.retry()
 
         val dao = ZylodApp.instance.database.syncQueueDao()
         val pending = dao.getPendingItems().filter { it.retryCount < MAX_RETRIES }
@@ -91,6 +110,11 @@ class OfflineSyncWorker(context: Context, params: WorkerParameters) :
                             dao.updateItem(item.copy(isSynced = true))
                             syncedCount++
                         }
+                        // t277-1b: 401/403 = the session is merely signed-out
+                        // or expired — do NOT burn the retry budget (a queued
+                        // order placed offline must survive a sign-out gap);
+                        // the next drain after re-auth delivers it.
+                        response.code == 401 || response.code == 403 -> hadTransientFailure = true
                         response.code in 400..499 -> {
                             dao.updateItem(item.copy(retryCount = item.retryCount + 1))
                         }
@@ -127,7 +151,9 @@ class OfflineSyncWorker(context: Context, params: WorkerParameters) :
         val notification = NotificationCompat.Builder(applicationContext, ZylodApp.CHANNEL_ORDERS)
             .setSmallIcon(android.R.drawable.ic_dialog_info)
             .setContentTitle("Offline actions synced")
-            .setContentText("$count queued action(s) delivered to the server.")
+            // t277-1b honesty: the server persists these events for processing;
+            // do not claim the business action itself already executed.
+            .setContentText("$count queued action(s) delivered to the server for processing.")
             .setAutoCancel(true)
             .setContentIntent(intent)
             .build()

@@ -97,6 +97,10 @@ data class OrderDetailUiState(
     val payInstructions: Map<String, String>? = null,
     val payInstructionsLoading: Boolean = false,
     val payInstructionsError: String = "",
+    /** t277-1a: which transfer method the cached instructions belong to —
+     *  the rail MUST never render account details of a method the buyer
+     *  already switched away from (money misdirection). */
+    val payInstructionsMethod: String? = null,
     /** Success feedback line — surfaced as a banner (sonner parity). */
     val payNotice: String = "",
 
@@ -309,7 +313,19 @@ class OrderDetailViewModel(
 
     /* ─── submit payment (Task 56-b) ─── */
 
-    fun updatePayMethod(idx: Int) = _state.update { it.copy(payMethodIdx = idx, payError = "") }
+    /** t277-1a: switching method invalidates the instruction rail — the old
+     *  cached rail (previous method's receiving account) must not survive. */
+    fun updatePayMethod(idx: Int) = _state.update {
+        val changed = it.payMethodIdx != idx
+        it.copy(
+            payMethodIdx = idx,
+            payError = "",
+            payInstructions = if (changed) null else it.payInstructions,
+            payInstructionsLoading = if (changed) false else it.payInstructionsLoading,
+            payInstructionsError = if (changed) "" else it.payInstructionsError,
+            payInstructionsMethod = if (changed) null else it.payInstructionsMethod,
+        )
+    }
     fun updatePayTrxId(v: String) = _state.update { it.copy(payTrxId = v) }
     fun updatePaySender(v: String) = _state.update { it.copy(paySender = v) }
     fun updatePayNote(v: String) = _state.update { it.copy(payNote = v) }
@@ -423,7 +439,11 @@ class OrderDetailViewModel(
             _state.update { it.copy(payInstructions = null, payInstructionsError = "") }
             return
         }
-        if (snapshot.payInstructions != null || snapshot.payInstructionsLoading) return
+        if (snapshot.payInstructionsLoading) return
+        // t277-1a: only short-circuit when the cached rail belongs to the
+        // CURRENTLY selected method; a stale rail for another method must
+        // trigger a refetch, not render.
+        if (snapshot.payInstructions != null && snapshot.payInstructionsMethod == selected.value) return
         _state.update { it.copy(payInstructionsLoading = true, payInstructionsError = "") }
         viewModelScope.launch {
             try {
@@ -445,7 +465,7 @@ class OrderDetailViewModel(
                     }
                     return@launch
                 }
-                _state.update { it.copy(payInstructionsLoading = false, payInstructions = instructions, payInstructionsError = "") }
+                _state.update { it.copy(payInstructionsLoading = false, payInstructions = instructions, payInstructionsError = "", payInstructionsMethod = selected.value) }
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {

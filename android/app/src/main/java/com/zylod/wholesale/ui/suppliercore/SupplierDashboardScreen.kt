@@ -314,7 +314,9 @@ private fun RevenueBars(months: List<SupplierCoreMonthRevenue>) {
                 Box(Modifier.fillMaxWidth().height(14.dp), contentAlignment = Alignment.Center) {
                     if (month.revenue > 0.0) {
                         Text(
-                            "৳${month.revenue.roundToLong()}",
+                            // t277-1d: shared grouped formatter — the raw
+                            // roundToLong rendered "৳1250000" (no grouping).
+                            formatBdt(month.revenue),
                             fontSize = 9.sp,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             maxLines = 1,

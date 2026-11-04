@@ -625,7 +625,8 @@ fun LoginScreen(
 
 private fun formatCountdown(ms: Long): String {
     val totalSeconds = (ms / 1000).coerceAtLeast(0)
-    return String.format("%02d:%02d", totalSeconds / 60, totalSeconds % 60)
+    // t277-1b: Locale.US — default-locale %d renders non-Latin digits on bn devices.
+    return String.format(java.util.Locale.US, "%02d:%02d", totalSeconds / 60, totalSeconds % 60)
 }
 
 /**

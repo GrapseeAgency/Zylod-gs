@@ -253,6 +253,20 @@ class RegisterSupplierViewModel(private val appContext: Context) : ViewModel() {
                 val nidFrontUrl = s.nidFront.url ?: s.nidFront.takeIf { it.localFile != null }?.let { uploadBlocking(KycSlot.NID_FRONT) }
                 val nidBackUrl = s.nidBack.url ?: s.nidBack.takeIf { it.localFile != null }?.let { uploadBlocking(KycSlot.NID_BACK) }
                 val licenseUrl = s.tradeLicense.url ?: s.tradeLicense.takeIf { it.localFile != null }?.let { uploadBlocking(KycSlot.TRADE_LICENSE) }
+                // t277-1a: a failed submit-time upload used to be swallowed
+                // (getOrNull -> null url -> registration proceeded WITHOUT the
+                // KYC document, row showed neither uploaded nor error). Surface
+                // it on the slot and block the submit — the buyer fixes the
+                // upload instead of shipping an unverified supplier.
+                val uploadFailure = listOf(
+                    KycSlot.NID_FRONT to nidFrontUrl, KycSlot.NID_BACK to nidBackUrl, KycSlot.TRADE_LICENSE to licenseUrl,
+                ).firstOrNull { (slot, url) -> url == null && slotState(slot).localFile != null }
+                if (uploadFailure != null) {
+                    val (slot, _) = uploadFailure
+                    updateSlot(slot) { it.copy(uploading = false, error = "Upload failed — check your connection and submit again.") }
+                    _state.update { it.copy(submitting = false, error = "A required document failed to upload. Fix the highlighted row and submit again.") }
+                    return@launch
+                }
 
                 val base = baseUrl ?: ServerConfig.resolve(appContext).also { baseUrl = it }
                 val response = ApiClient.authApi(base).register(

@@ -1,12 +1,17 @@
 package com.zylod.wholesale.ui.profile
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.zylod.wholesale.ZylodApp
 import com.zylod.wholesale.data.api.ApiClient
 import com.zylod.wholesale.data.api.UserProfileSeed
+import com.zylod.wholesale.data.api.ServerConfig
 import com.zylod.wholesale.data.session.SessionManager
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 
 /**
  * t233 — native Profile VM (SPA pageId "profile"; guests never reach this
@@ -34,6 +39,17 @@ class ProfileViewModel : ViewModel() {
     }
 
     fun signOut() {
+        // t277-1b: invalidate the SERVER session first (best-effort) — the
+        // opaque token stays valid server-side for its 7-day TTL otherwise.
+        // AuthApi.logout() existed with zero callers; the interceptor attaches
+        // the still-present bearer token, then the local clear runs below.
+        viewModelScope.launch(Dispatchers.IO) {
+            runCatching {
+                val base = ServerConfig.cached(ZylodApp.instance)
+                    ?: ServerConfig.resolve(ZylodApp.instance)
+                ApiClient.authApi(base).logout()
+            }.onFailure { /* best-effort: local sign-out proceeds regardless */ }
+        }
         SessionManager.clear()
         _state.value = load()
     }

@@ -53,6 +53,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.zylod.wholesale.data.api.OrderDto
 import com.zylod.wholesale.data.api.SubOrderDto
 import com.zylod.wholesale.ui.theme.LocalZylodExtra
+import com.zylod.wholesale.ui.wallet.formatBdt
 
 /**
  * Buyer orders — native port of src/components/pages/orders-page.tsx (Phase 2
@@ -488,10 +489,7 @@ private fun OrdersError(message: String, onRetry: () -> Unit) {
     }
 }
 
-private fun formatBdt(value: Double): String =
-    if (value % 1.0 == 0.0) "৳" + java.text.NumberFormat.getIntegerInstance().format(value.toLong())
-    else "৳" + String.format(java.util.Locale.US, "%.2f", value)
-
+// t277-1d: private locale-unstable copy removed — shared ui.wallet.formatBdt imported.
 // ── t233 native page metadata ──────────────────────────────────────────────
 // Kotlin registry entry for the SPA pageId "buyer-orders" (Phase 2 native
 // surface, highlights the profile tab). Appended by t233 without touching

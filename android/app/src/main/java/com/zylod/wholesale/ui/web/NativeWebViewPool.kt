@@ -198,11 +198,18 @@ internal object NativeWebViewPool {
         }
     }
 
-    /** Destroys every pooled shell (server switch, credential reset). */
+    /** Destroys every pooled shell (server switch, credential reset).
+     *  t277-1c: BUSY shells are destroyed too — the host activity's onDestroy
+     *  calls reset() while a shell may be checked out (uiMode/dark-mode is NOT
+     *  in configChanges, so a theme switch destroys the activity); leaving the
+     *  busy shell alive orphaned a WebView bound to the dead activity context
+     *  (its WebAppBridge holds the destroyed activity = leak + zombie Toasts). */
     fun reset() {
         synchronized(this) {
             free.forEach { destroy(it) }
             free.clear()
+            busy.forEach { destroy(it.shell) }
+            busy.clear()
         }
     }
 

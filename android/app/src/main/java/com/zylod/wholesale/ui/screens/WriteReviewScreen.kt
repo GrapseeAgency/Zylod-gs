@@ -70,47 +70,14 @@ fun WriteReviewScreen(
     openPage: (pageId: String, query: String) -> Unit,
     query: String,
 ) {
-    val context = LocalContext.current
-    val vm: NativePageViewModel = viewModel(key = "native-page-write-review") {
-        NativePageViewModel(context.applicationContext, WriteReviewPageMeta)
-    }
-    val state by vm.state.collectAsStateWithLifecycle()
-    LaunchedEffect(Unit) { vm.refresh(query) }
-
-    Scaffold(
-        containerColor = MaterialTheme.colorScheme.background,
-        topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        "Write Review",
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Black,
-                        color = MaterialTheme.colorScheme.primary,
-                    )
-                },
-                navigationIcon = {
-                    if (onBack != null) {
-                        IconButton(onClick = onBack) {
-                            Icon(
-                                Icons.AutoMirrored.Outlined.ArrowBack,
-                                "Go back",
-                                tint = MaterialTheme.colorScheme.onSurface,
-                            )
-                        }
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background),
-            )
-        },
-    ) { padding ->
-        Box(Modifier.fillMaxSize().padding(padding)) {
-            NativePageBody(
-                meta = WriteReviewPageMeta,
-                state = state,
-                onRetry = { vm.refresh() },
-                openPage = openPage,
-            )
-        }
-    }
+    // t277-1c: the curated-metadata body is GONE — this pageId is owned by the
+    // EXISTING typed ui/reviews implementation (WriteReviewViewModel + the
+    // real review-submit flow); the stub rendered bullets and dropped the
+    // product/order context, making the real screen unreachable.
+    com.zylod.wholesale.ui.reviews.WriteReviewScreen(
+        pageId = "write-review",
+        onBack = onBack,
+        openPage = openPage,
+        query = query,
+    )
 }

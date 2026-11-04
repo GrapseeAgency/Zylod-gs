@@ -483,6 +483,16 @@ fun WebScreen(pageId: String, query: String) {
             }
         }
     }
+
+    // t277-1c: keep window.__IS_OFFLINE__ LIVE in the hosted document. The
+    // flag was only re-asserted in onPageFinished (new document) — connectivity
+    // flipping WHILE a page was open never updated it, so the SPA's offline
+    // branches stayed wrong until the next navigation. The busy shell is the
+    // one this screen hosts; a null shell (no document) needs nothing.
+    val offlineNow by com.zylod.wholesale.ZylodApp.instance.networkMonitor.isConnected.collectAsStateWithLifecycle()
+    LaunchedEffect(shell, offlineNow) {
+        shell?.webView?.evaluateJavascript("window.__IS_OFFLINE__ = ${!offlineNow}", null)
+    }
 }
 
 /**

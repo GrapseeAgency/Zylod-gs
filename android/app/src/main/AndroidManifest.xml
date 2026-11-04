@@ -64,6 +64,10 @@
                     android:scheme="https"
                     android:host="zylod.com"
                     android:pathPrefix="/" />
+                <data
+                    android:scheme="https"
+                    android:host="www.zylod.com"
+                    android:pathPrefix="/" />
             </intent-filter>
         </activity>
 

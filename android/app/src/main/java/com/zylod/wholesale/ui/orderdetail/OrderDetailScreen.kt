@@ -1247,8 +1247,10 @@ private fun OrderDetailCancelDialog(state: OrderDetailUiState, vm: OrderDetailVi
 @Composable
 private fun OrderDetailPayDialog(state: OrderDetailUiState, vm: OrderDetailViewModel) {
     val order = state.order ?: return
-    // Dialog-open side effect: load the instructions rail for transfer methods.
-    LaunchedEffect(Unit) { vm.fetchPayInstructions() }
+    // Dialog-open side effect + t277-1a: keyed on the SELECTED method so a
+    // method switch refires the instructions fetch for that method (the VM
+    // clears the stale rail in updatePayMethod).
+    LaunchedEffect(state.payMethodIdx) { vm.fetchPayInstructions() }
     AlertDialog(
         onDismissRequest = { vm.dismissPayDialog() },
         title = {

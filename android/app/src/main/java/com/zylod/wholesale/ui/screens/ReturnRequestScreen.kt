@@ -70,47 +70,15 @@ fun ReturnRequestScreen(
     openPage: (pageId: String, query: String) -> Unit,
     query: String,
 ) {
-    val context = LocalContext.current
-    val vm: NativePageViewModel = viewModel(key = "native-page-return-request") {
-        NativePageViewModel(context.applicationContext, ReturnRequestPageMeta)
-    }
-    val state by vm.state.collectAsStateWithLifecycle()
-    LaunchedEffect(Unit) { vm.refresh(query) }
-
-    Scaffold(
-        containerColor = MaterialTheme.colorScheme.background,
-        topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        "Return Request",
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Black,
-                        color = MaterialTheme.colorScheme.primary,
-                    )
-                },
-                navigationIcon = {
-                    if (onBack != null) {
-                        IconButton(onClick = onBack) {
-                            Icon(
-                                Icons.AutoMirrored.Outlined.ArrowBack,
-                                "Go back",
-                                tint = MaterialTheme.colorScheme.onSurface,
-                            )
-                        }
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background),
-            )
-        },
-    ) { padding ->
-        Box(Modifier.fillMaxSize().padding(padding)) {
-            NativePageBody(
-                meta = ReturnRequestPageMeta,
-                state = state,
-                onRetry = { vm.refresh() },
-                openPage = openPage,
-            )
-        }
-    }
+    // t277-1c: the curated-metadata body is GONE — this pageId is owned by the
+    // EXISTING typed ui/returns implementation (real POST return flow,
+    // ReturnRequestViewModel(context, pageId)); the stub rendered bullets and
+    // dropped every query param (orderId etc.), making the real screen
+    // unreachable through the registry.
+    com.zylod.wholesale.ui.returns.ReturnRequestScreen(
+        pageId = "return-request",
+        onBack = onBack,
+        openPage = openPage,
+        query = query,
+    )
 }

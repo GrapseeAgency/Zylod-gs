@@ -97,7 +97,10 @@ object OfflineCatalogSupport {
         val now = System.currentTimeMillis()
         val last = prefs.getLong(KEY_LAST_SYNC, 0L)
         if (now - last < MIN_SYNC_INTERVAL_MS) return
-        prefs.edit().putLong(KEY_LAST_SYNC, now).apply()
+        // t277-1b: the throttle stamp moved AFTER success (written at the end
+        // of the launch body) — stamping BEFORE the fetch let one failed fetch
+        // block every retry for MIN_SYNC_INTERVAL_MS, and the "last synced"
+        // timestamp lied while the fetch was still in flight.
 
         CoroutineScope(Dispatchers.IO).launch {
             try {
@@ -120,6 +123,7 @@ object OfflineCatalogSupport {
                 // WebView's HTTP cache. Warm it NOW (while online) so the
                 // offline catalog renders real photos, not letter placeholders.
                 prefetchOfflineImages(context, rows.mapNotNull { it.imageUrl })
+                prefs.edit().putLong(KEY_LAST_SYNC, System.currentTimeMillis()).apply()
                 Log.i(TAG, "offline cache refreshed rows=${rows.size}")
             } catch (e: Exception) {
                 // Cache maintenance is best-effort; never surface or crash.
@@ -350,7 +354,9 @@ private fun OfflineProductRow(product: OfflineProduct) {
         Spacer(Modifier.width(8.dp))
         Column(horizontalAlignment = Alignment.End) {
             Text(
-                "৳%,.0f".format(product.priceBDT),
+                // t277-1b: Locale.US — default-locale %.0f used device grouping
+                // AND device digits (Bengali numerals on bn devices).
+                "৳%,.0f".format(java.util.Locale.US, product.priceBDT),
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onSurface,
                 fontSize = 14.sp,

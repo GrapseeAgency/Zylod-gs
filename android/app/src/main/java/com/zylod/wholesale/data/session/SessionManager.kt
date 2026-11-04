@@ -1,6 +1,9 @@
 package com.zylod.wholesale.data.session
 
+import android.webkit.CookieManager
+import com.zylod.wholesale.BuildConfig
 import com.zylod.wholesale.ZylodApp
+import com.zylod.wholesale.data.api.ServerConfig
 import com.zylod.wholesale.ui.cart.CartStore
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -64,14 +67,19 @@ object SessionManager {
         runCatching {
             val prefs = ZylodApp.instance.securePrefs
             val old = prefs.getString("auth_token", null)
-            prefs.edit().putString("auth_token", token).apply()
+            // t277-1b: ONE editor + ONE apply — the two separate applies could
+            // interleave with a concurrent clear(), resurrecting auth_token
+            // after a logout that ran between them.
+            val editor = prefs.edit()
+            editor.putString("auth_token", token)
             if (old != null && old != token) {
                 // Refresh rotations replace the opaque value; the PROFILE still
                 // belongs to the same server session, so re-stamp instead of
                 // dropping the pairing (dropping it would null userJson() for
                 // every legitimate 401→refresh cycle).
-                prefs.edit().putString("user_json_token", token).apply()
+                editor.putString("user_json_token", token)
             }
+            editor.apply()
         }
     }
 
@@ -102,7 +110,12 @@ object SessionManager {
      *  WebAuthSeeder handles the WebView localStorage side.
      *  t202: ALSO clears the local cart — cart lines are account-scoped and
      *  must never survive a logout / session expiry / account switch into the
-     *  next user's cart (CartStore.clear() previously had zero callers). */
+     *  next user's cart (CartStore.clear() previously had zero callers).
+     *  t277-1b: ALSO clears the WebView's auth-token cookie for every origin
+     *  the app can bind to — the cookie authenticates web pages' credentials-
+     *  include fetches (max-age 7 days server-side), so a native sign-out that
+     *  left it in place kept the PREVIOUS user logged in on checkout/receipt
+     *  pages the shell renders. Same store the debug receiver bridges into. */
     fun clear() {
         runCatching {
             ZylodApp.instance.securePrefs.edit()
@@ -111,7 +124,26 @@ object SessionManager {
                 .remove("user_json_token")
                 .apply()
         }
+        clearWebviewAuthCookie()
         runCatching { CartStore.clear() }
+    }
+
+    /** t277-1b: expire the auth-token cookie on the cached base + every
+     *  configured endpoint (cookies for unused origins are inert). Best-effort:
+     *  a CookieManager hiccup must never block a logout. */
+    private fun clearWebviewAuthCookie() {
+        runCatching {
+            val origins = LinkedHashSet<String>()
+            ServerConfig.cached(ZylodApp.instance)?.let { origins += it }
+            origins += BuildConfig.SERVER_ENDPOINTS.toList()
+            val cookieManager = CookieManager.getInstance()
+            for (origin in origins) {
+                runCatching {
+                    cookieManager.setCookie(origin, "auth-token=; Path=/; Max-Age=0")
+                }
+            }
+            cookieManager.flush()
+        }
     }
 
     /** Called by the ApiClient authenticator when refresh fails. */

@@ -63,6 +63,7 @@ import com.zylod.wholesale.ZylodApp
 import com.zylod.wholesale.data.api.DealItemDto
 import com.zylod.wholesale.data.api.ServerConfig
 import com.zylod.wholesale.ui.theme.LocalZylodExtra
+import com.zylod.wholesale.ui.wallet.formatBdt
 import kotlin.math.roundToInt
 
 /**
@@ -437,7 +438,7 @@ private fun DealThumbnail(deal: DealItemDto) {
                 contentDescription = deal.productName,
                 placeholder = placeholder,
                 error = placeholder,
-                contentScale = ContentScale.Crop,
+                contentScale = ContentScale.Fit, // t277-1d: product art never crops (web object-contain parity)
                 modifier = Modifier.fillMaxSize(),
             )
         } else {
@@ -589,9 +590,10 @@ private fun resolveImageUrl(raw: String?): String? {
     return server.trimEnd('/') + raw
 }
 
-private fun formatBdt(value: Double): String =
-    if (value % 1.0 == 0.0) "৳" + java.text.NumberFormat.getIntegerInstance().format(value.toLong())
-    else "৳" + String.format(java.util.Locale.US, "%.2f", value)
+// t277-1d: private locale-unstable copy removed — the shared Locale.US-pinned
+// formatter (ui/wallet/WalletFormat.kt) is imported above; on bn/ar devices
+// the old copy rendered Bengali/Arabic-Indic digits while checkout/wallet
+// rendered Latin digits — mixed digit systems inside one purchase flow.
 
 private val DealItemDto.effectivePrice: Double
     get() = dealPrice ?: originalPrice ?: 0.0

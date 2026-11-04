@@ -79,6 +79,21 @@ interface ZylodApi {
  *    (Cart/PDP) surface a "signed out" state instead of crashing.
  */
 private class SessionAuthenticator : Authenticator {
+
+    companion object {
+        // t277-1b P0 — SINGLE-FLIGHT refresh. The refresh token IS the live
+        // session token and rotation DESTROYS it (route.ts single-use), while
+        // OkHttp runs authenticate() concurrently per in-flight call (Home
+        // alone fires six parallel authed requests). Without a lock, all six
+        // presented the same stale token, one rotated, the other five got 401
+        // on a now-destroyed token and each called onSessionExpired() — which
+        // CLEAR()d the freshly rotated token and logged the user out of a
+        // perfectly valid session (the "random logout" class). Blocking
+        // synchronized is correct here: the authenticator already runs on an
+        // OkHttp worker thread inside a blocking call chain.
+        private val refreshLock = Any()
+    }
+
     override fun authenticate(route: Route?, response: Response): Request? {
         val request = response.request
         val path = request.url.encodedPath
@@ -87,15 +102,29 @@ private class SessionAuthenticator : Authenticator {
         if (request.header("X-Zylod-Reauth") != null) return null // single retry only
 
         val stale = SessionManager.token() ?: return null
-        val fresh = runCatching { refreshSync(request, stale) }.getOrNull()
+        val fresh = runCatching {
+            synchronized(refreshLock) {
+                val current = SessionManager.token()
+                if (current != null && current != stale) {
+                    // The lock leader already rotated past OUR stale token —
+                    // adopt the fresh one, never re-present the destroyed one.
+                    current
+                } else {
+                    refreshSync(request, stale)?.also { SessionManager.setToken(it) }
+                }
+            }
+        }.getOrNull()
         return if (fresh != null) {
-            SessionManager.setToken(fresh)
             request.newBuilder()
                 .header("Authorization", "Bearer $fresh")
                 .header("X-Zylod-Reauth", "1")
                 .build()
         } else {
-            SessionManager.onSessionExpired()
+            // t277-1b: expire the session ONLY when our stale token is still
+            // the current one. If the lock holder rotated past it, this 401
+            // was the rotation race — the session is alive and the adopting
+            // retry above (or the caller's next request) will succeed.
+            if (SessionManager.token() == stale) SessionManager.onSessionExpired()
             null
         }
     }

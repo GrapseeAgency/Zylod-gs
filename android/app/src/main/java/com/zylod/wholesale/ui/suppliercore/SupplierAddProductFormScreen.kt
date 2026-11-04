@@ -703,7 +703,7 @@ private fun SupplierAddProductImageRowCard(
                 AsyncImage(
                     model = if (row.status == SupplierFormsImageStatus.READY) row.displayUrl else row.localUri,
                     contentDescription = label,
-                    contentScale = ContentScale.Crop,
+                    contentScale = ContentScale.Fit, // t277-1d: product art never crops (web object-contain parity)
                     modifier = Modifier
                         .padding(8.dp)
                         .size(72.dp),

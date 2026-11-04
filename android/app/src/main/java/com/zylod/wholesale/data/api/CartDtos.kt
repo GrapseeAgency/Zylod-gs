@@ -37,6 +37,11 @@ data class CartItemData(
     val priceTiers: List<PriceTierDto> = emptyList(),
     /** Task 95 checkout: kg per ONE purchasable unit; null = honestly unquotable. */
     val weightKg: Double? = null,
+    /** t277 — server-truth per-line pricing problem (cart/route.ts:77,102-104):
+     *  the line cannot be priced (product hidden/unapproved, MOQ/stock error).
+     *  null = priced normally. Rendered honestly by the cart row instead of a
+     *  fabricated price. */
+    val pricingIssue: String? = null,
 ) {
     val mergeKey: String get() = "$productId::${variantId ?: "null"}"
 }
@@ -82,6 +87,16 @@ data class ServerCartItemDto(
     val supplierId: String? = null,
     val product: ServerCartProductDto? = null,
     val variant: ServerCartVariantDto? = null,
+    // t277 — SERVER TRUTH pricing (cart/route.ts:93-96, 102-104): every line
+    // carries its server-resolved unit/total (variant priceOverride → covering
+    // tier → basePrice) and an honest pricingIssue when unpriceable. These
+    // were previously undeclared, forcing a client recomputation from
+    // basePrice that lied on every variant/tier line and fabricated a price
+    // for unpriceable ones (the exact defect cart-store.ts:256-258 forbids).
+    val unitPrice: Double? = null,
+    val totalPrice: Double? = null,
+    val priceSource: String? = null,
+    val pricingIssue: String? = null,
 )
 
 @Serializable
@@ -96,6 +111,14 @@ data class ServerCartProductDto(
     val images: List<ProductImageDto> = emptyList(),
     val priceTiers: List<PriceTierDto> = emptyList(),
     val supplier: SupplierBrief? = null,
+    // t277 — the cart include returns the FULL product row (cart/route.ts:
+    // 23-27), so these scalars ride along; weight drives the checkout
+    // shipping quotes (CheckoutViewModel Σ qty × weightKg — every server row
+    // landed weightless before, killing the whole quote rail), bundle/max
+    // bound the PDP stepper.
+    val weightKg: Double? = null,
+    val bundleSize: Int? = null,
+    val maxOrderQty: Int? = null,
 )
 
 @Serializable
@@ -106,9 +129,12 @@ data class ServerCartVariantDto(
 )
 
 /**
- * Maps a server cart row into the local item shape. Field mapping mirrors
- * cart-store.ts syncWithApi (L160-185): unitPrice/totalPrice from basePrice ×
- * qty, supplierName from the supplier group, image from first product image.
+ * Maps a server cart row into the local item shape. t277: prices are SERVER
+ * TRUTH (cart/route.ts:93-96) — unitPrice/totalPrice are adopted verbatim and
+ * only fall back to the local tier rule when a legacy server omits them;
+ * weight/maxOrder/bundle ride the full product include; a pricingIssue is
+ * carried so the row can render the honest problem instead of a fabricated
+ * price.
  */
 fun ServerCartItemDto.toCartItemData(supplierName: String): CartItemData? {
     val pid = productId ?: product?.id ?: return null
@@ -118,7 +144,22 @@ fun ServerCartItemDto.toCartItemData(supplierName: String): CartItemData? {
         ?.minByOrNull { it.sortOrder }?.imageUrl
         ?: product?.thumbnailUrl
     val qty = quantity
-    val unitPrice = product?.basePrice ?: 0.0
+    // Server truth first; tier/base fallback keeps old-server parity. An
+    // unpriceable line (pricingIssue set, server unitPrice null) gets zeros —
+    // the UI renders the issue instead of a fabricated price.
+    val unpriceable = !pricingIssue.isNullOrBlank()
+    val unitPrice = if (unpriceable) 0.0 else this.unitPrice
+        ?: run {
+            var applicable = product?.basePrice ?: 0.0
+            for (tier in product?.priceTiers.orEmpty()) {
+                if (qty >= tier.minQty && (tier.maxQty == null || qty <= tier.maxQty)) {
+                    applicable = tier.pricePerUnit
+                    break
+                }
+            }
+            applicable
+        }
+    val lineTotal = if (unpriceable) 0.0 else (totalPrice ?: qty * unitPrice)
     return CartItemData(
         id = id, // server cartItem id — real, so PUT/DELETE target it
         productId = pid,
@@ -130,14 +171,16 @@ fun ServerCartItemDto.toCartItemData(supplierName: String): CartItemData? {
         variantValue = variant?.variantValue,
         quantity = qty,
         unitPrice = unitPrice,
-        totalPrice = qty * unitPrice,
+        totalPrice = lineTotal,
         moq = product?.moq ?: 1,
-        maxOrderQty = null,
+        maxOrderQty = product?.maxOrderQty,
         supplierId = supplierId ?: product?.supplier?.companyName.orEmpty(),
         supplierName = supplierName,
         supplierSlug = "",
         unit = product?.unit ?: "piece",
         priceTiers = product?.priceTiers.orEmpty(),
+        weightKg = product?.weightKg,
+        pricingIssue = pricingIssue,
     )
 }
 

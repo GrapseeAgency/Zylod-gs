@@ -454,7 +454,8 @@ fun OtpVerificationScreen(
 private fun formatSeconds(seconds: Int): String {
     val m = seconds / 60
     val s = seconds % 60
-    return String.format("%02d:%02d", m, s)
+    // t277-1b: Locale.US — default-locale %d renders non-Latin digits on bn devices.
+    return String.format(java.util.Locale.US, "%02d:%02d", m, s)
 }
 
 /** maskTarget — otp-verification-page.tsx:20-28, verbatim. */

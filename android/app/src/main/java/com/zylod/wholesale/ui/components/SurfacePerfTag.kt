@@ -14,7 +14,8 @@ import com.zylod.wholesale.util.JankProfiler
  * Frame/jank attribution for WebView-hosted surfaces (DEBUG-only harness —
  * release is a no-op). `SurfacePerfTag("web:<pageId>")` on WebScreen covers
  * every WebView page INCLUDING home (home → WEBVIEW, owner directive — the
- * retired `native:home` tag died with the quarantined Compose Home).
+ * retired `native:home` tag died with the t227-era WebView home — the Compose
+ * HomeScreen is LIVE again (ZylodRoot home route + NativePageRegistry 'home')).
  * Methodology in docs/PERFORMANCE-PROFILE.md.
  */
 @Composable

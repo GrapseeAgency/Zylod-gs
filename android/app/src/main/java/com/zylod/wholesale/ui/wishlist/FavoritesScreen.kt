@@ -501,7 +501,7 @@ private fun FavoriteProductRow(
                         contentDescription = name,
                         placeholder = placeholder,
                         error = placeholder,
-                        contentScale = ContentScale.Crop,
+                        contentScale = ContentScale.Fit, // t277-1d: product art never crops (web object-contain parity)
                         modifier = Modifier.fillMaxSize(),
                     )
                 } else {

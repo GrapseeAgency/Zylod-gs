@@ -58,6 +58,7 @@ import com.zylod.wholesale.data.api.ProductDto
 import com.zylod.wholesale.ui.pages.NativePageKind
 import com.zylod.wholesale.ui.pages.NativePageLink
 import com.zylod.wholesale.ui.pages.NativePageMeta
+import com.zylod.wholesale.ui.wallet.formatBdt
 
 /** t233 page metadata — Kotlin registry entry for the "search" pageId family. */
 data object SearchPageMeta : NativePageMeta() {
@@ -90,10 +91,21 @@ data object SearchPageMeta : NativePageMeta() {
 fun SearchScreen(
     onBack: (() -> Unit)?,
     openPage: (pageId: String, query: String) -> Unit,
+    // t277-1c: the search-results registry row forwards the deeplink's ?query=
+    // here (saved-search taps / ?page=search-results&query=…) — blank keeps
+    // the bare search tab behavior.
+    initialQuery: String = "",
 ) {
     val context = LocalContext.current
     val vm: SearchViewModel = viewModel { SearchViewModel(context.applicationContext) }
     val state by vm.state.collectAsStateWithLifecycle()
+
+    LaunchedEffect(initialQuery) {
+        if (initialQuery.isNotBlank() && state.query != initialQuery) {
+            vm.onQueryChange(initialQuery)
+            vm.submit(initialQuery)
+        }
+    }
 
     Column(
         Modifier
@@ -272,7 +284,7 @@ private fun SearchResultCard(product: ProductDto, openPage: (pageId: String, que
                         contentDescription = product.name,
                         placeholder = placeholder,
                         error = placeholder,
-                        contentScale = ContentScale.Crop,
+                        contentScale = ContentScale.Fit, // t277-1d: product art never crops (web object-contain parity)
                         modifier = Modifier.fillMaxSize(),
                     )
                 } else {
@@ -338,6 +350,7 @@ private fun resolveUrl(raw: String?): String? {
     return base.trimEnd('/') + raw
 }
 
-private fun formatBdt(value: Double): String =
-    if (value % 1.0 == 0.0) "৳" + java.text.NumberFormat.getIntegerInstance().format(value.toLong())
-    else "৳" + String.format(java.util.Locale.US, "%.2f", value)
+// t277-1d: private locale-unstable copy removed — the shared Locale.US-pinned
+// formatter (ui/wallet/WalletFormat.kt) is imported above; on bn/ar devices
+// the old copy rendered Bengali/Arabic-Indic digits while checkout/wallet
+// rendered Latin digits — mixed digit systems inside one purchase flow.

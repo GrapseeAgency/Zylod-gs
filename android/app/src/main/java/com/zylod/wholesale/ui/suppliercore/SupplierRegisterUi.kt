@@ -207,7 +207,9 @@ internal fun SupplierRegisterProgress(step: Int) {
                             fontSize = 9.sp,
                             lineHeight = 11.sp,
                             maxLines = 1,
-                            overflow = TextOverflow.Clip,
+                            // t277-1d: "Trade License & TIN" clipped mid-letter in
+                            // the ~76dp chip on 360/320dp screens.
+                            overflow = TextOverflow.Ellipsis,
                             textAlign = TextAlign.Center,
                             fontWeight = if (isCurrent) FontWeight.Bold else FontWeight.Normal,
                             color = tint,

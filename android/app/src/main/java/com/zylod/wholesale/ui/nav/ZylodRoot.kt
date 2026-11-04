@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
@@ -373,8 +374,16 @@ fun ZylodRoot() {
     LaunchedEffect(route, deepLinkTick) {
         if (route == HOME_ROUTE) {
             DeepLinkBus.drain().forEach { link ->
+                // t277-1c: RAW values — the openPage contract is "producers
+                // pass raw, the edge encodes once" (WebScreen's
+                // encodeQueryValues + softNavigateScript's URLSearchParams
+                // both encode). The per-value Uri.encode here made every
+                // drained link with a space/special char arrive
+                // pre-encoded and get encoded AGAIN (…%2520…) — the SPA
+                // then searched for the literal encoded text and
+                // paramsMatch never matched (20s watchdog error).
                 val query = link.params.entries.joinToString("&") { (k, v) ->
-                    "${Uri.encode(k)}=${Uri.encode(v)}"
+                    "$k=$v"
                 }
                 Log.i("ZylodDeepLink", "drained pageId=${link.targetPage} query=$query route=$route")
                 openPage(link.targetPage, query)
@@ -417,7 +426,13 @@ fun ZylodRoot() {
         NavHost(
             navController = navController,
             startDestination = startDestination,
-            modifier = Modifier.padding(padding),
+            modifier = Modifier
+                .padding(padding)
+                // t277-1c: consume the scaffold insets — delegate Scaffolds with
+                // no bottomBar re-applied the navigationBarsPadding the root bar
+                // already consumed, leaving a navbar-height dead strip at the
+                // bottom of every native page.
+                .consumeWindowInsets(padding),
             // t216: explicit quick transitions. The defaults were the platform
             // fallback (unspecified, opaque crossfade) — a deterministic
             // 200 ms fade reads snappier on tab taps and PDP pushes; no slide

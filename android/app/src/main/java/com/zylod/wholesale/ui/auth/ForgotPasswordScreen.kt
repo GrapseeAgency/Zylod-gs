@@ -107,8 +107,12 @@ class ForgotPasswordViewModel(private val appContext: Context) : ViewModel() {
                 val base = baseUrl ?: ServerConfig.resolve(appContext).also { baseUrl = it }
                 val api: AuthApi = ApiClient.authApi(base)
                 val response = api.forgotPassword(ForgotPasswordRequest(email = email.trim().lowercase()))
+                // t277-1a: record EVERY accepted submit (success or failure) —
+                // the old success-path skip let a user fire unlimited reset
+                // emails while the UI text promises "3 requests per hour"
+                // (web forgot-password-page.tsx:26-75 parity).
+                val attempts = recordAttempt(appContext)
                 if (!response.isSuccessful) {
-                    val attempts = recordAttempt(appContext)
                     _state.update {
                         it.copy(
                             loading = false,
@@ -121,6 +125,7 @@ class ForgotPasswordViewModel(private val appContext: Context) : ViewModel() {
                 _state.update {
                     it.copy(
                         loading = false,
+                        attemptsRemaining = (3 - attempts).coerceAtLeast(0),
                         successMessage = response.body()?.message ?: "If an account exists with this email, a reset link has been sent.",
                         proceed = true,
                     )
