@@ -208,7 +208,7 @@ internal object NativeWebViewPool {
         synchronized(this) {
             free.forEach { destroy(it) }
             free.clear()
-            busy.forEach { destroy(it.shell) }
+            busy.forEach { destroy(it) } // elements ARE Shells (HashSet<Shell>)
             busy.clear()
         }
     }
