@@ -2107,11 +2107,11 @@ money_path_captures () {
     if [ "$BUYER_T273_CHECKOUT" = "yes" ] && [ -n "${TOKEN:-}" ]; then
       ADDR_GET_CODE=$(timeout 10 curl -s -o screenshots/checkout-addresses.json -w "%{http_code}" -H "Authorization: Bearer $TOKEN" "$HOST_API_BASE/api/addresses" 2>/dev/null || echo err)
       ADDR_COUNT=$(python3 -c 'import json,sys
-  try:
-      d = json.load(open("screenshots/checkout-addresses.json", encoding="utf-8", errors="ignore"))
-      print(len(d.get("data") or []))
-  except Exception:
-      print(-1)' 2>/dev/null || echo -1)
+try:
+    d = json.load(open("screenshots/checkout-addresses.json", encoding="utf-8", errors="ignore"))
+    print(len(d.get("data") or []))
+except Exception:
+    print(-1)' 2>/dev/null || echo -1)
       ADDR_POST_CODE=skipped
       # t275: POST when the count is not a POSITIVE integer — the old `= 0`
       # gate left the book unseeded whenever the GET body failed to parse
@@ -2145,11 +2145,11 @@ money_path_captures () {
     fi
     if [ -z "$T273_PRODUCT_ID" ]; then
       T273_PRODUCT_ID=$(timeout 10 curl -s "$HOST_API_BASE/api/products?limit=1" | python3 -c 'import json,sys
-  try:
-      d = json.load(sys.stdin)
-      print(d["data"][0]["id"])
-  except Exception:
-      pass' 2>/dev/null || true)
+try:
+    d = json.load(sys.stdin)
+    print(d["data"][0]["id"])
+except Exception:
+    pass' 2>/dev/null || true)
     fi
     echo "capture 68: T273_PRODUCT_ID=${T273_PRODUCT_ID:-} (product-id.txt or fresh /api/products?limit=1)"
     # t275 (a): SERVER-SIDE CART SEED — the UI was the only cart builder and
@@ -2172,21 +2172,21 @@ money_path_captures () {
       T275_PROD_CODE=$(timeout 10 curl -s -o screenshots/cart-seed-product.json -w "%{http_code}" "$HOST_API_BASE/api/products/$T273_PRODUCT_ID" 2>/dev/null || echo err)
       # the detail route spreads the full row: name/moq/stockQuantity/maxOrderQty
       T273_NAME=$(python3 -c 'import json,sys
-  try:
-      d = json.load(open("screenshots/cart-seed-product.json", encoding="utf-8", errors="ignore")).get("data") or {}
-      print((d.get("name") or "").strip()[:40])
-  except Exception:
-      pass' 2>/dev/null || true)
+try:
+    d = json.load(open("screenshots/cart-seed-product.json", encoding="utf-8", errors="ignore")).get("data") or {}
+    print((d.get("name") or "").strip()[:40])
+except Exception:
+    pass' 2>/dev/null || true)
       T275_QTY=$(python3 -c 'import json,sys
-  try:
-      d = json.load(open("screenshots/cart-seed-product.json", encoding="utf-8", errors="ignore")).get("data") or {}
-      moq = int(d.get("moq") or 0); stock = int(d.get("stockQuantity") or 0)
-      maxq = d.get("maxOrderQty")
-      if maxq is not None: maxq = int(maxq)
-      qty = moq if moq >= 1 else 1
-      print(qty if (stock >= qty and (maxq is None or qty <= maxq)) else 0)
-  except Exception:
-      print(0)' 2>/dev/null || echo 0)
+try:
+    d = json.load(open("screenshots/cart-seed-product.json", encoding="utf-8", errors="ignore")).get("data") or {}
+    moq = int(d.get("moq") or 0); stock = int(d.get("stockQuantity") or 0)
+    maxq = d.get("maxOrderQty")
+    if maxq is not None: maxq = int(maxq)
+    qty = moq if moq >= 1 else 1
+    print(qty if (stock >= qty and (maxq is None or qty <= maxq)) else 0)
+except Exception:
+    print(0)' 2>/dev/null || echo 0)
       if [ -n "$T275_QTY" ] && [ "$T275_QTY" -ge 1 ] 2>/dev/null; then
         T275_SEED_CODE=$(timeout 10 curl -s -o screenshots/cart-seed-post.json -w "%{http_code}" -X POST "$HOST_API_BASE/api/cart" -H "Authorization: Bearer $TOKEN" -H 'Content-Type: application/json' -d "{\"productId\":\"$T273_PRODUCT_ID\",\"quantity\":$T275_QTY}" 2>/dev/null || echo err)
         if [ "$T275_SEED_CODE" = "200" ] || [ "$T275_SEED_CODE" = "201" ]; then
@@ -2266,11 +2266,11 @@ money_path_captures () {
       # preceded by a walk. The proven deeplink stays as the fallback.
       PDP_T273_SETTLED=0
       T273_NAME=$(timeout 10 curl -s "$HOST_API_BASE/api/products?limit=1" | python3 -c 'import json,sys
-  try:
-      d = json.load(sys.stdin)
-      print((d["data"][0].get("name") or "").strip()[:40])
-  except Exception:
-      pass' 2>/dev/null || true)
+try:
+    d = json.load(sys.stdin)
+    print((d["data"][0].get("name") or "").strip()[:40])
+except Exception:
+    pass' 2>/dev/null || true)
       echo "capture 68: home-card needle=${T273_NAME:-none}"
       TAP_T273_FIRED=0
       if [ -n "$T273_NAME" ]; then
