@@ -161,8 +161,10 @@ class DebugSessionReceiver : BroadcastReceiver() {
             val cookieManager = CookieManager.getInstance()
             var written = 0
             for (origin in origins) {
+                // CI run 41893630895: setCookie's platform overload infers
+                // Any here — coerce with == true so the guard is Boolean.
                 val ok = runCatching {
-                    cookieManager.setCookie(origin, "auth-token=$token; Path=/; SameSite=Lax")
+                    cookieManager.setCookie(origin, "auth-token=$token; Path=/; SameSite=Lax") == true
                 }.getOrDefault(false)
                 if (ok) written++
             }
