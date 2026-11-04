@@ -214,6 +214,23 @@ log () { echo "── $1 ──"; }
 # t240: adb shell with a hard timeout, never fatal. Usage: adbt 20 uiautomator dump /sdcard/ui.xml
 adbt () { timeout "${1:-20}" adb shell "${@:2}" || true; }
 
+# t275-fix3: ONE dynamically-sized scroll swipe — every remaining hardcoded
+# 'input swipe 540 …' call site is OFF-SCREEN on the 320x640 default AVD
+# (x=540 > width 320, y=1400/1500 > height 640 — adb accepts the coords and
+# silently injects NOTHING), so every walk that relied on them never
+# scrolled a single pixel: 06's Add-to-Cart walk, 69's Bank Transfer /
+# Place Order walks — the whole t273/t274 UI-cart saga was fought against a
+# dead gesture while the capture-25 block (lines below) already knew the
+# fix: compute CX/Y1/Y2 from the ACTUAL wm size. Same math, as a helper.
+scroll_swipe () { # one upward swipe — content scrolls down
+  local SW SH CX Y1 Y2
+  SW=$(timeout 20 adb shell wm size | grep -oE '[0-9]+' | head -1 | tr -d '[:space:]')
+  SH=$(timeout 20 adb shell wm size | grep -oE '[0-9]+' | tail -1 | tr -d '[:space:]')
+  SW=${SW:-320}; SH=${SH:-640}
+  CX=$((SW / 2)); Y1=$((SH * 3 / 4)); Y2=$((SH / 5))
+  adbt 20 input swipe $CX $Y1 $CX $Y2 400
+}
+
 # t240 GLOBAL BUDGET: 30 minutes of wall clock for the capture blocks
 # (t248: raised to 1900s — two more admin captures, ~20s each, must fit).
 # (t249: raised to 2100s — the authed-admin segment adds buyer sign-out +
@@ -2285,7 +2302,7 @@ except Exception:
             TAP_T273_FIRED=1
             break
           fi
-          adbt 15 "input swipe 540 1500 540 500 400" >/dev/null 2>&1 || true
+          scroll_swipe >/dev/null 2>&1 || true
           sleep 3
         done
       fi
@@ -2300,7 +2317,7 @@ except Exception:
             break
           fi
           if any_text_on_screen "reviews"; then
-            adbt 15 "input swipe 540 1500 540 500 400" >/dev/null 2>&1 || true
+            scroll_swipe >/dev/null 2>&1 || true
           fi
         done
       fi
@@ -2315,7 +2332,7 @@ except Exception:
               break
             fi
             if any_text_on_screen "reviews"; then
-              adbt 15 "input swipe 540 1500 540 500 400" >/dev/null 2>&1 || true
+              scroll_swipe >/dev/null 2>&1 || true
             fi
           done
           if [ "$PDP_T273_SETTLED" -eq 1 ]; then
@@ -2344,7 +2361,7 @@ except Exception:
               break
             fi
             if any_text_on_screen "reviews"; then
-              adbt 15 "input swipe 540 1500 540 500 400" >/dev/null 2>&1 || true
+              scroll_swipe >/dev/null 2>&1 || true
             fi
           done
           echo "capture 68: matured-app deeplink settled=$PDP_T273_SETTLED"
@@ -2390,7 +2407,7 @@ except Exception:
           PAY_T273_READY=1
           break
         fi
-        adbt 15 "input swipe 540 1400 540 600 400" >/dev/null 2>&1 || true
+        scroll_swipe >/dev/null 2>&1 || true
         sleep 2
       done
       echo "capture 69: Bank Transfer visible=$PAY_T273_READY"
@@ -2405,7 +2422,7 @@ except Exception:
           CTA_T273_READY=1
           break
         fi
-        adbt 15 "input swipe 540 1400 540 600 400" >/dev/null 2>&1 || true
+        scroll_swipe >/dev/null 2>&1 || true
         sleep 2
       done
       echo "capture 69: Place Order visible=$CTA_T273_READY"
@@ -2473,7 +2490,7 @@ except Exception:
         # render-gated walk: the payment summary sits below the fold — swipe
         # only once the detail screen has rendered (its own header text)
         if any_text_on_screen "Placed" "Track Order"; then
-          adbt 15 "input swipe 540 1400 540 600 400" >/dev/null 2>&1 || true
+          scroll_swipe >/dev/null 2>&1 || true
         fi
       done
       cap "screenshots/71-order-detail.png"
