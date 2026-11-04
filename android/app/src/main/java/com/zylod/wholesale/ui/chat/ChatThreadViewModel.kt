@@ -171,7 +171,7 @@ class ChatThreadViewModel(
                     // Optimistic caches only — re-pull the thread best-effort so
                     // the read receipts / ordering stay server-true.
                 } else {
-                    failSend(temp.key, text, parseError(response))
+                    failSend(temp.key, text, parseError(response) ?: "Message not sent")
                 }
             } catch (ce: CancellationException) {
                 throw ce

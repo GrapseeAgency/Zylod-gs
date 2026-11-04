@@ -21,7 +21,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.CloudOff
-import androidx.compose.material.icons.outlined.MessageSquare
+import androidx.compose.material.icons.outlined.Forum
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -199,7 +199,7 @@ private fun ConversationRowCard(
     openPage: (pageId: String, query: String) -> Unit,
 ) {
     val name = row.otherPartyName.orEmpty().ifBlank { "Conversation" }
-    val initial = remember(name) { name.firstOrNull()?.uppercase()?.takeIf { it.isLetter() } ?: "?" }
+    val initial = remember(name) { name.firstOrNull()?.takeIf { it.isLetter() }?.uppercase() ?: "?" }
     val timeLabel = remember(row.lastMessageAt) { formatRelativeDate(row.lastMessageAt) }
     val preview = remember(row) {
         val last = row.lastMessage
@@ -310,7 +310,7 @@ private fun ConversationsEmptyState(
             .padding(horizontal = 24.dp, vertical = 32.dp),
     ) {
         Icon(
-            Icons.Outlined.MessageSquare,
+            Icons.Outlined.Forum,
             null,
             tint = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.size(34.dp),
@@ -356,7 +356,7 @@ private fun ConversationsAuthGate(openPage: (pageId: String, query: String) -> U
             .padding(horizontal = 32.dp),
     ) {
         Icon(
-            Icons.Outlined.MessageSquare,
+            Icons.Outlined.Forum,
             null,
             tint = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.size(36.dp),
