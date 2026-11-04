@@ -2055,6 +2055,338 @@ else
   echo "::warning::capture 06-product-detail skipped: PRODUCT_ID empty (env unset + server fetch failed)"
 fi
 guarded_deeplink "07-cart" 8 "zylod://cart"
+
+# t274e — THE MONEY-PATH CAPTURES (68/69/70/71) as a FUNCTION, invoked right
+# after capture 07. WHY MOVED: the t274c routing logs (run 41736002177)
+# proved the product deeplink ALWAYS navigates (route flips to
+# product-detail/{productId}) and capture 06 renders the identical
+# deeplink's PDP in ≤6s — but at the old position (after the seller rail)
+# the PDP content never rendered on ANY process age (young, warm, or the
+# t274b matured relaunch), while the same process rendered the typed
+# checkout 60s later. Reusing capture 06's exact proven moment — same
+# process, same home state, minutes-old app — is the only configuration
+# that has rendered the PDP on CI every single run. The warm buyer
+# re-injection (t274d) swaps in the seeded buyer1@zylod.bd session WITHOUT
+# any force-stop, so the process stays exactly as mature as 06's.
+money_path_captures () {
+    # t273 — typed checkout money-path: 68-checkout, 69-checkout-placed and
+    # 70-checkout-success. At THIS point (right after 06/07) the process is
+    # the one that just rendered the PDP, and its session is whatever the
+    # register flow left. The warm broadcast below swaps in a freshly
+    # committed BUYER session (the seeded buyer1@zylod.bd whose address
+    # book this script seeds) WITHOUT any force-stop, seconds before the
+    # PDP/checkout deeplinks (evidence appends to buyer-session-check.txt;
+    # this run's keys are the authoritative ones for the t273 shots).
+    # Non-fatal: on failure the marker below records it and capture 68 keeps
+    # its honest sign-in wall verdict.
+    BUYER_T273_CHECKOUT=no
+    if ! budget_stop; then
+      log "t273: re-injecting the buyer session immediately before the checkout captures (mid-flow 401s from earlier deeplinks trigger the SessionAuthenticator logout that clears it)"
+      # t274d: WARM re-injection — the cold-start dance here killed the mature
+      # process and every fresh process since t273b failed to render the PDP
+      # content (see the WARM mode comment inside broadcast_inject_session).
+      if broadcast_inject_session "buyer1@zylod.bd" "Passw0rd!23" "buyer" "screenshots/buyer-session-check.txt" warm; then
+        BUYER_T273_CHECKOUT=yes
+      fi
+    fi
+    echo "buyer-checkout-reinjection=$BUYER_T273_CHECKOUT" >> screenshots/buyer-session-check.txt 2>/dev/null || true
+    # t273 (b): ensure an address exists via the REAL api/addresses using the
+    # buyer token the injection just logged in for ($TOKEN is set by the
+    # api_login_token call inside broadcast_inject_session). GET the book;
+    # when it is EMPTY, POST the seeded HQ address. Every http code is
+    # recorded to screenshots/checkout-address-check.txt and NEVER fatal —
+    # a missing address only means capture 68 shows its honest Add-Address
+    # state (and 69 is skipped by its own Review Order guard).
+    : > screenshots/checkout-address-check.txt 2>/dev/null || true
+    if [ "$BUYER_T273_CHECKOUT" = "yes" ] && [ -n "${TOKEN:-}" ]; then
+      ADDR_GET_CODE=$(timeout 10 curl -s -o screenshots/checkout-addresses.json -w "%{http_code}" -H "Authorization: Bearer $TOKEN" "$HOST_API_BASE/api/addresses" 2>/dev/null || echo err)
+      ADDR_COUNT=$(python3 -c 'import json,sys
+  try:
+      d = json.load(open("screenshots/checkout-addresses.json", encoding="utf-8", errors="ignore"))
+      print(len(d.get("data") or []))
+  except Exception:
+      print(-1)' 2>/dev/null || echo -1)
+      ADDR_POST_CODE=skipped
+      if [ "$ADDR_COUNT" = "0" ]; then
+        ADDR_POST_CODE=$(timeout 10 curl -s -o screenshots/checkout-address-post.json -w "%{http_code}" -X POST "$HOST_API_BASE/api/addresses" -H "Authorization: Bearer $TOKEN" -H 'Content-Type: application/json' -d '{"label":"HQ","address_line1":"12 Farmgate Road","city":"Dhaka","district":"Dhaka","postal_code":"1205","country":"Bangladesh","is_default":true}' 2>/dev/null || echo err)
+      fi
+      {
+        echo "=== t273 checkout address check $(date -u '+%Y-%m-%dT%H:%M:%SZ') ==="
+        echo "addresses-get=$ADDR_GET_CODE"
+        echo "addresses-count=$ADDR_COUNT"
+        echo "addresses-post=$ADDR_POST_CODE"
+      } >> screenshots/checkout-address-check.txt 2>/dev/null || true
+      echo "capture 68: address check get=$ADDR_GET_CODE count=$ADDR_COUNT post=$ADDR_POST_CODE"
+    else
+      {
+        echo "=== t273 checkout address check $(date -u '+%Y-%m-%dT%H:%M:%SZ') ==="
+        echo "addresses-get=skipped (buyer injection failed — no token)"
+      } >> screenshots/checkout-address-check.txt 2>/dev/null || true
+    fi
+    # t273 (c): resolve PRODUCT_ID the capture-06 way — reuse the saved id
+    # when present, else self-fetch from /api/products?limit=1 (same probe
+    # discipline as capture 06; an empty result degrades capture 68 to
+    # whatever the existing cart holds, never fatal).
+    T273_PRODUCT_ID=""
+    if [ -s screenshots/product-id.txt ]; then
+      T273_PRODUCT_ID=$(tr -d '[:space:]' < screenshots/product-id.txt 2>/dev/null || true)
+    fi
+    if [ -z "$T273_PRODUCT_ID" ]; then
+      T273_PRODUCT_ID=$(timeout 10 curl -s "$HOST_API_BASE/api/products?limit=1" | python3 -c 'import json,sys
+  try:
+      d = json.load(sys.stdin)
+      print(d["data"][0]["id"])
+  except Exception:
+      pass' 2>/dev/null || true)
+    fi
+    echo "capture 68: T273_PRODUCT_ID=${T273_PRODUCT_ID:-} (product-id.txt or fresh /api/products?limit=1)"
+    # t273 (d): build a cart — PDP → settle for the Add to Cart button (up to
+    # 20s, the capture-06 needle) → tap it → sleep 3 for the toast flow. The
+    # seeded product merges into whatever the cart already holds.
+    # t273b→f: the button sits BELOW THE FOLD on the tall PDP and the product
+    # deeplink dies silently in a freshly cold-started process — the block
+    # below builds the cart via a real home-feed card tap first, then falls
+    # back to the deeplink, and walks the button into view with render-gated
+    # swipes (uiautomator sees visible nodes only).
+    if [ -n "$T273_PRODUCT_ID" ] && ensure_home; then
+      # t273f (runs 41698812091 + 41707303870): zylod://product/<id> navigates
+      # reliably on a MATURE process (capture 06 proves it every run) but dies
+      # SILENTLY in a freshly cold-started one — three delivered intents
+      # (result code=3 → onNewIntent → DeepLinkBus.open, verified in logcat)
+      # produced zero navigation and zero app logs across 85s, while the
+      # zylod://checkout link 30s later navigated fine. The bus drain never
+      # fired for the product links. The fix stops depending on the bus for
+      # THIS capture: build the cart the way a real buyer does — tap the
+      # featured card on the NATIVE home feed (HomeScreen.kt:435
+      # FeaturedCard.clickable → openPage → resolver → native PDP; direct
+      # Compose navigation, no deeplink, no bus). The card needle is the
+      # product NAME (both the AsyncImage contentDescription and the title
+      # Text carry it); the featured rail sits below the fold so the tap is
+      # preceded by a walk. The proven deeplink stays as the fallback.
+      PDP_T273_SETTLED=0
+      T273_NAME=$(timeout 10 curl -s "$HOST_API_BASE/api/products?limit=1" | python3 -c 'import json,sys
+  try:
+      d = json.load(sys.stdin)
+      print((d["data"][0].get("name") or "").strip()[:40])
+  except Exception:
+      pass' 2>/dev/null || true)
+      echo "capture 68: home-card needle=${T273_NAME:-none}"
+      TAP_T273_FIRED=0
+      if [ -n "$T273_NAME" ]; then
+        # t274b (run 41720404142 logcat): the walk polled 21:58:44–59 while the
+        # freshly cold-started feed was still empty — ServerConfig resolved at
+        # 21:58:35 and the featured cards' images only hit the wire at
+        # 21:58:59, the exact second the walk gave up. Sleep every round so
+        # the poll window outlives the feed render (~30s post-cold-start).
+        for i in 1 2 3 4 5 6 7 8; do
+          if any_text_on_screen "$T273_NAME"; then
+            tap_clickable_text "$T273_NAME" || true
+            TAP_T273_FIRED=1
+            break
+          fi
+          adbt 15 "input swipe 540 1500 540 500 400" >/dev/null 2>&1 || true
+          sleep 3
+        done
+      fi
+      echo "capture 68: home-card tap fired=$TAP_T273_FIRED"
+      if [ "$TAP_T273_FIRED" -eq 1 ]; then
+        # settle the PDP + walk the button (render-gated: 'reviews' rating
+        # line above the fold proves state.product != null)
+        for i in 1 2 3 4 5 6; do
+          sleep 5
+          if any_text_on_screen "Add to Cart"; then
+            PDP_T273_SETTLED=1
+            break
+          fi
+          if any_text_on_screen "reviews"; then
+            adbt 15 "input swipe 540 1500 540 500 400" >/dev/null 2>&1 || true
+          fi
+        done
+      fi
+      if [ "$PDP_T273_SETTLED" -eq 0 ]; then
+        # fallback: the deeplink path (proven on mature processes; 2 attempts)
+        for T273_ATTEMPT in 1 2; do
+          adbt 15 am start -a android.intent.action.VIEW -d "zylod://product/$T273_PRODUCT_ID" com.zylod.wholesale.debug >/dev/null 2>&1
+          for i in 1 2 3; do
+            sleep 5
+            if any_text_on_screen "Add to Cart"; then
+              PDP_T273_SETTLED=1
+              break
+            fi
+            if any_text_on_screen "reviews"; then
+              adbt 15 "input swipe 540 1500 540 500 400" >/dev/null 2>&1 || true
+            fi
+          done
+          if [ "$PDP_T273_SETTLED" -eq 1 ]; then
+            break
+          fi
+          echo "capture 68: PDP deeplink attempt $T273_ATTEMPT did not render"
+        done
+      fi
+      if [ "$PDP_T273_SETTLED" -eq 0 ]; then
+        # t274b FINAL fallback — the proven-mature path: every run's capture 06
+        # deeplinks the SAME product on a process that has been up for
+        # minutes and lands the NATIVE PDP first try. Force-stop + relaunch +
+        # a 35s maturity window (ServerConfig resolve + feed render + the
+        # process state the 06 deeplink always finds) + ensure_home + one
+        # more deeplink with the full render-gated walk.
+        log "capture 68: maturing the app (force-stop + relaunch + 35s) for the proven deeplink path"
+        adbt 15 am force-stop com.zylod.wholesale.debug >/dev/null 2>&1 || true
+        adbt 20 monkey -p com.zylod.wholesale.debug -c android.intent.category.LAUNCHER 1 >/dev/null 2>&1 || true
+        sleep 35
+        if ensure_home; then
+          adbt 15 am start -a android.intent.action.VIEW -d "zylod://product/$T273_PRODUCT_ID" com.zylod.wholesale.debug >/dev/null 2>&1
+          for i in 1 2 3 4 5 6; do
+            sleep 5
+            if any_text_on_screen "Add to Cart"; then
+              PDP_T273_SETTLED=1
+              break
+            fi
+            if any_text_on_screen "reviews"; then
+              adbt 15 "input swipe 540 1500 540 500 400" >/dev/null 2>&1 || true
+            fi
+          done
+          echo "capture 68: matured-app deeplink settled=$PDP_T273_SETTLED"
+        fi
+      fi
+      if [ "$PDP_T273_SETTLED" -eq 1 ]; then
+        tap_clickable_text "Add to Cart" || true
+        sleep 3
+      else
+        echo "::warning::capture 68: PDP 'Add to Cart' not detected (card tap + deeplinks + matured relaunch) — cart may stay empty (captures proceed honestly)"
+      fi
+    fi
+    # t273 (e): fire the typed checkout. guarded_deeplink enforces the
+    # HOME_ROUTE queue-drain guard and caps after its 10s settle; the extra
+    # poll below waits up to 15s more for ANY of the three honest typed
+    # states (any one proves the typed screen) and re-caps the settled shot
+    # — on timeout the guarded_deeplink cap stands (capture regardless).
+    guarded_deeplink "68-checkout" 10 "zylod://checkout"
+    CHECKOUT_T273_SETTLED=0
+    for i in 1 2 3; do
+      sleep 5
+      if any_text_on_screen "Review Order" "Your cart is empty" "Sign in required"; then
+        CHECKOUT_T273_SETTLED=1
+        break
+      fi
+    done
+    if [ "$CHECKOUT_T273_SETTLED" -eq 1 ]; then
+      cap "screenshots/68-checkout.png"
+    fi
+    echo "capture 68: checkout settled=$CHECKOUT_T273_SETTLED (Review Order / Your cart is empty / Sign in required)"
+    # t273 (f): on the REAL form — pick Bank Transfer, place the order,
+    # settle up to 30s for the inline success title ("Order <num> Created"
+    # contains 'Created'); timeout → capture the current state anyway + dump
+    # the last 200 logcat lines as place-order evidence. Never fatal.
+    # t273b: the payment radios and the Place Order CTA are BELOW THE FOLD on
+    # the tall form — each tap is preceded by a swipe walk that stops as soon
+    # as its target text is visible (uiautomator sees visible nodes only).
+    if any_text_on_screen "Review Order"; then
+      PAY_T273_READY=0
+      # t273d: 6 rounds (was 4) — slow CI forms get more walk margin
+      for i in 1 2 3 4 5 6; do
+        if any_text_on_screen "Bank Transfer"; then
+          PAY_T273_READY=1
+          break
+        fi
+        adbt 15 "input swipe 540 1400 540 600 400" >/dev/null 2>&1 || true
+        sleep 2
+      done
+      echo "capture 69: Bank Transfer visible=$PAY_T273_READY"
+      if [ "$PAY_T273_READY" -eq 1 ]; then
+        tap_clickable_text "Bank Transfer" || true
+      fi
+      sleep 1
+      CTA_T273_READY=0
+      # t273d: 6 rounds (was 4)
+      for i in 1 2 3 4 5 6; do
+        if any_text_on_screen "Place Order"; then
+          CTA_T273_READY=1
+          break
+        fi
+        adbt 15 "input swipe 540 1400 540 600 400" >/dev/null 2>&1 || true
+        sleep 2
+      done
+      echo "capture 69: Place Order visible=$CTA_T273_READY"
+      if [ "$CTA_T273_READY" -eq 1 ]; then
+        tap_clickable_text "Place Order" || true
+      fi
+      PLACED_T273_SETTLED=0
+      for i in 1 2 3 4 5 6; do
+        sleep 5
+        if any_text_on_screen "Created"; then
+          PLACED_T273_SETTLED=1
+          break
+        fi
+      done
+      cap "screenshots/69-checkout-placed.png"
+      if [ "$PLACED_T273_SETTLED" -eq 0 ]; then
+        echo "::warning::capture 69: 'Created' not detected within 30s — captured current state + logcat evidence"
+        timeout 10 adb logcat -d 2>/dev/null | tail -200 > screenshots/checkout-place-log.txt || true
+      fi
+      echo "capture 69: placed settled=$PLACED_T273_SETTLED"
+    else
+      echo "capture 69: SKIPPED — 'Review Order' never visible (empty cart / sign-in wall / still loading)"
+    fi
+    # t273 (g): extract the placed orderId from the VM's capture-evidence log
+    # line ("order placed id=..."). logcat-full.txt is only dumped at the
+    # very END of the script, so grep the LIVE buffer the way the neighbor
+    # blocks do. No id → the confirmation URL still fires without one and
+    # capture 70 shows the honest No-order-to-confirm state.
+    T273_ORDER_ID=$(timeout 10 adb logcat -d 2>/dev/null | grep -o "order placed id=[0-9a-f-]*" | tail -1 | cut -d= -f2 || true)
+    echo "capture 70: T273_ORDER_ID=${T273_ORDER_ID:-} (grep 'order placed id=' over adb logcat -d)"
+    if [ -n "$T273_ORDER_ID" ]; then
+      guarded_deeplink "70-checkout-success" 10 "https://zylod.com/?page=checkout-success&orderId=$T273_ORDER_ID"
+    else
+      guarded_deeplink "70-checkout-success" 10 "https://zylod.com/?page=checkout-success"
+    fi
+    SUCCESS_T273_SETTLED=0
+    for i in 1 2 3; do
+      sleep 5
+      if any_text_on_screen "Order Received" "No order to confirm"; then
+        SUCCESS_T273_SETTLED=1
+        break
+      fi
+    done
+    if [ "$SUCCESS_T273_SETTLED" -eq 1 ]; then
+      cap "screenshots/70-checkout-success.png"
+    fi
+    echo "capture 70: confirmation settled=$SUCCESS_T273_SETTLED (Order Received / No order to confirm)"
+
+    # t274: the TYPED order-detail capture — the placed order's real detail
+    # (status stepper, per-supplier shipments with line items + tracking, the
+    # payment summary with the manual-payment leg). zylod://orders/<id> maps
+    # to the order-detail pageId with the orderId param (DeepLinkParser t206
+    # B5). Needs the buyer session (re-injected above) and the real orderId
+    # from the 69 place-order — without one the capture SKIPS (the honest
+    # no-order wall is already proven by the web suite).
+    if [ -n "$T273_ORDER_ID" ]; then
+      guarded_deeplink "71-order-detail" 10 "zylod://orders/$T273_ORDER_ID"
+      DETAIL_T274_SETTLED=0
+      for i in 1 2 3 4 5 6; do
+        sleep 5
+        if any_text_on_screen "Items in Order" "Sign in required" "Order not found" "No order selected"; then
+          DETAIL_T274_SETTLED=1
+          break
+        fi
+        # render-gated walk: the payment summary sits below the fold — swipe
+        # only once the detail screen has rendered (its own header text)
+        if any_text_on_screen "Placed" "Track Order"; then
+          adbt 15 "input swipe 540 1400 540 600 400" >/dev/null 2>&1 || true
+        fi
+      done
+      cap "screenshots/71-order-detail.png"
+      echo "capture 71: detail settled=$DETAIL_T274_SETTLED (Items in Order / Sign in required / Order not found / No order selected)"
+    else
+      echo "capture 71: SKIPPED — T273_ORDER_ID empty (the 69 place-order never landed)"
+    fi
+}
+
+# t274e: invoke the money path HERE — capture 06/07's process is the proven
+# one; every later segment (seller rail, admin) runs its own injections and
+# does not depend on this state.
+money_path_captures
+
 # t239 DEFECT 3a: 10-deals captured a bare spinner (state.loading renders
 # ONLY a full-screen CircularProgressIndicator). Settle-poll up to 25s
 # (5×5s) for card-level deal content; on timeout capture anyway + dump the
@@ -2146,9 +2478,12 @@ elif ensure_home; then
   echo "capture 18: ensure_home=0 — firing zylod://buyer-orders with a strict signed-in settle-poll"
   adbt 15 am start -a android.intent.action.VIEW -d "zylod://buyer-orders" com.zylod.wholesale.debug >/dev/null 2>&1
   ORDERS_SETTLED=0
+  # t274e: "PO #" (OrdersScreen.kt:322) joins the authed needle set — the
+  # money-path captures now place a REAL order before this capture, so the
+  # list shows the order card instead of the empty state.
   for i in 1 2 3 4 5; do
     sleep 5
-    if any_text_on_screen "No orders yet" "Sign in to see your orders"; then
+    if any_text_on_screen "No orders yet" "Sign in to see your orders" "PO #"; then
       ORDERS_SETTLED=1
       break
     fi
@@ -2741,317 +3076,6 @@ else
   # screen; NO session needed, GET api/suppliers is public.
   guarded_deeplink "65-supplier-directory" 12 "zylod://supplier-directory"
   guarded_deeplink "67-supplier-alias" 12 "zylod://supplier-"
-  # t273 — typed checkout money-path: 68-checkout, 69-checkout-placed and
-  # 70-checkout-success. The seller captures above left the SELLER session
-  # committed, and the t249-k finding applies verbatim (mid-flow 401s
-  # trigger the SessionAuthenticator logout that clears roles) — so the
-  # exact same broadcast_inject_session runs here FIRST, swapping in a
-  # freshly committed BUYER session on a cold-started home seconds before
-  # the checkout deeplink (evidence appends to buyer-session-check.txt;
-  # this run's keys are the authoritative ones for the t273 shots).
-  # Non-fatal: on failure the marker below records it and capture 68 keeps
-  # its honest sign-in wall verdict.
-  BUYER_T273_CHECKOUT=no
-  if ! budget_stop; then
-    log "t273: re-injecting the buyer session immediately before the checkout captures (mid-flow 401s from earlier deeplinks trigger the SessionAuthenticator logout that clears it)"
-    # t274d: WARM re-injection — the cold-start dance here killed the mature
-    # process and every fresh process since t273b failed to render the PDP
-    # content (see the WARM mode comment inside broadcast_inject_session).
-    if broadcast_inject_session "buyer1@zylod.bd" "Passw0rd!23" "buyer" "screenshots/buyer-session-check.txt" warm; then
-      BUYER_T273_CHECKOUT=yes
-    fi
-  fi
-  echo "buyer-checkout-reinjection=$BUYER_T273_CHECKOUT" >> screenshots/buyer-session-check.txt 2>/dev/null || true
-  # t273 (b): ensure an address exists via the REAL api/addresses using the
-  # buyer token the injection just logged in for ($TOKEN is set by the
-  # api_login_token call inside broadcast_inject_session). GET the book;
-  # when it is EMPTY, POST the seeded HQ address. Every http code is
-  # recorded to screenshots/checkout-address-check.txt and NEVER fatal —
-  # a missing address only means capture 68 shows its honest Add-Address
-  # state (and 69 is skipped by its own Review Order guard).
-  : > screenshots/checkout-address-check.txt 2>/dev/null || true
-  if [ "$BUYER_T273_CHECKOUT" = "yes" ] && [ -n "${TOKEN:-}" ]; then
-    ADDR_GET_CODE=$(timeout 10 curl -s -o screenshots/checkout-addresses.json -w "%{http_code}" -H "Authorization: Bearer $TOKEN" "$HOST_API_BASE/api/addresses" 2>/dev/null || echo err)
-    ADDR_COUNT=$(python3 -c 'import json,sys
-try:
-    d = json.load(open("screenshots/checkout-addresses.json", encoding="utf-8", errors="ignore"))
-    print(len(d.get("data") or []))
-except Exception:
-    print(-1)' 2>/dev/null || echo -1)
-    ADDR_POST_CODE=skipped
-    if [ "$ADDR_COUNT" = "0" ]; then
-      ADDR_POST_CODE=$(timeout 10 curl -s -o screenshots/checkout-address-post.json -w "%{http_code}" -X POST "$HOST_API_BASE/api/addresses" -H "Authorization: Bearer $TOKEN" -H 'Content-Type: application/json' -d '{"label":"HQ","address_line1":"12 Farmgate Road","city":"Dhaka","district":"Dhaka","postal_code":"1205","country":"Bangladesh","is_default":true}' 2>/dev/null || echo err)
-    fi
-    {
-      echo "=== t273 checkout address check $(date -u '+%Y-%m-%dT%H:%M:%SZ') ==="
-      echo "addresses-get=$ADDR_GET_CODE"
-      echo "addresses-count=$ADDR_COUNT"
-      echo "addresses-post=$ADDR_POST_CODE"
-    } >> screenshots/checkout-address-check.txt 2>/dev/null || true
-    echo "capture 68: address check get=$ADDR_GET_CODE count=$ADDR_COUNT post=$ADDR_POST_CODE"
-  else
-    {
-      echo "=== t273 checkout address check $(date -u '+%Y-%m-%dT%H:%M:%SZ') ==="
-      echo "addresses-get=skipped (buyer injection failed — no token)"
-    } >> screenshots/checkout-address-check.txt 2>/dev/null || true
-  fi
-  # t273 (c): resolve PRODUCT_ID the capture-06 way — reuse the saved id
-  # when present, else self-fetch from /api/products?limit=1 (same probe
-  # discipline as capture 06; an empty result degrades capture 68 to
-  # whatever the existing cart holds, never fatal).
-  T273_PRODUCT_ID=""
-  if [ -s screenshots/product-id.txt ]; then
-    T273_PRODUCT_ID=$(tr -d '[:space:]' < screenshots/product-id.txt 2>/dev/null || true)
-  fi
-  if [ -z "$T273_PRODUCT_ID" ]; then
-    T273_PRODUCT_ID=$(timeout 10 curl -s "$HOST_API_BASE/api/products?limit=1" | python3 -c 'import json,sys
-try:
-    d = json.load(sys.stdin)
-    print(d["data"][0]["id"])
-except Exception:
-    pass' 2>/dev/null || true)
-  fi
-  echo "capture 68: T273_PRODUCT_ID=${T273_PRODUCT_ID:-} (product-id.txt or fresh /api/products?limit=1)"
-  # t273 (d): build a cart — PDP → settle for the Add to Cart button (up to
-  # 20s, the capture-06 needle) → tap it → sleep 3 for the toast flow. The
-  # seeded product merges into whatever the cart already holds.
-  # t273b→f: the button sits BELOW THE FOLD on the tall PDP and the product
-  # deeplink dies silently in a freshly cold-started process — the block
-  # below builds the cart via a real home-feed card tap first, then falls
-  # back to the deeplink, and walks the button into view with render-gated
-  # swipes (uiautomator sees visible nodes only).
-  if [ -n "$T273_PRODUCT_ID" ] && ensure_home; then
-    # t273f (runs 41698812091 + 41707303870): zylod://product/<id> navigates
-    # reliably on a MATURE process (capture 06 proves it every run) but dies
-    # SILENTLY in a freshly cold-started one — three delivered intents
-    # (result code=3 → onNewIntent → DeepLinkBus.open, verified in logcat)
-    # produced zero navigation and zero app logs across 85s, while the
-    # zylod://checkout link 30s later navigated fine. The bus drain never
-    # fired for the product links. The fix stops depending on the bus for
-    # THIS capture: build the cart the way a real buyer does — tap the
-    # featured card on the NATIVE home feed (HomeScreen.kt:435
-    # FeaturedCard.clickable → openPage → resolver → native PDP; direct
-    # Compose navigation, no deeplink, no bus). The card needle is the
-    # product NAME (both the AsyncImage contentDescription and the title
-    # Text carry it); the featured rail sits below the fold so the tap is
-    # preceded by a walk. The proven deeplink stays as the fallback.
-    PDP_T273_SETTLED=0
-    T273_NAME=$(timeout 10 curl -s "$HOST_API_BASE/api/products?limit=1" | python3 -c 'import json,sys
-try:
-    d = json.load(sys.stdin)
-    print((d["data"][0].get("name") or "").strip()[:40])
-except Exception:
-    pass' 2>/dev/null || true)
-    echo "capture 68: home-card needle=${T273_NAME:-none}"
-    TAP_T273_FIRED=0
-    if [ -n "$T273_NAME" ]; then
-      # t274b (run 41720404142 logcat): the walk polled 21:58:44–59 while the
-      # freshly cold-started feed was still empty — ServerConfig resolved at
-      # 21:58:35 and the featured cards' images only hit the wire at
-      # 21:58:59, the exact second the walk gave up. Sleep every round so
-      # the poll window outlives the feed render (~30s post-cold-start).
-      for i in 1 2 3 4 5 6 7 8; do
-        if any_text_on_screen "$T273_NAME"; then
-          tap_clickable_text "$T273_NAME" || true
-          TAP_T273_FIRED=1
-          break
-        fi
-        adbt 15 "input swipe 540 1500 540 500 400" >/dev/null 2>&1 || true
-        sleep 3
-      done
-    fi
-    echo "capture 68: home-card tap fired=$TAP_T273_FIRED"
-    if [ "$TAP_T273_FIRED" -eq 1 ]; then
-      # settle the PDP + walk the button (render-gated: 'reviews' rating
-      # line above the fold proves state.product != null)
-      for i in 1 2 3 4 5 6; do
-        sleep 5
-        if any_text_on_screen "Add to Cart"; then
-          PDP_T273_SETTLED=1
-          break
-        fi
-        if any_text_on_screen "reviews"; then
-          adbt 15 "input swipe 540 1500 540 500 400" >/dev/null 2>&1 || true
-        fi
-      done
-    fi
-    if [ "$PDP_T273_SETTLED" -eq 0 ]; then
-      # fallback: the deeplink path (proven on mature processes; 2 attempts)
-      for T273_ATTEMPT in 1 2; do
-        adbt 15 am start -a android.intent.action.VIEW -d "zylod://product/$T273_PRODUCT_ID" com.zylod.wholesale.debug >/dev/null 2>&1
-        for i in 1 2 3; do
-          sleep 5
-          if any_text_on_screen "Add to Cart"; then
-            PDP_T273_SETTLED=1
-            break
-          fi
-          if any_text_on_screen "reviews"; then
-            adbt 15 "input swipe 540 1500 540 500 400" >/dev/null 2>&1 || true
-          fi
-        done
-        if [ "$PDP_T273_SETTLED" -eq 1 ]; then
-          break
-        fi
-        echo "capture 68: PDP deeplink attempt $T273_ATTEMPT did not render"
-      done
-    fi
-    if [ "$PDP_T273_SETTLED" -eq 0 ]; then
-      # t274b FINAL fallback — the proven-mature path: every run's capture 06
-      # deeplinks the SAME product on a process that has been up for
-      # minutes and lands the NATIVE PDP first try. Force-stop + relaunch +
-      # a 35s maturity window (ServerConfig resolve + feed render + the
-      # process state the 06 deeplink always finds) + ensure_home + one
-      # more deeplink with the full render-gated walk.
-      log "capture 68: maturing the app (force-stop + relaunch + 35s) for the proven deeplink path"
-      adbt 15 am force-stop com.zylod.wholesale.debug >/dev/null 2>&1 || true
-      adbt 20 monkey -p com.zylod.wholesale.debug -c android.intent.category.LAUNCHER 1 >/dev/null 2>&1 || true
-      sleep 35
-      if ensure_home; then
-        adbt 15 am start -a android.intent.action.VIEW -d "zylod://product/$T273_PRODUCT_ID" com.zylod.wholesale.debug >/dev/null 2>&1
-        for i in 1 2 3 4 5 6; do
-          sleep 5
-          if any_text_on_screen "Add to Cart"; then
-            PDP_T273_SETTLED=1
-            break
-          fi
-          if any_text_on_screen "reviews"; then
-            adbt 15 "input swipe 540 1500 540 500 400" >/dev/null 2>&1 || true
-          fi
-        done
-        echo "capture 68: matured-app deeplink settled=$PDP_T273_SETTLED"
-      fi
-    fi
-    if [ "$PDP_T273_SETTLED" -eq 1 ]; then
-      tap_clickable_text "Add to Cart" || true
-      sleep 3
-    else
-      echo "::warning::capture 68: PDP 'Add to Cart' not detected (card tap + deeplinks + matured relaunch) — cart may stay empty (captures proceed honestly)"
-    fi
-  fi
-  # t273 (e): fire the typed checkout. guarded_deeplink enforces the
-  # HOME_ROUTE queue-drain guard and caps after its 10s settle; the extra
-  # poll below waits up to 15s more for ANY of the three honest typed
-  # states (any one proves the typed screen) and re-caps the settled shot
-  # — on timeout the guarded_deeplink cap stands (capture regardless).
-  guarded_deeplink "68-checkout" 10 "zylod://checkout"
-  CHECKOUT_T273_SETTLED=0
-  for i in 1 2 3; do
-    sleep 5
-    if any_text_on_screen "Review Order" "Your cart is empty" "Sign in required"; then
-      CHECKOUT_T273_SETTLED=1
-      break
-    fi
-  done
-  if [ "$CHECKOUT_T273_SETTLED" -eq 1 ]; then
-    cap "screenshots/68-checkout.png"
-  fi
-  echo "capture 68: checkout settled=$CHECKOUT_T273_SETTLED (Review Order / Your cart is empty / Sign in required)"
-  # t273 (f): on the REAL form — pick Bank Transfer, place the order,
-  # settle up to 30s for the inline success title ("Order <num> Created"
-  # contains 'Created'); timeout → capture the current state anyway + dump
-  # the last 200 logcat lines as place-order evidence. Never fatal.
-  # t273b: the payment radios and the Place Order CTA are BELOW THE FOLD on
-  # the tall form — each tap is preceded by a swipe walk that stops as soon
-  # as its target text is visible (uiautomator sees visible nodes only).
-  if any_text_on_screen "Review Order"; then
-    PAY_T273_READY=0
-    # t273d: 6 rounds (was 4) — slow CI forms get more walk margin
-    for i in 1 2 3 4 5 6; do
-      if any_text_on_screen "Bank Transfer"; then
-        PAY_T273_READY=1
-        break
-      fi
-      adbt 15 "input swipe 540 1400 540 600 400" >/dev/null 2>&1 || true
-      sleep 2
-    done
-    echo "capture 69: Bank Transfer visible=$PAY_T273_READY"
-    if [ "$PAY_T273_READY" -eq 1 ]; then
-      tap_clickable_text "Bank Transfer" || true
-    fi
-    sleep 1
-    CTA_T273_READY=0
-    # t273d: 6 rounds (was 4)
-    for i in 1 2 3 4 5 6; do
-      if any_text_on_screen "Place Order"; then
-        CTA_T273_READY=1
-        break
-      fi
-      adbt 15 "input swipe 540 1400 540 600 400" >/dev/null 2>&1 || true
-      sleep 2
-    done
-    echo "capture 69: Place Order visible=$CTA_T273_READY"
-    if [ "$CTA_T273_READY" -eq 1 ]; then
-      tap_clickable_text "Place Order" || true
-    fi
-    PLACED_T273_SETTLED=0
-    for i in 1 2 3 4 5 6; do
-      sleep 5
-      if any_text_on_screen "Created"; then
-        PLACED_T273_SETTLED=1
-        break
-      fi
-    done
-    cap "screenshots/69-checkout-placed.png"
-    if [ "$PLACED_T273_SETTLED" -eq 0 ]; then
-      echo "::warning::capture 69: 'Created' not detected within 30s — captured current state + logcat evidence"
-      timeout 10 adb logcat -d 2>/dev/null | tail -200 > screenshots/checkout-place-log.txt || true
-    fi
-    echo "capture 69: placed settled=$PLACED_T273_SETTLED"
-  else
-    echo "capture 69: SKIPPED — 'Review Order' never visible (empty cart / sign-in wall / still loading)"
-  fi
-  # t273 (g): extract the placed orderId from the VM's capture-evidence log
-  # line ("order placed id=..."). logcat-full.txt is only dumped at the
-  # very END of the script, so grep the LIVE buffer the way the neighbor
-  # blocks do. No id → the confirmation URL still fires without one and
-  # capture 70 shows the honest No-order-to-confirm state.
-  T273_ORDER_ID=$(timeout 10 adb logcat -d 2>/dev/null | grep -o "order placed id=[0-9a-f-]*" | tail -1 | cut -d= -f2 || true)
-  echo "capture 70: T273_ORDER_ID=${T273_ORDER_ID:-} (grep 'order placed id=' over adb logcat -d)"
-  if [ -n "$T273_ORDER_ID" ]; then
-    guarded_deeplink "70-checkout-success" 10 "https://zylod.com/?page=checkout-success&orderId=$T273_ORDER_ID"
-  else
-    guarded_deeplink "70-checkout-success" 10 "https://zylod.com/?page=checkout-success"
-  fi
-  SUCCESS_T273_SETTLED=0
-  for i in 1 2 3; do
-    sleep 5
-    if any_text_on_screen "Order Received" "No order to confirm"; then
-      SUCCESS_T273_SETTLED=1
-      break
-    fi
-  done
-  if [ "$SUCCESS_T273_SETTLED" -eq 1 ]; then
-    cap "screenshots/70-checkout-success.png"
-  fi
-  echo "capture 70: confirmation settled=$SUCCESS_T273_SETTLED (Order Received / No order to confirm)"
-
-  # t274: the TYPED order-detail capture — the placed order's real detail
-  # (status stepper, per-supplier shipments with line items + tracking, the
-  # payment summary with the manual-payment leg). zylod://orders/<id> maps
-  # to the order-detail pageId with the orderId param (DeepLinkParser t206
-  # B5). Needs the buyer session (re-injected above) and the real orderId
-  # from the 69 place-order — without one the capture SKIPS (the honest
-  # no-order wall is already proven by the web suite).
-  if [ -n "$T273_ORDER_ID" ]; then
-    guarded_deeplink "71-order-detail" 10 "zylod://orders/$T273_ORDER_ID"
-    DETAIL_T274_SETTLED=0
-    for i in 1 2 3 4 5 6; do
-      sleep 5
-      if any_text_on_screen "Items in Order" "Sign in required" "Order not found" "No order selected"; then
-        DETAIL_T274_SETTLED=1
-        break
-      fi
-      # render-gated walk: the payment summary sits below the fold — swipe
-      # only once the detail screen has rendered (its own header text)
-      if any_text_on_screen "Placed" "Track Order"; then
-        adbt 15 "input swipe 540 1400 540 600 400" >/dev/null 2>&1 || true
-      fi
-    done
-    cap "screenshots/71-order-detail.png"
-    echo "capture 71: detail settled=$DETAIL_T274_SETTLED (Items in Order / Sign in required / Order not found / No order selected)"
-  else
-    echo "capture 71: SKIPPED — T273_ORDER_ID empty (the 69 place-order never landed)"
-  fi
 fi
 
 log "Screen inventory"
