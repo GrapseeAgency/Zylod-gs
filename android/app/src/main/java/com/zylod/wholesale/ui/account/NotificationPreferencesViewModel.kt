@@ -94,8 +94,19 @@ class NotificationPreferencesViewModel(private val appContext: Context) : ViewMo
                     return@launch
                 }
                 val prefs = response.body()?.takeIf { it.success }?.prefs
-                if (!response.isSuccessful || prefs == null) {
+                if (!response.isSuccessful) {
                     _state.update { it.copy(loading = false, error = "Could not load your saved notification settings (HTTP ${response.code()})") }
+                    return@launch
+                }
+                // t281: web parity — the route returns prefs:null when the
+                // account has never saved a notificationPreferences row
+                // (notification-preferences-page.tsx :399 `if (prefs)` keeps
+                // the defaults in exactly this case). The old branch treated
+                // a never-saved account as a HARD ERROR ("Could not load your
+                // saved notification settings (HTTP 200)" — VLM capture 73),
+                // hiding all 14 category cards behind a retry wall.
+                if (prefs == null) {
+                    _state.update { it.copy(loading = false) }
                     return@launch
                 }
                 val (cats, quiet) = restored(prefs)
