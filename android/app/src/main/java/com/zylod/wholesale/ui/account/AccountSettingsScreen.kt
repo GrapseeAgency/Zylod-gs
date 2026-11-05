@@ -2,6 +2,7 @@ package com.zylod.wholesale.ui.account
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -176,9 +177,17 @@ fun AccountSettingsScreen(
 
             // Section pills (web :356-362 — 5 of the 6 pills; Billing & Tax
             // rows are tax/billing doc pages on the web, not settings).
+            // t282: the web strip is overflow-x-auto (account-settings-page :364)
+            // and FaqScreen uses the same pattern — a PLAIN Row squeezed the
+            // fifth pill into a one-letter-per-line vertical sliver at 320dp
+            // (capture 72, artifact 13412300323 "Appearance" rendered as a
+            // stacked A/p/p/e/a/r/a/n/c/e strip).
             Row(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
-                modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .horizontalScroll(rememberScrollState())
+                    .padding(bottom = 16.dp),
             ) {
                 SectionPill("Security", state.section == AccountSettingsSection.SECURITY) {
                     vm.selectSection(AccountSettingsSection.SECURITY)

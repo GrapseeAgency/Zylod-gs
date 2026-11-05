@@ -194,7 +194,13 @@ private fun MethodCard(icon: androidx.compose.ui.graphics.vector.ImageVector, ti
             Spacer(Modifier.width(14.dp))
             Column(Modifier.weight(1f)) {
                 Text(title, fontSize = 14.sp, fontWeight = FontWeight.Bold)
-                Text(sub, fontSize = 11.sp, color = if (enabled) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.outline)
+                // t282: the disabled branch carries an ACTIONABLE hint
+                // ("Add one in Profile to enable SMS codes") but outline was
+                // whisper-contrast at 320dp (capture 75, artifact 13412300323,
+                // VLM: "barely legible"); the web renders the same hint in
+                // legible #6B7280 (two-factor-auth-page.tsx :448). The disabled
+                // affordance stays on the icon tint + no-click + not-selected.
+                Text(sub, fontSize = 11.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
         }
     }

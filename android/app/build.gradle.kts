@@ -23,11 +23,11 @@ android {
         applicationId = "com.zylod.wholesale"
         minSdk = 24
         targetSdk = 35
-        versionCode = 282
+        versionCode = 283
         // CI passes -PcommitSuffix=<short-sha> so every CI-built APK is
         // traceable to its exact commit on-device (Settings → Apps).
-        // Local builds stay plain "2.4.42".
-        versionName = "2.4.42" + (findProperty("commitSuffix")?.let { "-$it" } ?: "")
+        // Local builds stay plain "2.4.43".
+        versionName = "2.4.43" + (findProperty("commitSuffix")?.let { "-$it" } ?: "")
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -191,4 +191,11 @@ dependencies {
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
+}
+
+// t282: Room schema export directory — @Database(exportSchema = true) writes
+// app/schemas/…AppDatabase/<version>.json at build time so entity changes are
+// diffable and migration-testable (checked in, per Room's guidance).
+ksp {
+    arg("room.schemaLocation", "$projectDir/schemas")
 }

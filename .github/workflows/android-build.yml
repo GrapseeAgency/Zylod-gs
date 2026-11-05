@@ -87,7 +87,11 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: Zylod-release-apk-${{ github.sha }}
+          # t282: the Room schema export (app/schemas/…AppDatabase/<v>.json,
+          # exportSchema = true) rides the release artifact so it can be
+          # captured and committed from the green build.
           path: |
             android/app/build/outputs/apk/release/app-release.apk
+            android/app/schemas/
           if-no-files-found: error
           retention-days: 30

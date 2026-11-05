@@ -4,6 +4,7 @@ import android.content.Intent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -165,6 +166,11 @@ fun BackupCodesScreen(
 
             Spacer(Modifier.height(20.dp))
             val clipboard = LocalClipboardManager.current
+            // t282: "Copy to Clipboard" ellipsized to "Copy to" (capture 76,
+            // artifact 13412300323) — OutlinedButton's default 24dp-per-side
+            // content padding starved the 10sp label inside a weight(1f)
+            // half-row; tightened padding keeps the web's full label
+            // (backup-codes-page 'Copy to Clipboard') on one line.
             Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                 OutlinedButton(
                     onClick = {
@@ -172,6 +178,7 @@ fun BackupCodesScreen(
                         vm.markCopied()
                     },
                     shape = RoundedCornerShape(14.dp),
+                    contentPadding = PaddingValues(horizontal = 10.dp, vertical = 8.dp),
                     modifier = Modifier.weight(1f).height(46.dp),
                 ) {
                     Icon(Icons.Outlined.ContentCopy, null, Modifier.size(16.dp))
@@ -200,6 +207,7 @@ fun BackupCodesScreen(
                         }
                     },
                     shape = RoundedCornerShape(14.dp),
+                    contentPadding = PaddingValues(horizontal = 10.dp, vertical = 8.dp),
                     modifier = Modifier.weight(1f).height(46.dp),
                 ) {
                     Icon(Icons.Outlined.Share, null, Modifier.size(16.dp))

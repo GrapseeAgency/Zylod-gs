@@ -150,17 +150,40 @@ fun NotificationPreferencesScreen(
                 }
             }
             item {
+                // t282: "Mute All Channels" wrapped to two lines while
+                // "Unmute All" sat on one (capture 73, artifact 13412300323) —
+                // the default OutlinedButton content padding (24dp per side)
+                // starved the label inside a weight(1f) half-row. The web's
+                // master controls are flex-1 h-10 text-xs buttons
+                // (notification-preferences-page :596-604) — tightened padding
+                // puts both labels on a single line at 320dp.
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     OutlinedButton(
                         onClick = { vm.muteAll(true) },
                         shape = RoundedCornerShape(12.dp),
+                        contentPadding = androidx.compose.foundation.layout.PaddingValues(horizontal = 10.dp, vertical = 8.dp),
                         modifier = Modifier.weight(1f),
-                    ) { Text("Mute All Channels", fontSize = 11.sp, fontWeight = FontWeight.Bold) }
+                    ) {
+                        Text(
+                            "Mute All Channels",
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.Bold,
+                            maxLines = 1,
+                        )
+                    }
                     OutlinedButton(
                         onClick = { vm.muteAll(false) },
                         shape = RoundedCornerShape(12.dp),
+                        contentPadding = androidx.compose.foundation.layout.PaddingValues(horizontal = 10.dp, vertical = 8.dp),
                         modifier = Modifier.weight(1f),
-                    ) { Text("Unmute All", fontSize = 11.sp, fontWeight = FontWeight.Bold) }
+                    ) {
+                        Text(
+                            "Unmute All",
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.Bold,
+                            maxLines = 1,
+                        )
+                    }
                 }
             }
             items(state.categories, key = { it.id }) { cat ->
