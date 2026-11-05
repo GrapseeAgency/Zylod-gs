@@ -1,6 +1,6 @@
 import { checkRateLimit, rateLimitResponse } from '@/lib/rate-limit'
 import { NextRequest, NextResponse } from 'next/server'
-import { writeFile } from 'fs/promises'
+import { mkdir, writeFile } from 'fs/promises'
 import path from 'path'
 import crypto from 'crypto'
 import { authenticateRequest } from '@/lib/auth'
@@ -46,6 +46,11 @@ export async function POST(request: NextRequest) {
     const filePath = path.join(dir, filename)
 
     const buffer = Buffer.from(await file.arrayBuffer())
+    // t280: the uploads tree was never created by this route — on a fresh
+    // checkout/dev volume the first upload 500s with ENOENT (verified live:
+    // public/uploads/avatars did not exist). KYC/product uploads create their
+    // own dirs; this one must too.
+    await mkdir(dir, { recursive: true })
     await writeFile(filePath, buffer)
 
     const fileUrl = `/uploads/${subfolder}/${filename}`

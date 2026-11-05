@@ -165,7 +165,11 @@ class AccountSettingsViewModel(private val appContext: Context) : ViewModel() {
                     put(
                         "promotions",
                         buildJsonObject {
-                            put("push", JsonPrimitive(s.notifPricePush))
+                            // t280 fix: the promo group carries the REAL promo
+                            // state (the audit's stated body wrote the price
+                            // toggle here — actively wrong: turning price
+                            // alerts off would have disabled promo alerts).
+                            put("push", JsonPrimitive(s.notifPromoPush))
                             put("email", JsonPrimitive(false))
                         },
                     )
@@ -175,6 +179,21 @@ class AccountSettingsViewModel(private val appContext: Context) : ViewModel() {
                             put("push", JsonPrimitive(s.notifShipPush))
                             put("email", JsonPrimitive(true))
                             put("sms", JsonPrimitive(false))
+                        },
+                    )
+                    // t280 fix: the price-drop toggle persists via the route's
+                    // categories map (processed alongside the flat groups) —
+                    // without it the control saved nothing (web parity fix).
+                    put(
+                        "categories",
+                        buildJsonObject {
+                            put(
+                                "price_alerts",
+                                buildJsonObject {
+                                    put("push", JsonPrimitive(s.notifPricePush))
+                                    put("email", JsonPrimitive(false))
+                                },
+                            )
                         },
                     )
                 }

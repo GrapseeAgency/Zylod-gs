@@ -252,6 +252,11 @@ export function AccountSettingsPage() {
           order: { push: notifOrderPush, email: notifOrderEmail, sms: notifOrderSms },
           promotions: { push: notifPromoPush, email: false },
           shipping: { push: notifShipPush, email: true, sms: false },
+          // t280: the Price Drop & Restock toggle hydrated from
+          // prefs.pushPriceDrops but its value was DROPPED on save — a dead
+          // control. The route processes the categories map alongside the
+          // flat groups, so price_alerts persists it for real.
+          categories: { price_alerts: { push: notifPricePush, email: false } },
         }),
       })
       const json = await res.json().catch(() => null)

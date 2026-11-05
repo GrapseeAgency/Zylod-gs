@@ -48,6 +48,10 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -76,9 +80,9 @@ fun AccountSettingsScreen(
     ) { AccountSettingsViewModel(context.applicationContext) }
     val state by vm.state.collectAsStateWithLifecycle()
 
-    var toast by androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf<String?>(null) }
-    var lastToastedNotif by androidx.compose.runtime.remember { androidx.compose.runtime.mutableIntStateOf(0) }
-    var lastToastedPrivacy by androidx.compose.runtime.remember { androidx.compose.runtime.mutableIntStateOf(0) }
+    var toast by remember { mutableStateOf<String?>(null) }
+    var lastToastedNotif by remember { mutableIntStateOf(0) }
+    var lastToastedPrivacy by remember { mutableIntStateOf(0) }
 
     LaunchedEffect(state.savedNotificationsTick) {
         if (state.savedNotificationsTick > lastToastedNotif) {
