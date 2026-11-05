@@ -411,6 +411,35 @@ const EVENTS = [
   },
 ]
 
+
+// t281 5-d: the CURRENT app version row — the download page and the in-app
+// updater read the LATEST published appVersions row; the repo's APKs sat at
+// the v2.4.7 era while the code shipped v2.4.42 (the t229h stale-APK class).
+// Size is the real artifact byte count of the green 805cd70 release build.
+const APP_VERSION = {
+  id: 'android-v282',
+  platform: 'android',
+  versionNumber: '2.4.42',
+  versionCode: 282,
+  minSupportedVersion: '2.4.0',
+  isMandatory: false,
+  changelogEn: `- 18 previously-shadowed typed screens now render natively (Help Center, FAQ, Contact, Docs, Feedback, Service Status, mid-checkout Delivery Methods, Coupons, Seller Verification and more)
+- 49 dead-end pages now open the real web pages instead of static bullets (returns, refunds, rewards points, payment options, address editing, seller finance, account settings)
+- Money-path screens polished: payment-verification status pill, order numbers wrap cleanly, honest "No reviews yet" ratings
+- Cart stepper matches the web for kilogram product lines (0.5 kg steps)
+- FAQ and blog sections now carry live content
+- Notification preferences no longer shows an error wall on fresh accounts`,
+  changelogBn: `- ১৮টি নতুন টাইপড স্ক্রিন এখন নেটিভভাবে রেন্ডার হয়
+- ৪৯টি ডেড-এন্ড পেজ এখন আসল ওয়েব পেজ খোলে
+- মানি-পাথ স্ক্রিন পলিশড
+- কার্ট স্টেপার ওয়েবের সাথে মিলে যায়
+- FAQ ও ব্লগ সেকশনে এখন লাইভ কনটেন্ট`,
+  apkDownloadUrl: '/downloads/zylod-b2b-v2.4.42.apk',
+  apkSizeBytes: BigInt(26690419),  // real 805cd70 release artifact size
+  releaseNotes: 'Round-5 native sweep + fresh-account notification-preferences fix.',
+  isPublished: true,
+}
+
 // t281 5-c: public FAQs — the FAQ/help-center surfaces rendered
 // 'No matching questions found' on every CI run (faqItems was seeded by
 // NOTHING — prisma/seed-support-docs.ts exists but no CI path runs it;
@@ -630,6 +659,16 @@ async function main() {
   }
   console.log(`[seed-content] blogPosts: ${BLOG_POSTS.length}`)
 
+  // t281 5-d: the current app version row (upsert by stable id)
+  await db.appVersions.upsert({
+    where: { id: APP_VERSION.id },
+    create: APP_VERSION,
+    update: { ...APP_VERSION, id: undefined },
+  })
+  console.log(`[seed-content] appVersions: ${APP_VERSION.versionNumber}/${APP_VERSION.versionCode}`)
+
+
+
 
   const counts = {
     legalDocuments: await db.legalDocuments.count(),
@@ -639,6 +678,7 @@ async function main() {
     tradeEvents: await db.tradeEvents.count(),
     faqItems: await db.faqItems.count(),
     blogPosts: await db.blogPosts.count(),
+    appVersions: await db.appVersions.count(),
   }
   console.log('[seed-content] totals:', counts)
 }
