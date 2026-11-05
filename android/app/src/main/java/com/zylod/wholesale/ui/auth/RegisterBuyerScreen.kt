@@ -89,6 +89,8 @@ class RegisterBuyerViewModel(private val appContext: Context) : ViewModel() {
             return
         }
         val target = if (usePhone) phone.trim() else email.trim().lowercase()
+        // t280 4-a#6: entry guard — one OTP send in flight at a time.
+        if (_state.value.sending) return
         viewModelScope.launch {
             _state.update { it.copy(sending = true, error = null) }
             try {

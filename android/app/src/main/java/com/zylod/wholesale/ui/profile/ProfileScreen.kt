@@ -18,6 +18,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.Logout
+import androidx.compose.material.icons.outlined.AddAPhoto
+import androidx.compose.material.icons.outlined.Security
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material.icons.outlined.Person
@@ -126,6 +128,10 @@ fun ProfileScreen(
                 Triple(Icons.Outlined.ReceiptLong, "Transaction history", "transaction-history"),
                 Triple(Icons.Outlined.Notifications, "Notifications", "notifications"),
                 Triple(Icons.Outlined.Settings, "Account settings", "account-settings"),
+                // t280: the typed account family's entries — photo + 2FA were
+                // reachable only through doc-page related chips before.
+                Triple(Icons.Outlined.AddAPhoto, "Profile photo", "profile-photo"),
+                Triple(Icons.Outlined.Security, "Security & 2FA", "two-factor-auth"),
                 Triple(Icons.Outlined.Storefront, "Business profile", "business-profile"),
                 Triple(Icons.Outlined.Verified, "Verification center", "verification-center"),
             )

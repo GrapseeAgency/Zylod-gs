@@ -9,6 +9,8 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import androidx.compose.runtime.getValue
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import android.os.Environment
 import android.provider.MediaStore
 import android.speech.RecognitionListener
@@ -142,8 +144,19 @@ class NativeMainActivity : FragmentActivity(), WebViewHost {
         // `adb logcat -s ZylodProvenance` proves exactly which build is
         // running and which endpoints it will consider (docs/PROVENANCE.md).
         com.zylod.wholesale.session.WebProvenance.logAppIdentity()
+        // t280: hydrate the persisted theme override BEFORE the first frame
+        // (GET/PATCH api/profile/theme parity — the root collects the live
+        // flow so an in-settings change applies instantly, no restart).
+        com.zylod.wholesale.ui.account.ThemeController.hydrate()
         setContent {
-            ZylodTheme {
+            // The collected value drives recomposition; resolveDarkTheme is
+            // only the shared mapping (SYSTEM → follow the device).
+            val themeMode by com.zylod.wholesale.ui.account.ThemeController.mode
+                .collectAsStateWithLifecycle()
+            val systemDark = androidx.compose.foundation.isSystemInDarkTheme()
+            ZylodTheme(
+                darkTheme = com.zylod.wholesale.ui.account.ThemeController.resolveDarkTheme(themeMode, systemDark),
+            ) {
                 ZylodRoot()
             }
         }

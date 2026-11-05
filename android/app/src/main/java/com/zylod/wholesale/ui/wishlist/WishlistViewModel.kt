@@ -62,6 +62,10 @@ class WishlistViewModel(private val appContext: Context) : ViewModel() {
     }
 
     fun remove(productId: String) {
+        // t280 4-a#5: same-frame double-tap fired two DELETEs; the second's
+        // 404 hit the failure branch and raised a false "offline" banner
+        // right after a successful removal. Every sibling VM already guards.
+        if (_state.value.removingId != null) return
         _state.update { it.copy(removingId = productId) }
         viewModelScope.launch {
             try {

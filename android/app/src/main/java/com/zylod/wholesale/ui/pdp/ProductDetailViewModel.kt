@@ -291,6 +291,8 @@ class ProductDetailViewModel(private val appContext: Context) : ViewModel() {
             _state.update { it.copy(qaNeedsLogin = true) }
             return
         }
+        // t280 4-a#6: entry guard — one Q&A post in flight.
+        if (_state.value.askingQuestion) return
         viewModelScope.launch {
             _state.update { it.copy(askingQuestion = true) }
             try {
@@ -426,6 +428,11 @@ class ProductDetailViewModel(private val appContext: Context) : ViewModel() {
             _state.update { it.copy(justAdded = false) }
         }
         viewModelScope.launch {
+            // t280 4-a#2: one POST per merge key at a time — a concurrent
+            // cart-entry pull pushing the same local row to the ADDITIVE
+            // server route would double-count this line into checkout money.
+            // Skipped here, the next cart pull adopts the server's truth.
+            if (!CartStore.serverAddInFlight.add(mergeKeyValue)) return@launch
             try {
                 val base = baseUrl ?: ServerConfig.resolve(appContext).also { baseUrl = it }
                 val buyerId = SessionManager.userJson()?.let { raw ->
@@ -441,7 +448,15 @@ class ProductDetailViewModel(private val appContext: Context) : ViewModel() {
                         buyerId = buyerId,
                         productId = stored.productId,
                         variantId = stored.variantId,
-                        quantity = stored.quantity,
+                        // t280 4-a#1: the server POST route is ADDITIVE (cart
+                        // route.ts: existingItem.quantity + safeQuantity — web
+                        // cart-store.ts:181 sends the DELTA it was handed, not
+                        // the post-merge total). stored.quantity is the merged
+                        // local TOTAL: sending it with 10 already on the server
+                        // row and the buyer adding 10 landed 10+20=30 server
+                        // side, which pullServerCart then adopted — checkout
+                        // ordered 30. Send exactly what this tap added.
+                        quantity = quantity.toDouble(),
                         supplierId = stored.supplierId,
                     ),
                 )
@@ -481,6 +496,8 @@ class ProductDetailViewModel(private val appContext: Context) : ViewModel() {
                 throw ce
             } catch (e: Exception) {
                 // Offline-tolerant: local cart keeps working (web parity).
+            } finally {
+                CartStore.serverAddInFlight.remove(mergeKeyValue)
             }
         }
     }

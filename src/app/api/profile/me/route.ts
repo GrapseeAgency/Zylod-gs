@@ -98,6 +98,12 @@ async function handleProfileUpdate(request: NextRequest) {
     const userUpdates: Record<string, unknown> = {}
     if (email) userUpdates.email = email
     if (phone) userUpdates.phone = phone
+    // t280: honor avatarUrl:null (the web profile-photo page's Remove button
+    // PATCHes exactly this and it was silently dropped — the avatar survived
+    // every "remove" and reappeared on the next load now that the column is
+    // persisted). Only null is honored: the upload endpoint owns writes of
+    // real URLs.
+    if (body.avatarUrl === null) userUpdates.avatarUrl = null
 
     if (Object.keys(userUpdates).length > 0) {
       await db.users.update({

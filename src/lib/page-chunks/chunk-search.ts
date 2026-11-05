@@ -15,7 +15,7 @@ export const CHUNK_SEARCH = new Set([
   'category-navigation', 'all-categories',
 
   // Search & Navigation Sub-pages
-  'search-filters', 'filter-sort',
+  'search-filters',
   'trending-searches-sub',
   'saved-searches',
   'category-products-detail',
@@ -50,7 +50,6 @@ export async function loadChunkPage(pageId: string): Promise<PageLoadResult> {
 
     // Sub-pages
     'search-filters': () => import('@/components/pages/search-filters-page'),
-    'filter-sort': () => import('@/components/pages/search-filters-page'),
     'trending-searches-sub': () => import('@/components/pages/trending-searches-page'),
     'saved-searches': () => import('@/components/pages/saved-searches-page'),
     'category-products-detail': () => import('@/components/pages/category-products-detail-page'),

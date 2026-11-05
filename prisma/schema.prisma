@@ -27,6 +27,11 @@ model users {
   isPhoneVerified    Boolean   @default(false)
   twoFactorSecret    String?
   isTwoFactorEnabled Boolean   @default(false)
+  // t280: profile photo URL (public/uploads/avatars/...). The photo POST
+  // route used to write the file and return the URL WITHOUT persisting it —
+  // every refresh lost the avatar (web + native alike). me GET returns it,
+  // me PATCH honors avatarUrl:null (remove).
+  avatarUrl          String?
   // Suspension metadata (set when accountStatus != active)
   suspensionReason   String?
   suspensionRef      String?
@@ -2744,6 +2749,12 @@ model offlineSyncEvents {
   id              String    @id @default(cuid())
   // Set when the replay carried a valid session token
   userId          String?
+  // t280 idempotency: stable client-generated event id (the Android worker
+  // sends "native-<localId>-<createdAt>"). The replay is at-least-once
+  // (backoff retries after a lost response), and CREATE_ORDER is money —
+  // the unique index makes the second insert of the same event a no-op
+  // instead of a duplicate order downstream. Nullable: legacy/anon replays.
+  eventId         String?   @unique
   // actionType: POST /api/orders, SAVE_WISHLIST, SUBMIT_RFQ, ...
   actionType      String
   entityType      String

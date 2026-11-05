@@ -33,15 +33,25 @@ import com.zylod.wholesale.ui.pages.NativePageViewModel
  * (src/lib/page-loader.ts registry entry, now owned by Compose — the
  * WebView is fallback-only for unregistered ids).
  *
- * Live data: GET api/categories through NativePageRepository, cached on-device for offline.
+ * Live data: GET api/products?category=<slug> (the navigation query folds in
+ * via buildEndpoint on PRODUCTS metas) through NativePageRepository, cached
+ * on-device for offline.
 "Category Products — product discovery and buying on the Zylod marketplace. Content streams live from the Zylod API and renders through the shared native page model."
  */
 data object CategoryProductsPageMeta : NativePageMeta() {
     override val pageId = "category-products"
     override val title = "Category Products"
     override val category = "Shopping & Products"
-    override val kind = NativePageKind.CATEGORIES
-    override val endpoint: String? = "api/categories"
+    // t280 4-b#1 (P0): this was kind=CATEGORIES + endpoint=api/categories —
+    // buildEndpoint only folds the `category=` query param on PRODUCTS metas,
+    // so the Home category tile and the Categories tab's row (both navigate
+    // here WITH category=<slug>) re-rendered the category LIST with the param
+    // silently dropped — the core browse flow was a dead-end loop (a category
+    // tile could never show that category's products). PRODUCTS + the
+    // products endpoint folds the slug exactly like the web's
+    // category-products-page (route: /api/products?category=<slug>).
+    override val kind = NativePageKind.PRODUCTS
+    override val endpoint: String? = "api/products?limit=20&page=1"
     override val summary = "Category Products — product discovery and buying on the Zylod marketplace. Content streams live from the Zylod API and renders through the shared native page model."
     override val tabHint = ""
     override val bullets = listOf(

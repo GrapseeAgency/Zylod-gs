@@ -217,7 +217,11 @@ class NotificationsViewModel(private val appContext: Context) : ViewModel() {
      */
     fun openTarget(n: NativeNotificationDto): Pair<String, String> {
         val relatedId = n.relatedId?.takeIf(String::isNotBlank)
-        if (relatedId == null) return "notification-detail" to "notificationId=${n.id}"
+        // t280 4-b#2: the web's notification-detail page reads pageParams.id
+        // (generic-info notification-detail + GET api/notifications/{id}); the
+        // old `notificationId=` param name never matched, so even the webview
+        // fallback rendered a param-less detail card.
+        if (relatedId == null) return "notification-detail" to "id=${n.id}"
         return when (n.type?.trim()?.lowercase()) {
             // Task 68-c: a payment notification carrying the exact payments
             // row lands on the order view (the native OrderDetail has no
@@ -243,7 +247,7 @@ class NotificationsViewModel(private val appContext: Context) : ViewModel() {
             // sellers the seller thread).
             "system" -> if (isSupplier()) "seller-ticket-detail" to "id=$relatedId"
             else "ticket-detail" to "id=$relatedId"
-            else -> "notification-detail" to "notificationId=${n.id}"
+            else -> "notification-detail" to "id=${n.id}"
         }
     }
 

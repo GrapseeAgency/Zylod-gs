@@ -11,7 +11,7 @@ export const CHUNK_SELLER = new Set([
   'seller-storefront',
   'add-product', 'seller-add-product', 'supplier-add-product',
   'edit-product', 'seller-edit-product',
-  'product-listings-manager', 'seller-products-manager', 'supplier-products',
+  'product-listings-manager', 'seller-products-manager',
   'inventory-management', 'seller-inventory',
   'seller-order-management', 'seller-orders', 'supplier-orders',
   'seller-analytics',
@@ -119,7 +119,6 @@ export async function loadChunkPage(pageId: string): Promise<PageLoadResult> {
     // 135. Product Listings Manager
     'product-listings-manager': () => import('@/components/pages/product-listings-manager-page'),
     'seller-products-manager': () => import('@/components/pages/product-listings-manager-page'),
-    'supplier-products': () => import('@/components/pages/product-listings-manager-page'),
 
     // 136. Inventory Management
     'inventory-management': () => import('@/components/pages/inventory-management-page'),

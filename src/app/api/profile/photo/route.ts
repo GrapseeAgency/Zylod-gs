@@ -4,6 +4,7 @@ import { writeFile } from 'fs/promises'
 import path from 'path'
 import crypto from 'crypto'
 import { authenticateRequest } from '@/lib/auth'
+import { db } from '@/lib/db'
 
 const MAX_SIZE = 10 * 1024 * 1024 // 10MB
 const ALLOWED = ['image/jpeg', 'image/png', 'image/webp', 'image/gif']
@@ -48,6 +49,20 @@ export async function POST(request: NextRequest) {
     await writeFile(filePath, buffer)
 
     const fileUrl = `/uploads/${subfolder}/${filename}`
+
+    // t280: PERSIST the avatar upload — the route used to write the file and
+    // return the URL without touching the database, so every sign-in/refresh
+    // lost the avatar (the web stored it only in client state, the native had
+    // nothing at all; the remove button's PATCH { avatarUrl: null } was
+    // silently ignored by me/route.ts). Avatars land on users.avatarUrl, the
+    // single source of truth both clients read (me GET). Cover uploads keep
+    // the legacy ephemeral behavior — no column exists for them.
+    if (!isCover) {
+      await db.users.update({
+        where: { id: auth.user.id },
+        data: { avatarUrl: fileUrl },
+      })
+    }
 
     return NextResponse.json({
       success: true,

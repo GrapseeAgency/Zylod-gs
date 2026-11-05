@@ -162,6 +162,8 @@ class LoginViewModel(private val appContext: Context) : ViewModel() {
         // from logcat, the tap never reached the ViewModel. Presence + length
         // only; the password is NEVER logged.
         Log.i("ZylodAuth", "login submit emailPresent=${emailOrPhone.isNotBlank()} emailLen=${emailOrPhone.trim().length}")
+        // t280 4-a#6: entry guard — one login POST in flight at a time.
+        if (_state.value.loading) return
         if (emailOrPhone.isBlank() || password.isBlank()) {
             _state.update { it.copy(error = "Please enter your email/phone and password") }
             return

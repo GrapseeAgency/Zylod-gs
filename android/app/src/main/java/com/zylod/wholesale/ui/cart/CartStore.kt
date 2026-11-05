@@ -41,6 +41,17 @@ object CartStore {
 
     data class State(val items: List<CartItemData> = emptyList())
 
+    /** t280 4-a#2: POST /api/cart pushes in flight, keyed by merge key.
+     *  The server add-route is ADDITIVE (existing + sent), so two CONCURRENT
+     *  pushes of the same line double-count it into real money at checkout —
+     *  e.g. the PDP's delta POST still mid-flight while a cart-entry pull's
+     *  pending-row loop pushes the same local row's full quantity. One push
+     *  per merge key at a time, process-wide (PDP VM and cart VM share this
+     *  store). Sequential pushes remain correct: each carries the amount of
+     *  its own moment, and the next pull adopts the server's truth. */
+    val serverAddInFlight: MutableSet<String> =
+        java.util.concurrent.ConcurrentHashMap.newKeySet()
+
     private val ioScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
     // t279 — the cold-start cart hydrate no longer runs inside object init on

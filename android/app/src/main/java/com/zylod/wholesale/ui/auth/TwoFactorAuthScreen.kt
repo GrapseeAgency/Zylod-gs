@@ -97,6 +97,8 @@ class TwoFactorViewModel(private val appContext: Context) : ViewModel() {
             _state.update { it.copy(error = "Missing user context. Please restart the flow.") }
             return
         }
+        // t280 4-a#6: entry guard — a double-tap fired two 2FA verify POSTs.
+        if (_state.value.submitting) return
         viewModelScope.launch {
             _state.update { it.copy(submitting = true, error = null) }
             try {

@@ -16,7 +16,6 @@ export async function loadChunkByName(chunkName: string): Promise<any> {
     case 'browse': mod = await import('./page-chunks/chunk-browse'); break
     case 'cart': mod = await import('./page-chunks/chunk-cart'); break
     case 'profile': mod = await import('./page-chunks/chunk-profile'); break
-    case 'shipping': mod = await import('./page-chunks/chunk-shipping'); break
     case 'wishlist': mod = await import('./page-chunks/chunk-wishlist'); break
     case 'seller': mod = await import('./page-chunks/chunk-seller'); break
     case 'search': mod = await import('./page-chunks/chunk-search'); break
@@ -35,39 +34,6 @@ export async function loadPageFromChunk(chunkName: string, pageId: string): Prom
     return mod.loadChunkPage(pageId)
   }
   return { component: null }
-}
-
-// Load an auth/core page directly (register, login, home, etc.)
-export async function loadAuthPage(pageId: string): Promise<PageLoadResult> {
-  const loaders: Record<string, () => Promise<any>> = {
-    'home': () => import('@/components/pages/home-page'),
-    'register': () => import('@/components/pages/register-page'),
-    'login': () => import('@/components/pages/login-page'),
-    'register-buyer': () => import('@/components/pages/register-buyer-page'),
-    'register-supplier': () => import('@/components/pages/register-supplier-page'),
-    'otp-verification': () => import('@/components/pages/otp-verification-page'),
-    'forgot-password': () => import('@/components/pages/forgot-password-page'),
-    'reset-password': () => import('@/components/pages/reset-password-page'),
-    'phone-verification': () => import('@/components/pages/phone-verification-page'),
-    'email-verification': () => import('@/components/pages/email-verification-page'),
-    'account-suspended': () => import('@/components/pages/account-suspended-page'),
-    'two-factor-auth': () => import('@/components/pages/two-factor-auth-page'),
-    'backup-codes': () => import('@/components/pages/backup-codes-page'),
-    'account-recovery': () => import('@/components/pages/account-recovery-page'),
-  }
-  const loader = loaders[pageId]
-  if (!loader) return { component: null }
-  try {
-    const mod = await loader()
-    if (mod.default) return { component: mod.default }
-    const keys = Object.keys(mod)
-    const pageKey = keys.find(k => k.includes('Page'))
-    if (pageKey) return { component: mod[pageKey] }
-    return { component: null }
-  } catch (e) {
-    console.error(`Failed to load auth page: ${pageId}`, e)
-    return { component: null }
-  }
 }
 
 // Load a generic component by type

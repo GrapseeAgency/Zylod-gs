@@ -319,7 +319,13 @@ export async function loadChunkPage(pageId: string): Promise<PageLoadResult> {
     'marketplace-news': () => import('@/components/pages/blog-page'),
     'member-area': () => import('@/components/pages/loyalty-points-page'),
     'merchant-dashboard': () => import('@/components/pages/seller-dashboard-page'),
-    'messaging-center': () => import('@/components/pages/live-chat-page'),
+    // t280: 'messaging-center' previously routed to live-chat-page (Zylod
+    // SUPPORT) — the same wrong-recipient class t278 fixed for chat-list /
+    // chat-detail. A page named messaging-center must land on the DM
+    // conversation list (api/chat/conversations), which the native app
+    // already renders for this pageId; the unreachable 'messages' config
+    // below now has a live pageId carrying its specialType.
+    'messaging-center': () => import('@/components/pages/generic-info-page'),
     'newsletter': () => import('@/components/pages/promo-notifications-page'),
     'offers-page': () => import('@/components/pages/daily-deals-page'),
     'order-bulk-actions': () => import('@/components/pages/orders-page'),

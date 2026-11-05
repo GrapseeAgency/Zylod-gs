@@ -65,6 +65,19 @@ class CartViewModel(private val appContext: Context) : ViewModel() {
     /** DELETEs in flight (cartItem ids) — the remove double-tap guard. */
     private val removing = mutableSetOf<String>()
 
+    /** t280 4-a#3: server-row PUTs in flight (cartItem ids) — rapid stepper
+     *  taps used to launch N concurrent PUT /api/cart/{id} calls whose landing
+     *  order is arbitrary, and each failure reverted to ITS OWN pre-tap
+     *  snapshot — a late-failing old tap clobbered a newer successful one
+     *  (server 15, store back to 5; checkout then ordered the clobbered 5). */
+    private val updating = mutableSetOf<String>()
+
+    /** t280 4-a#2: queue-drain single-flight — the screen fires refresh() on
+     *  every composition, and two overlapping pullServerCart(0) runs read the
+     *  same pending local rows before either adopts server ids, so both POST
+     *  the same line to the ADDITIVE server route (2x quantity = money). */
+    private val pulling = java.util.concurrent.atomic.AtomicBoolean(false)
+
     private var baseUrl: String? = null
 
     init {
@@ -102,10 +115,18 @@ class CartViewModel(private val appContext: Context) : ViewModel() {
             _authed.value = false
             return
         }
+        // t280 4-a#2 single-flight: an in-flight drain must not be re-entered —
+        // the pending-row push loop is inside, and a second concurrent pass
+        // re-POSTs the same local rows to the additive cart route.
+        if (!pulling.compareAndSet(false, true)) return
         viewModelScope.launch {
             _syncing.value = true
-            pullServerCart(depth = 0)
-            _syncing.value = false
+            try {
+                pullServerCart(depth = 0)
+            } finally {
+                pulling.set(false)
+                _syncing.value = false
+            }
         }
     }
 
@@ -138,10 +159,19 @@ class CartViewModel(private val appContext: Context) : ViewModel() {
             CartStore.replaceItems(serverItems + keptLocal)
 
             // Background-sync local-only rows (web syncWithApiBackground 'add').
+            // t280 4-a#2: one push per merge key at a time — a PDP delta POST
+            // still in flight for the same line makes a second concurrent push
+            // a double-count on the additive server route.
             val pending = CartStore.state.value.items.filter { !CartStore.isServerItem(it) }
             var anyPosted = false
             for (item in pending) {
-                if (postAddItem(item)) anyPosted = true
+                if (!CartStore.serverAddInFlight.add(item.mergeKey)) continue
+                val posted = try {
+                    postAddItem(item)
+                } finally {
+                    CartStore.serverAddInFlight.remove(item.mergeKey)
+                }
+                if (posted) anyPosted = true
             }
             // Adopt the server-assigned ids exactly once after successful posts.
             if (anyPosted && depth < 1) pullServerCart(depth + 1)
@@ -195,16 +225,20 @@ class CartViewModel(private val appContext: Context) : ViewModel() {
         clearItemError(item.id)
         val isServer = CartStore.isServerItem(item)
         if (!isServer) {
+            // t280 4-a#2: local rows stay local until the next cart entry —
+            // web parity (cart-page.tsx handleQtyChange is local-only; only
+            // addItem POSTs). The old code fired a FULL-quantity POST to the
+            // ADDITIVE server route on every stepper tap (rapid taps q1,q2,q3
+            // landed q1+q2+q3 server-side) and pullServerCart's merge then
+            // adopted the inflated quantity, which checkout ordered. The
+            // pending-row push in pullServerCart syncs the row (once) on the
+            // next cart entry, and PDP adds POST their own delta.
             CartStore.updateQuantity(item.id, quantity)
-            // Was added while offline/unauthenticated — push it now if we can.
-            if (_authed.value) {
-                viewModelScope.launch {
-                    val updated = item.copy(quantity = quantity)
-                    if (postAddItem(updated)) pullServerCart(depth = 1)
-                }
-            }
             return
         }
+        // t280 4-a#3: one PUT per row at a time — concurrent PUTs land in
+        // arbitrary order and the losers' reverts clobber the winner.
+        if (!updating.add(item.id)) return
         // Optimistic update, then PUT; revert + inline error on failure.
         CartStore.updateQuantity(item.id, quantity)
         viewModelScope.launch {
@@ -212,7 +246,10 @@ class CartViewModel(private val appContext: Context) : ViewModel() {
                 val base = baseUrl ?: ServerConfig.resolve(appContext).also { baseUrl = it }
                 val response = ApiClient.cartApi(base).updateItem(item.id, UpdateCartRequest(quantity))
                 if (!response.isSuccessful) {
-                    CartStore.updateQuantity(item.id, item.quantity)
+                    // Revert ONLY when the store still shows the value this PUT
+                    // carried — a newer tap has since changed it, and reverting
+                    // to this tap's pre-state would clobber the newer intent.
+                    revertIfUnchanged(item, quantity)
                     val err = parseErrorBody(response.errorBody())
                     _itemErrors.update {
                         it + (item.id to when {
@@ -225,9 +262,20 @@ class CartViewModel(private val appContext: Context) : ViewModel() {
             } catch (ce: CancellationException) {
                 throw ce
             } catch (_: Exception) {
-                CartStore.updateQuantity(item.id, item.quantity)
+                revertIfUnchanged(item, quantity)
                 _itemErrors.update { it + (item.id to "Network error — quantity restored") }
+            } finally {
+                updating.remove(item.id)
             }
+        }
+    }
+
+    /** t280 4-a#3 helper — restore [from]'s pre-tap quantity only when the
+     *  store still holds exactly the value the failed PUT carried. */
+    private fun revertIfUnchanged(item: CartItemData, sentQuantity: Double) {
+        val current = CartStore.state.value.items.firstOrNull { it.id == item.id } ?: return
+        if (current.quantity == sentQuantity) {
+            CartStore.updateQuantity(item.id, item.quantity)
         }
     }
 

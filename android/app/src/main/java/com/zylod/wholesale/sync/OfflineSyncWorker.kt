@@ -90,6 +90,16 @@ class OfflineSyncWorker(context: Context, params: WorkerParameters) :
                 .put("payloadJson", item.payloadJson)
                 .put("clientCreatedAt", item.createdAt)
                 .put("retryCount", item.retryCount)
+                // t280 4-a#4 idempotency: a stable per-row event id. The drain
+                // is at-least-once (IOException/5xx → Result.retry() re-POSTs
+                // the same row after the server may have already persisted it;
+                // ExistingWorkPolicy KEEP below can no longer cancel a
+                // mid-POST drain, but backoff retries remain). CREATE_ORDER is
+                // money: the server dedupes on this id, so a replayed event
+                // can no longer become a duplicate order downstream.
+                // localId alone restarts at 1 on reinstall — createdAt makes
+                // it unique across installs; both survive retries verbatim.
+                .put("eventId", "native-${item.localId}-${item.createdAt}")
                 .toString()
                 .toRequestBody("application/json".toMediaType())
 

@@ -74,6 +74,8 @@ class ResetPasswordViewModel(private val appContext: Context) : ViewModel() {
     private var baseUrl: String? = null
 
     fun submit(token: String, password: String, confirmPassword: String) {
+        // t280 4-a#6: entry guard — one password reset write in flight.
+        if (_state.value.loading) return
         if (token.isBlank()) {
             _state.update { it.copy(error = "Invalid or missing reset token. Please request a new password reset link.") }
             return

@@ -197,6 +197,8 @@ class RegisterSupplierViewModel(private val appContext: Context) : ViewModel() {
 
     /** Uploads one staged document to /api/uploads/kyc (multipart file+kind). */
     fun upload(slot: KycSlot, onUploaded: () -> Unit = {}) {
+        // t280 4-a#6: same-frame double-tap re-ran the multipart KYC upload.
+        if (slotState(slot).uploading) return
         val file = slotState(slot).localFile?.let(::File)
         if (file == null || !file.exists()) {
             updateSlot(slot) { it.copy(error = "Select a document first") }
@@ -256,6 +258,8 @@ class RegisterSupplierViewModel(private val appContext: Context) : ViewModel() {
         tradeLicenseNumber: String, tinNumber: String, bankName: String,
         bankAccountName: String, bankAccountNumber: String, bankBranch: String,
     ) {
+        // t280 4-a#6: a double-tap re-ran 3 KYC uploads + the register POST.
+        if (_state.value.submitting) return
         viewModelScope.launch {
             _state.update { it.copy(submitting = true, error = null) }
             try {

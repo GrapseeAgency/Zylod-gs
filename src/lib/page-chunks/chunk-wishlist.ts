@@ -12,8 +12,7 @@ export const CHUNK_WISHLIST = new Set([
   'favorite-suppliers', 'favorite-products', 'favorite-categories',
   'save-for-later-detail',
   'collection-detail', 'edit-collection', 'collection-shared',
-  'shared-wishlist-detail',
-  'price-drop-alerts', 'bulk-add-to-cart',
+  'shared-wishlist-detail', 'bulk-add-to-cart',
 ])
 
 export async function loadChunkPage(pageId: string): Promise<PageLoadResult> {
@@ -38,7 +37,6 @@ export async function loadChunkPage(pageId: string): Promise<PageLoadResult> {
     'edit-collection': () => import('@/components/pages/edit-collection-page'),
     'collection-shared': () => import('@/components/pages/collection-shared-page'),
     'shared-wishlist-detail': () => import('@/components/pages/shared-wishlist-detail-page'),
-    'price-drop-alerts': () => import('@/components/pages/price-drop-alerts-page'),
     'bulk-add-to-cart': () => import('@/components/pages/bulk-add-to-cart-page'),
   }
   return loadFromMap(loaders, pageId)

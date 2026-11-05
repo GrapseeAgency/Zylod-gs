@@ -220,6 +220,11 @@ object ApiClient {
     fun profileApi(baseUrl: String): ProfileApi =
         cachedApi(baseUrl, "profile") { it.create(ProfileApi::class.java) }
 
+    /** t280 — account settings family (settings/notifications/privacy/theme/
+     *  photo/2fa/backup-codes). */
+    fun profileSettingsApi(baseUrl: String): ProfileSettingsApi =
+        cachedApi(baseUrl, "profileSettings") { it.create(ProfileSettingsApi::class.java) }
+
     fun productDetailApi(baseUrl: String): ProductDetailApi =
         cachedApi(baseUrl, "productDetail") { it.create(ProductDetailApi::class.java) }
 

@@ -82,6 +82,10 @@ class ForgotPasswordViewModel(private val appContext: Context) : ViewModel() {
     }
 
     fun submit(email: String, captchaAnswer: String) {
+        // t280 4-a#6: entry guard — one reset request in flight at a time
+        // (t277 already throttled successful sends; this kills the same-frame
+        // double-tap duplicate).
+        if (_state.value.loading) return
         if (email.isBlank() || !email.contains("@") || !email.contains(".")) {
             _state.update { it.copy(error = "Please enter a valid email address") }
             return

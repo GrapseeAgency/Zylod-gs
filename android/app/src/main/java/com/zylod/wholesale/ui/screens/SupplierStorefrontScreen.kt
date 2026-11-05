@@ -5,6 +5,7 @@ import com.zylod.wholesale.ui.pages.NativePageKind
 import com.zylod.wholesale.ui.pages.NativePageLink
 import com.zylod.wholesale.ui.pages.NativePageMeta
 import com.zylod.wholesale.ui.suppliercore.SupplierStorefrontScreen as SharedSupplierStorefrontScreen
+import com.zylod.wholesale.ui.web.WebScreen
 
 /**
  * t233 — NATIVE Kotlin screen for the SPA pageId "supplier-storefront"
@@ -56,5 +57,22 @@ fun SupplierStorefrontScreen(
     openPage: (pageId: String, query: String) -> Unit,
     query: String,
 ) {
+    // t280 4-b#3: a supplierId param means a PUBLIC store — warehouse
+    // supplier taps (LogisticsScreen) and other cross-supplier links. The
+    // typed screen renders the SIGNED-IN supplier's own store (its
+    // @Suppress("UNUSED_PARAMETER") ignores the query); the SPA's
+    // seller-storefront page renders ANY supplier's public store from the
+    // param. No param -> the typed own-store (capture 56 rides this branch).
+    if (hasSupplierParam(query)) {
+        WebScreen(pageId = "supplier-storefront", query = query)
+        return
+    }
     SharedSupplierStorefrontScreen(pageId = "supplier-storefront", onBack = onBack, openPage = openPage, query = query)
 }
+
+/** t280 4-b#3 — true when the navigation targets a SPECIFIC supplier. */
+private fun hasSupplierParam(query: String): Boolean =
+    query.split('&').any { pair ->
+        val name = pair.substringBefore('=')
+        name == "supplierId" || name == "supplier" || name == "supplierUserId" || name == "id"
+    }

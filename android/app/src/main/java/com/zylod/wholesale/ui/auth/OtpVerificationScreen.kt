@@ -126,6 +126,8 @@ class OtpViewModel(private val appContext: Context) : ViewModel() {
             _state.update { it.copy(error = "Missing verification target. Please restart the flow.") }
             return
         }
+        // t280 4-a#6: entry guard — one OTP send in flight at a time.
+        if (_state.value.resending) return
         viewModelScope.launch {
             _state.update { it.copy(resending = true, error = null) }
             try {
@@ -154,6 +156,9 @@ class OtpViewModel(private val appContext: Context) : ViewModel() {
             _state.update { it.copy(error = "Missing verification target. Please restart the flow.") }
             return
         }
+        // t280 4-a#6: entry guard — verify completes the ACCOUNT CREATION;
+        // a double-tap fired two register POSTs.
+        if (_state.value.loading) return
         viewModelScope.launch {
             _state.update { it.copy(loading = true, error = null) }
             try {

@@ -20,7 +20,7 @@ export const CHUNK_SUPPORT = new Set([
 
   // Documentation & Policy Sub-pages (Amazon/Stripe Docs System)
   'docs-browser', 'docs', 'documentation',
-  'policy-detail', 'policy', 'terms', 'terms-of-service', 'terms-and-conditions', 'privacy', 'privacy-policy', 'cookies', 'cookie-policy', 'refund-policy', 'return-policy',
+  'policy-detail', 'policy', 'terms-and-conditions',
   'quality-guarantee', 'dispute-resolution', 'supplier-agreement', 'compliance', 'how-it-works', 'bulk-pricing-guide',
   'docs-search-results', 'docs-search',
   'prohibited-items', 'restricted-items',
@@ -28,7 +28,6 @@ export const CHUNK_SUPPORT = new Set([
   'escrow-protection-guide', 'safepay-guide', 'escrow-guide',
   'seller-verification-guide', 'kyc-guide', 'supplier-guide', 'seller-guide',
   'buyer-protection-policy', 'buyer-protection',
-  'logistics-delivery-policy', 'shipping-policy', 'delivery-policy',
   'tax-compliance-guide', 'vat-guide', 'tax-guide',
 ])
 
@@ -86,15 +85,7 @@ export async function loadChunkPage(pageId: string): Promise<PageLoadResult> {
 
     'policy-detail': () => import('@/components/pages/policy-detail-page'),
     'policy': () => import('@/components/pages/policy-detail-page'),
-    'terms': () => import('@/components/pages/policy-detail-page'),
-    'terms-of-service': () => import('@/components/pages/policy-detail-page'),
     'terms-and-conditions': () => import('@/components/pages/policy-detail-page'),
-    'privacy': () => import('@/components/pages/policy-detail-page'),
-    'privacy-policy': () => import('@/components/pages/policy-detail-page'),
-    'cookies': () => import('@/components/pages/policy-detail-page'),
-    'cookie-policy': () => import('@/components/pages/policy-detail-page'),
-    'refund-policy': () => import('@/components/pages/buyer-protection-policy-page'),
-    'return-policy': () => import('@/components/pages/buyer-protection-policy-page'),
     'quality-guarantee': () => import('@/components/pages/buyer-protection-policy-page'),
     'dispute-resolution': () => import('@/components/pages/dispute-resolution-guide-page'),
     'supplier-agreement': () => import('@/components/pages/community-guidelines-page'),
@@ -123,10 +114,6 @@ export async function loadChunkPage(pageId: string): Promise<PageLoadResult> {
 
     'buyer-protection-policy': () => import('@/components/pages/buyer-protection-policy-page'),
     'buyer-protection': () => import('@/components/pages/buyer-protection-policy-page'),
-
-    'logistics-delivery-policy': () => import('@/components/pages/logistics-delivery-policy-page'),
-    'shipping-policy': () => import('@/components/pages/logistics-delivery-policy-page'),
-    'delivery-policy': () => import('@/components/pages/logistics-delivery-policy-page'),
 
     'tax-compliance-guide': () => import('@/components/pages/tax-compliance-guide-page'),
     'vat-guide': () => import('@/components/pages/tax-compliance-guide-page'),

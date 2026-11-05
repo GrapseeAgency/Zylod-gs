@@ -310,11 +310,13 @@ object NativePageRegistry {
         "docs-browser" to entry(DocsBrowserPageMeta) { onBack, openPage, query -> DocsBrowserScreen(onBack = onBack, openPage = openPage, query = query) },
         "docs-page" to entry(DocsPagePageMeta) { onBack, openPage, query -> DocsPageScreen(onBack = onBack, openPage = openPage, query = query) },
         "docs-search" to entry(DocsSearchPageMeta) { onBack, openPage, query -> DocsSearchScreen(onBack = onBack, openPage = openPage, query = query) },
-        "docs-search-results" to entry(DocsSearchResultsPageMeta) { onBack, openPage, query -> DocsSearchResultsScreen(onBack = onBack, openPage = openPage, query = query) },
+        // t280 4-b#2: the "docs-search-results" row REMOVED — HelpCenterScreen's
+        // search hop (query=<terms>) landed on bullets with the query dropped.
+        // WebScreen → the SPA's real docs search (reads query).
         "documentation" to entry(DocumentationPageMeta) { onBack, openPage, query -> DocumentationScreen(onBack = onBack, openPage = openPage, query = query) },
         "domestic-shipping" to entry(DomesticShippingPageMeta) { onBack, openPage, query -> DomesticShippingScreen(onBack = onBack, openPage = openPage, query = query) },
         "download-app" to entry(DownloadAppPageMeta) { onBack, openPage, query -> DownloadAppScreen(onBack = onBack, openPage = openPage, query = query) },
-        "draft-orders" to entry(DraftOrdersPageMeta) { onBack, openPage, query -> DraftOrdersScreen(onBack = onBack, openPage = openPage, query = query) },
+        "draft-orders" to entry(DraftOrdersPageMeta) { onBack, openPage, _ -> com.zylod.wholesale.ui.orders.OrdersScreen(onBack = onBack, openPage = openPage, openAuth = { openPage("login", "") }) },
         "earn-coupons" to entry(EarnCouponsPageMeta) { onBack, openPage, query -> EarnCouponsScreen(onBack = onBack, openPage = openPage, query = query) },
         "earnings" to entry(EarningsPageMeta) { onBack, openPage, query -> EarningsScreen(onBack = onBack, openPage = openPage, query = query) },
         "earnings-dashboard" to entry(EarningsDashboardPageMeta) { onBack, openPage, query -> EarningsDashboardScreen(onBack = onBack, openPage = openPage, query = query) },
@@ -402,7 +404,10 @@ object NativePageRegistry {
         "issue-tracker" to entry(IssueTrackerPageMeta) { onBack, openPage, query -> IssueTrackerScreen(onBack = onBack, openPage = openPage, query = query) },
         "jewelry" to entry(JewelryPageMeta) { onBack, openPage, query -> JewelryScreen(onBack = onBack, openPage = openPage, query = query) },
         "job-apply" to entry(JobApplyPageMeta) { onBack, openPage, query -> JobApplyScreen(onBack = onBack, openPage = openPage, query = query) },
-        "job-detail" to entry(JobDetailPageMeta) { onBack, openPage, query -> JobDetailScreen(onBack = onBack, openPage = openPage, query = query) },
+        // t280 4-b#2: the "job-detail" row REMOVED — it rendered curated bullets
+        // while a real job tap (CareersScreen.kt:304, id=<lookupKey>) needs the
+        // LIVE posting the web renders (job-detail-page, reads id/slug). The id
+        // now falls through to WebScreen → the SPA's real job detail.
         "job-listings" to entry(JobListingsPageMeta) { onBack, openPage, query -> JobListingsScreen(onBack = onBack, openPage = openPage, query = query) },
         "join-seller" to entry(JoinSellerPageMeta) { onBack, openPage, query -> JoinSellerScreen(onBack = onBack, openPage = openPage, query = query) },
         "kyc-guide" to entry(KycGuidePageMeta) { onBack, openPage, query -> KycGuideScreen(onBack = onBack, openPage = openPage, query = query) },
@@ -453,7 +458,9 @@ object NativePageRegistry {
         "non-returnable" to entry(NonReturnablePageMeta) { onBack, openPage, query -> NonReturnableScreen(onBack = onBack, openPage = openPage, query = query) },
         "notification-archive" to entry(NotificationArchivePageMeta) { onBack, openPage, query -> NotificationArchiveScreen(onBack = onBack, openPage = openPage, query = query) },
         "notification-categories" to entry(NotificationCategoriesPageMeta) { onBack, openPage, query -> NotificationCategoriesScreen(onBack = onBack, openPage = openPage, query = query) },
-        "notification-detail" to entry(NotificationDetailPageMeta) { onBack, openPage, query -> NotificationDetailScreen(onBack = onBack, openPage = openPage, query = query) },
+        // t280 4-b#2: the "notification-detail" row REMOVED — the default
+        // notification tap landed on bullets. WebScreen → the SPA's real
+        // notification detail page (reads id; GET api/notifications/{id}).
         "notification-filter" to entry(NotificationFilterPageMeta) { onBack, openPage, query -> NotificationFilterScreen(onBack = onBack, openPage = openPage, query = query) },
         "notification-muted" to entry(NotificationMutedPageMeta) { onBack, openPage, query -> NotificationMutedScreen(onBack = onBack, openPage = openPage, query = query) },
         "notification-preferences" to entry(NotificationPreferencesPageMeta) { onBack, openPage, query -> NotificationPreferencesScreen(onBack = onBack, openPage = openPage, query = query) },
@@ -471,17 +478,19 @@ object NativePageRegistry {
         "offline-sync-queue" to entry(OfflineSyncQueuePageMeta) { onBack, openPage, query -> OfflineSyncQueueScreen(onBack = onBack, openPage = openPage, query = query) },
         "onboarding-guide" to entry(OnboardingGuidePageMeta) { onBack, openPage, query -> OnboardingGuideScreen(onBack = onBack, openPage = openPage, query = query) },
         "open-ticket" to entry(OpenTicketPageMeta) { onBack, openPage, query -> OpenTicketScreen(onBack = onBack, openPage = openPage, query = query) },
-        "order-bulk-actions" to entry(OrderBulkActionsPageMeta) { onBack, openPage, query -> OrderBulkActionsScreen(onBack = onBack, openPage = openPage, query = query) },
+        "order-bulk-actions" to entry(OrderBulkActionsPageMeta) { onBack, openPage, _ -> com.zylod.wholesale.ui.orders.OrdersScreen(onBack = onBack, openPage = openPage, openAuth = { openPage("login", "") }) },
         "order-confirmation" to entry(OrderConfirmationPageMeta) { onBack, openPage, query -> OrderConfirmationScreen(onBack = onBack, openPage = openPage, query = query) },
         "order-detail" to entry(OrderDetailPageMeta) { onBack, openPage, query -> OrderDetailScreen(onBack = onBack, openPage = openPage, query = query) },
         "order-feedback" to entry(OrderFeedbackPageMeta) { onBack, openPage, query -> OrderFeedbackScreen(onBack = onBack, openPage = openPage, query = query) },
         "order-invoice" to entry(OrderInvoicePageMeta) { onBack, openPage, query -> OrderInvoiceScreen(onBack = onBack, openPage = openPage, query = query) },
         "order-invoice-download" to entry(OrderInvoiceDownloadPageMeta) { onBack, openPage, query -> OrderInvoiceDownloadScreen(onBack = onBack, openPage = openPage, query = query) },
-        "order-management-page" to entry(OrderManagementPagePageMeta) { onBack, openPage, query -> OrderManagementPageScreen(onBack = onBack, openPage = openPage, query = query) },
+        "order-management-page" to entry(OrderManagementPagePageMeta) { onBack, openPage, _ -> com.zylod.wholesale.ui.orders.OrdersScreen(onBack = onBack, openPage = openPage, openAuth = { openPage("login", "") }) },
         "order-receipt" to entry(OrderReceiptPageMeta) { onBack, openPage, query -> OrderReceiptScreen(onBack = onBack, openPage = openPage, query = query) },
         "order-status-subscriptions" to entry(OrderStatusSubscriptionsPageMeta) { onBack, openPage, query -> OrderStatusSubscriptionsScreen(onBack = onBack, openPage = openPage, query = query) },
         "order-summary" to entry(OrderSummaryPageMeta) { onBack, openPage, query -> OrderSummaryScreen(onBack = onBack, openPage = openPage, query = query) },
-        "order-timeline" to entry(OrderTimelinePageMeta) { onBack, openPage, query -> OrderTimelineScreen(onBack = onBack, openPage = openPage, query = query) },
+        // t280 4-b#2: the "order-timeline" row REMOVED — TrackOrderScreen's
+        // timeline hop (orderId=<id>) landed on bullets. WebScreen → the SPA's
+        // real order-timeline page (reads orderId).
         "order-tracking" to entry(OrderTrackingPageMeta) { onBack, openPage, query -> OrderTrackingScreen(onBack = onBack, openPage = openPage, query = query) },
         "order-update-detail" to entry(OrderUpdateDetailPageMeta) { onBack, openPage, query -> OrderUpdateDetailScreen(onBack = onBack, openPage = openPage, query = query) },
         "order-updates" to entry(OrderUpdatesPageMeta) { onBack, openPage, query -> OrderUpdatesScreen(onBack = onBack, openPage = openPage, query = query) },
@@ -501,7 +510,7 @@ object NativePageRegistry {
         "payout" to entry(PayoutPageMeta) { onBack, openPage, query -> PayoutScreen(onBack = onBack, openPage = openPage, query = query) },
         "payouts" to entry(PayoutsPageMeta) { onBack, openPage, query -> PayoutsScreen(onBack = onBack, openPage = openPage, query = query) },
         "pdf-viewer" to entry(PdfViewerPageMeta) { onBack, openPage, query -> PdfViewerScreen(onBack = onBack, openPage = openPage, query = query) },
-        "pending-orders" to entry(PendingOrdersPageMeta) { onBack, openPage, query -> PendingOrdersScreen(onBack = onBack, openPage = openPage, query = query) },
+        "pending-orders" to entry(PendingOrdersPageMeta) { onBack, openPage, _ -> com.zylod.wholesale.ui.orders.OrdersScreen(onBack = onBack, openPage = openPage, openAuth = { openPage("login", "") }) },
         "phone-verification" to entry(PhoneVerificationPageMeta) { onBack, openPage, query -> PhoneVerificationScreen(onBack = onBack, openPage = openPage, query = query) },
         "pickup-point" to entry(PickupPointPageMeta) { onBack, openPage, query -> PickupPointScreen(onBack = onBack, openPage = openPage, query = query) },
         "pickup-point-selection" to entry(PickupPointSelectionPageMeta) { onBack, openPage, query -> PickupPointSelectionScreen(onBack = onBack, openPage = openPage, query = query) },
@@ -509,7 +518,9 @@ object NativePageRegistry {
         "points-detail" to entry(PointsDetailPageMeta) { onBack, openPage, query -> PointsDetailScreen(onBack = onBack, openPage = openPage, query = query) },
         "points-history" to entry(PointsHistoryPageMeta) { onBack, openPage, query -> PointsHistoryScreen(onBack = onBack, openPage = openPage, query = query) },
         "policy" to entry(PolicyPageMeta) { onBack, openPage, query -> PolicyScreen(onBack = onBack, openPage = openPage, query = query) },
-        "policy-detail" to entry(PolicyDetailPageMeta) { onBack, openPage, query -> PolicyDetailScreen(onBack = onBack, openPage = openPage, query = query) },
+        // t280 4-b#2: the "policy-detail" row REMOVED — ChatbotScreen's policy
+        // hop (slug=<slug>) landed on bullets. WebScreen → the SPA's real
+        // policy detail page (reads slug).
         "popular-searches" to entry(PopularSearchesPageMeta) { onBack, openPage, query -> PopularSearchesScreen(onBack = onBack, openPage = openPage, query = query) },
         "pre-order" to entry(PreOrderPageMeta) { onBack, openPage, query -> PreOrderScreen(onBack = onBack, openPage = openPage, query = query) },
         "press-media" to entry(PressMediaPageMeta) { onBack, openPage, query -> PressMediaScreen(onBack = onBack, openPage = openPage, query = query) },
@@ -551,7 +562,7 @@ object NativePageRegistry {
         "promotion-banners" to entry(PromotionBannersPageMeta) { onBack, openPage, query -> PromotionBannersScreen(onBack = onBack, openPage = openPage, query = query) },
         "promotional-items" to entry(PromotionalItemsPageMeta) { onBack, openPage, query -> PromotionalItemsScreen(onBack = onBack, openPage = openPage, query = query) },
         "promotions-page" to entry(PromotionsPagePageMeta) { onBack, openPage, query -> PromotionsPageScreen(onBack = onBack, openPage = openPage, query = query) },
-        "purchase-history" to entry(PurchaseHistoryPageMeta) { onBack, openPage, query -> PurchaseHistoryScreen(onBack = onBack, openPage = openPage, query = query) },
+        "purchase-history" to entry(PurchaseHistoryPageMeta) { onBack, openPage, _ -> com.zylod.wholesale.ui.orders.OrdersScreen(onBack = onBack, openPage = openPage, openAuth = { openPage("login", "") }) },
         "purge-cache" to entry(PurgeCachePageMeta) { onBack, openPage, query -> PurgeCacheScreen(onBack = onBack, openPage = openPage, query = query) },
         "push-notification-per-channel" to entry(PushNotificationPerChannelPageMeta) { onBack, openPage, query -> PushNotificationPerChannelScreen(onBack = onBack, openPage = openPage, query = query) },
         "push-notification-settings" to entry(PushNotificationSettingsPageMeta) { onBack, openPage, query -> PushNotificationSettingsScreen(onBack = onBack, openPage = openPage, query = query) },
@@ -562,7 +573,10 @@ object NativePageRegistry {
         "quick-links" to entry(QuickLinksPageMeta) { onBack, openPage, query -> QuickLinksScreen(onBack = onBack, openPage = openPage, query = query) },
         "quick-order" to entry(QuickOrderPageMeta) { onBack, openPage, query -> QuickOrderScreen(onBack = onBack, openPage = openPage, query = query) },
         "quick-view" to entry(QuickViewPageMeta) { onBack, openPage, query -> QuickViewScreen(onBack = onBack, openPage = openPage, query = query) },
-        "quote-request" to entry(QuoteRequestPageMeta) { onBack, openPage, query -> QuoteRequestScreen(onBack = onBack, openPage = openPage, query = query) },
+        // t280 4-b#2: the "quote-request" row REMOVED — the deeplink
+        // (?page=quote-request&productId=) landed on bullets while the web PDP
+        // navigates its REAL quote form with the productId. WebScreen → the
+        // SPA's real quote-request page (reads productId).
         "raise-complaint" to entry(RaiseComplaintPageMeta) { onBack, openPage, query -> RaiseComplaintScreen(onBack = onBack, openPage = openPage, query = query) },
         "raise-dispute" to entry(RaiseDisputePageMeta) { onBack, openPage, query -> RaiseDisputeScreen(onBack = onBack, openPage = openPage, query = query) },
         "rate-products" to entry(RateProductsPageMeta) { onBack, openPage, query -> RateProductsScreen(onBack = onBack, openPage = openPage, query = query) },
@@ -588,13 +602,19 @@ object NativePageRegistry {
         "report-issue-page" to entry(ReportIssuePagePageMeta) { onBack, openPage, query -> ReportIssuePageScreen(onBack = onBack, openPage = openPage, query = query) },
         "report-problem" to entry(ReportProblemPageMeta) { onBack, openPage, query -> ReportProblemScreen(onBack = onBack, openPage = openPage, query = query) },
         "report-seller" to entry(ReportSellerPageMeta) { onBack, openPage, query -> ReportSellerScreen(onBack = onBack, openPage = openPage, query = query) },
-        "report-user" to entry(ReportUserPageMeta) { onBack, openPage, query -> ReportUserScreen(onBack = onBack, openPage = openPage, query = query) },
+        // t280 4-b#2: the "report-user" row REMOVED — OrderDetailScreen's report
+    // action (orderId/userId) landed on bullets. WebScreen → the SPA's real
+    // report form (reads orderId/userId).
         "report-violation" to entry(ReportViolationPageMeta) { onBack, openPage, query -> ReportViolationScreen(onBack = onBack, openPage = openPage, query = query) },
-        "reschedule-delivery" to entry(RescheduleDeliveryPageMeta) { onBack, openPage, query -> RescheduleDeliveryScreen(onBack = onBack, openPage = openPage, query = query) },
+        // t280 4-b#2: the "reschedule-delivery" row REMOVED — OrderDetailScreen's
+        // reschedule action (orderId=<id>) landed on bullets. WebScreen → the
+        // SPA's real reschedule form (reads orderId).
         "reset-password" to entry(ResetPasswordPageMeta) { onBack, openPage, query -> ResetPasswordScreen(onBack = onBack, openPage = openPage, query = query) },
         "restricted-items" to entry(RestrictedItemsPageMeta) { onBack, openPage, query -> RestrictedItemsScreen(onBack = onBack, openPage = openPage, query = query) },
         "return-claim-detail" to entry(ReturnClaimDetailPageMeta) { onBack, openPage, query -> ReturnClaimDetailScreen(onBack = onBack, openPage = openPage, query = query) },
-        "return-detail" to entry(ReturnDetailPageMeta) { onBack, openPage, query -> ReturnDetailScreen(onBack = onBack, openPage = openPage, query = query) },
+        // t280 4-b#2: the "return-detail" row REMOVED — ReturnRequestScreen's
+        // post-submit success hop (orderId=<id>) landed on bullets. WebScreen →
+        // the SPA's real return-detail page (reads orderId/returnId).
         "return-faq" to entry(ReturnFaqPageMeta) { onBack, openPage, query -> ReturnFaqScreen(onBack = onBack, openPage = openPage, query = query) },
         "return-management" to entry(ReturnManagementPageMeta) { onBack, openPage, query -> ReturnManagementScreen(onBack = onBack, openPage = openPage, query = query) },
         "return-page" to entry(ReturnPagePageMeta) { onBack, openPage, query -> ReturnPageScreen(onBack = onBack, openPage = openPage, query = query) },
@@ -701,7 +721,9 @@ object NativePageRegistry {
         "seller-support" to entry(SellerSupportPageMeta) { onBack, openPage, query -> SellerSupportScreen(onBack = onBack, openPage = openPage, query = query) },
         "seller-tax-invoices" to entry(SellerTaxInvoicesPageMeta) { onBack, openPage, query -> SellerTaxInvoicesScreen(onBack = onBack, openPage = openPage, query = query) },
         "seller-terms" to entry(SellerTermsPageMeta) { onBack, openPage, query -> SellerTermsScreen(onBack = onBack, openPage = openPage, query = query) },
-        "seller-ticket-detail" to entry(SellerTicketDetailPageMeta) { onBack, openPage, query -> SellerTicketDetailScreen(onBack = onBack, openPage = openPage, query = query) },
+        // t280 4-b#2: the "seller-ticket-detail" row REMOVED — seller-side
+        // ticket taps landed on bullets. WebScreen → the SPA's real ticket
+        // detail page (reads id).
         "seller-tier-benefits" to entry(SellerTierBenefitsPageMeta) { onBack, openPage, query -> SellerTierBenefitsScreen(onBack = onBack, openPage = openPage, query = query) },
         "seller-tools" to entry(SellerToolsPageMeta) { onBack, openPage, query -> SellerToolsScreen(onBack = onBack, openPage = openPage, query = query) },
         "seller-traffic-sources" to entry(SellerTrafficSourcesPageMeta) { onBack, openPage, query -> SellerTrafficSourcesScreen(onBack = onBack, openPage = openPage, query = query) },
@@ -750,7 +772,12 @@ object NativePageRegistry {
         "store-settings" to entry(StoreSettingsPageMeta) { onBack, openPage, query -> StoreSettingsScreen(onBack = onBack, openPage = openPage, query = query) },
         "store-story-about" to entry(StoreStoryAboutPageMeta) { onBack, openPage, query -> StoreStoryAboutScreen(onBack = onBack, openPage = openPage, query = query) },
         "store-theme-customizer" to entry(StoreThemeCustomizerPageMeta) { onBack, openPage, query -> StoreThemeCustomizerScreen(onBack = onBack, openPage = openPage, query = query) },
-        "submit-ticket" to entry(SubmitTicketPageMeta) { onBack, openPage, query -> SubmitTicketScreen(onBack = onBack, openPage = openPage, query = query) },
+        // t280 4-b#2: "submit-ticket" now delegates to the TYPED SupportCenterScreen —
+        // its create dialog is the native's real POST api/support/tickets form
+        // (SupportCenterViewModel.createTicket, validation mirrors the route);
+        // the old row rendered curated bullets while OrderDetail / HelpCenter /
+        // Faq / Docs / DisputeGuides all navigate here expecting a form.
+        "submit-ticket" to entry(SubmitTicketPageMeta) { onBack, openPage, query -> com.zylod.wholesale.ui.support.SupportCenterScreen(onBack = onBack, openPage = openPage, query = query) },
         "subscription-plans" to entry(SubscriptionPlansPageMeta) { onBack, openPage, query -> SubscriptionPlansScreen(onBack = onBack, openPage = openPage, query = query) },
         "suggestions" to entry(SuggestionsPageMeta) { onBack, openPage, query -> SuggestionsScreen(onBack = onBack, openPage = openPage, query = query) },
         "supplier" to entry(SupplierPageMeta) { onBack, openPage, query -> SupplierScreen(onBack = onBack, openPage = openPage, query = query) },
@@ -786,7 +813,8 @@ object NativePageRegistry {
         "support" to entry(SupportPageMeta) { onBack, openPage, query -> SupportScreen(onBack = onBack, openPage = openPage, query = query) },
         "support-bot" to entry(SupportBotPageMeta) { onBack, openPage, query -> SupportBotScreen(onBack = onBack, openPage = openPage, query = query) },
         "support-center" to entry(SupportCenterPageMeta) { onBack, openPage, query -> com.zylod.wholesale.ui.support.SupportCenterScreen(onBack = onBack, openPage = openPage, query = query) },
-        "support-ticket" to entry(SupportTicketPageMeta) { onBack, openPage, query -> SupportTicketScreen(onBack = onBack, openPage = openPage, query = query) },
+        // t280 4-b#2: the "support-ticket" row REMOVED — the ticket-view affordances
+        // landed on bullets. WebScreen → the SPA's real ticket detail page.
         "support-tickets" to entry(SupportTicketsPageMeta) { onBack, openPage, query -> SupportTicketsScreen(onBack = onBack, openPage = openPage, query = query) },
         "sync-queue" to entry(SyncQueuePageMeta) { onBack, openPage, query -> SyncQueueScreen(onBack = onBack, openPage = openPage, query = query) },
         "system-health" to entry(SystemHealthPageMeta) { onBack, openPage, query -> SystemHealthScreen(onBack = onBack, openPage = openPage, query = query) },
@@ -803,7 +831,9 @@ object NativePageRegistry {
         "textiles-fabrics" to entry(TextilesFabricsPageMeta) { onBack, openPage, query -> TextilesFabricsScreen(onBack = onBack, openPage = openPage, query = query) },
         "theme-settings" to entry(ThemeSettingsPageMeta) { onBack, openPage, query -> ThemeSettingsScreen(onBack = onBack, openPage = openPage, query = query) },
         "ticket" to entry(TicketPageMeta) { onBack, openPage, query -> TicketScreen(onBack = onBack, openPage = openPage, query = query) },
-        "ticket-detail" to entry(TicketDetailPageMeta) { onBack, openPage, query -> TicketDetailScreen(onBack = onBack, openPage = openPage, query = query) },
+        // t280 4-b#2: the "ticket-detail" row REMOVED — notification "system"
+        // taps (id=<ticketId>) landed on bullets. WebScreen → the SPA's real
+        // ticket detail page (reads id/ticketId).
         "top-deals" to entry(TopDealsPageMeta) { onBack, openPage, query -> TopDealsScreen(onBack = onBack, openPage = openPage, query = query) },
         "top-suppliers" to entry(TopSuppliersPageMeta) { onBack, openPage, query -> TopSuppliersScreen(onBack = onBack, openPage = openPage, query = query) },
         "toys" to entry(ToysPageMeta) { onBack, openPage, query -> ToysScreen(onBack = onBack, openPage = openPage, query = query) },

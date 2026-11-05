@@ -59,4 +59,10 @@ interface ProfileApi {
      *  buyerProfile/supplierProfile upsert in one round-trip. */
     @PATCH("api/profile/me")
     suspend fun updateMe(@Body body: ProfileUpdateRequest): Response<ApiEnvelope<ProfileMeDto>>
+
+    /** t280 — PATCH api/profile/me with a RAW JSON body (the photo-remove
+     *  leg sends { "avatarUrl": null } — an explicit null ON THE WIRE, which
+     *  a typed DTO with explicitNulls=false would drop instead of send). */
+    @PATCH("api/profile/me")
+    suspend fun patchMeRaw(@Body body: kotlinx.serialization.json.JsonElement): Response<ApiEnvelope<ProfileMeDto>>
 }

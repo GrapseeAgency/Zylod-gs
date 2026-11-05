@@ -122,12 +122,11 @@ function PageRenderer({ pageId, pageParams }: { pageId: string; pageParams: Reco
               const chunkLoader = await getChunkLoader()
               if (cancelled) return
 
-              let pageResult: any = null
-              if (chunkName === 'auth') {
-                pageResult = await chunkLoader.loadAuthPage(pageId)
-              } else {
-                pageResult = await chunkLoader.loadPageFromChunk(chunkName, pageId)
-              }
+              // t280: the 'auth' special case was dead code — getChunkForPage
+              // returns null for every CHUNK_CORE id, so this branch only ever
+              // ran for non-core chunks; loadAuthPage duplicated chunk-core's
+              // loadChunkPage exactly and nothing could reach it.
+              const pageResult: any = await chunkLoader.loadPageFromChunk(chunkName, pageId)
 
               if (cancelled) return
               if (pageResult && pageResult.component) {
