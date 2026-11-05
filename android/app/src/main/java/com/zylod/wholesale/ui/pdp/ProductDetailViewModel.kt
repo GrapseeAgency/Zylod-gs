@@ -15,6 +15,7 @@ import com.zylod.wholesale.data.api.ServerConfig
 import com.zylod.wholesale.data.api.SpecificationsDto
 import com.zylod.wholesale.data.api.WishlistAddRequest
 import com.zylod.wholesale.data.api.apiQty
+import com.zylod.wholesale.data.api.apiQtyInt
 import com.zylod.wholesale.data.api.calculatePrice
 import com.zylod.wholesale.data.session.SessionManager
 import com.zylod.wholesale.ui.cart.CartStore

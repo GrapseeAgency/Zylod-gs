@@ -419,7 +419,7 @@ private fun Gallery(product: ProductDetailDto) {
         if (product.isCustomizable) {
             BadgeChip("Customizable", Modifier.align(Alignment.TopStart).padding(12.dp))
         }
-        if (product.stockQuantity == 0) {
+        if (product.stockQuantity <= 0.0) {
             BadgeChip(
                 "Out of Stock",
                 Modifier
@@ -575,7 +575,7 @@ private fun ProductInfo(
                     // selecting a variant only recomposes the affected chips.
                     items(product.variants, key = { it.id }, contentType = { "variant" }) { variant ->
                         val selected = selectedVariantId == variant.id
-                        val outOfStock = variant.stockQuantity == 0
+                        val outOfStock = variant.stockQuantity <= 0.0
                         Surface(
                             shape = RoundedCornerShape(8.dp),
                             color = when {
@@ -787,7 +787,7 @@ private fun ActionRow(
     onAddToCart: () -> Unit,
     onBuyNow: () -> Unit,
 ) {
-    val outOfStock = product.stockQuantity == 0
+    val outOfStock = product.stockQuantity <= 0.0
     Row(
         horizontalArrangement = Arrangement.spacedBy(12.dp),
         modifier = Modifier
