@@ -215,7 +215,9 @@ data class PhotoUploadData(
     val updatedAt: String? = null,
 )
 
-// ─── POST api/auth/2fa/setup + verify (2fa/*/route.ts) ─────────────────────
+// ─── POST api/auth/2fa/setup + verify (2fa route family) ────────────────────
+// (TwoFactorVerifyRequest + SuspensionDto live in AuthDtos.kt — shared with
+//  the login-challenge flow; no duplicates here.)
 
 @Serializable
 data class TwoFactorSetupRequest(
@@ -234,13 +236,6 @@ data class TwoFactorSetupEnvelope(
     val error: String? = null,
     /** sms only, non-production servers. */
     val debug: String? = null,
-)
-
-@Serializable
-data class TwoFactorVerifyRequest(
-    val userId: String,
-    val code: String,
-    val method: String = "authenticator",
 )
 
 @Serializable
@@ -266,13 +261,6 @@ data class TwoFactorUserDto(
     val accountStatus: String? = null,
     val isEmailVerified: Boolean = false,
     val isPhoneVerified: Boolean = false,
-)
-
-@Serializable
-data class SuspensionDto(
-    val reason: String? = null,
-    val reference: String? = null,
-    val suspendedAt: String? = null,
 )
 
 // ─── GET/POST api/auth/backup-codes (backup-codes/route.ts) ────────────────
