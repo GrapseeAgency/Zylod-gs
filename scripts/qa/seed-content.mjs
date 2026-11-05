@@ -412,31 +412,31 @@ const EVENTS = [
 ]
 
 
-// t281 5-d: the CURRENT app version row — the download page and the in-app
-// updater read the LATEST published appVersions row; the repo's APKs sat at
-// the v2.4.7 era while the code shipped v2.4.42 (the t229h stale-APK class).
-// Size is the real artifact byte count of the green 805cd70 release build.
+// t281 5-d seeded the CURRENT app version row (the download page and the
+// in-app updater read the LATEST published appVersions row; the repo's APKs
+// sat at the v2.4.7 era while the code shipped v2.4.42 — the t229h stale-APK
+// class). t282 bumps the row to 2.4.43/283 alongside the green 9b7778d
+// release build; size is the real artifact byte count.
 const APP_VERSION = {
-  id: 'android-v282',
+  id: 'android-v283',
   platform: 'android',
-  versionNumber: '2.4.42',
-  versionCode: 282,
+  versionNumber: '2.4.43',
+  versionCode: 283,
   minSupportedVersion: '2.4.0',
   isMandatory: false,
-  changelogEn: `- 18 previously-shadowed typed screens now render natively (Help Center, FAQ, Contact, Docs, Feedback, Service Status, mid-checkout Delivery Methods, Coupons, Seller Verification and more)
-- 49 dead-end pages now open the real web pages instead of static bullets (returns, refunds, rewards points, payment options, address editing, seller finance, account settings)
-- Money-path screens polished: payment-verification status pill, order numbers wrap cleanly, honest "No reviews yet" ratings
-- Cart stepper matches the web for kilogram product lines (0.5 kg steps)
-- FAQ and blog sections now carry live content
-- Notification preferences no longer shows an error wall on fresh accounts`,
-  changelogBn: `- ১৮টি নতুন টাইপড স্ক্রিন এখন নেটিভভাবে রেন্ডার হয়
-- ৪৯টি ডেড-এন্ড পেজ এখন আসল ওয়েব পেজ খোলে
-- মানি-পাথ স্ক্রিন পলিশড
-- কার্ট স্টেপার ওয়েবের সাথে মিলে যায়
-- FAQ ও ব্লগ সেকশনে এখন লাইভ কনটেন্ট`,
-  apkDownloadUrl: '/downloads/zylod-b2b-v2.4.42.apk',
-  apkSizeBytes: BigInt(26690419),  // real 805cd70 release artifact size
-  releaseNotes: 'Round-5 native sweep + fresh-account notification-preferences fix.',
+  changelogEn: `- Account Settings section pills now scroll sideways like the web (the squeezed "Appearance" pill is gone)
+- Notification preferences: Mute All / Unmute All buttons render on one line
+- Backup codes: "Copy to Clipboard" label no longer truncates
+- Two-factor setup: the SMS hint text is readable again on disabled accounts
+- Room database schemas are now exported and versioned for safe migrations`,
+  changelogBn: `- অ্যাকাউন্ট সেটিংসের সেকশন পিলগুলো এখন ওয়েবের মতো পাশে স্ক্রল করে
+- নোটিফিকেশন প্রেফারেন্সের মিউট বাটনগুলো এক লাইনে দেখা যায়
+- ব্যাকআপ কোডের "Copy to Clipboard" লেখা আর কাটা পড়ে না
+- টু-ফ্যাক্টর সেটআপের SMS হিন্ট টেক্সট এখন পঠনযোগ্য
+- রুম ডেটাবেস স্কিমা এখন সংস্করণসহ এক্সপোর্ট হয়`,
+  apkDownloadUrl: '/downloads/zylod-b2b-v2.4.43.apk',
+  apkSizeBytes: BigInt(26690415),  // real 9b7778d release artifact size
+  releaseNotes: 'Round-6 native sweep (settings pills, mute buttons, backup-code labels, 2FA hint legibility, Room schema export).',
   isPublished: true,
 }
 
