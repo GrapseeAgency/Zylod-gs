@@ -54,6 +54,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.zylod.wholesale.data.api.CheckoutSuccessItem
 import com.zylod.wholesale.data.api.CheckoutSuccessOrder
+import com.zylod.wholesale.data.api.apiQty
 import com.zylod.wholesale.ui.wallet.formatBdt
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -631,7 +632,7 @@ private fun CheckoutSuccessItemRow(
             )
             val unit = item.product?.unit.orEmpty()
             Text(
-                if (unit.isNotBlank()) "Qty: ${item.quantity} $unit" else "Qty: ${item.quantity}",
+                if (unit.isNotBlank()) "Qty: ${item.quantity.apiQty()} $unit" else "Qty: ${item.quantity.apiQty()}",
                 fontSize = 11.sp,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )

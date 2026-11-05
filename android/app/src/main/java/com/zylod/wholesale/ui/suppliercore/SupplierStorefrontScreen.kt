@@ -234,7 +234,10 @@ private fun HeaderCard(data: SupplierCoreStorefrontData) {
     val ratingLabel = remember(data) {
         "★ ${supplierCoreRating(data.ratingAvg)} (${supplierCoreCount(data.ratingCount)})"
     }
-    val sinceLabel = remember(data) { supplierCoreDate(data.memberSince) }
+    // t279 — date-only UTC: "Member since Jan 5, 2026" (was "Jan 5, 2026
+    // 14:30" in device-local time — a meaningless clock time that could even
+    // shift the DAY for the UTC+6 primary market).
+    val sinceLabel = remember(data) { supplierCoreDateOnly(data.memberSince) }
     Surface(
         shape = RoundedCornerShape(16.dp),
         color = MaterialTheme.colorScheme.surfaceContainer,

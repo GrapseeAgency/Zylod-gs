@@ -64,7 +64,9 @@ class InvestorViewModel(
 
     /** Entry resolve (called on EVERY entry — the web refetches on mount). */
     fun load() {
-        _state.update { it.copy(loading = true, error = null, offlineFromCache = false) }
+        // t279 — re-entry (rotation) must not blank the visible documents
+        // into skeletons: loading only while there is nothing renderable yet.
+        _state.update { it.copy(loading = it.documents.isEmpty(), error = null, offlineFromCache = false) }
         fetchDocs()
         fetchSupportEmail()
     }

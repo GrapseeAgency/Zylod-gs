@@ -294,9 +294,12 @@ const db = new DatabaseSync(DB_PATH)
 db.exec('PRAGMA foreign_keys = OFF;')
 let enriched = 0
 for (const p of productIds) {
-  const reviewsOfP = reviewCount > 0 ? null : null // count via SQL below
-  const stmt = `UPDATE products SET soldCount = ?, ratingAvg = ?, reviewCount = (SELECT COUNT(*) FROM reviews WHERE productId = ?) WHERE id = ?`
-  db.prepare(stmt).run(p.sold, p.rating, p.id, p.id)
+  // t279 honesty: ratingAvg only when reviews EXIST. The old unconditional
+  // `ratingAvg = p.rating` produced rows like "4.6 stars (0 reviews)" — a
+  // rating that cannot exist with no reviews. Zero-review products now keep
+  // ratingAvg = 0 and the UI renders "No reviews yet" instead of stars.
+  const stmt = `UPDATE products SET soldCount = ?, ratingAvg = CASE WHEN (SELECT COUNT(*) FROM reviews WHERE productId = ?) = 0 THEN 0 ELSE ? END, reviewCount = (SELECT COUNT(*) FROM reviews WHERE productId = ?) WHERE id = ?`
+  db.prepare(stmt).run(p.sold, p.id, p.rating, p.id, p.id)
   enriched++
 }
 // Supplier aggregate ratings from their products

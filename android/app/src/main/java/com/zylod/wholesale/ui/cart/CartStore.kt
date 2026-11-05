@@ -1,14 +1,19 @@
 package com.zylod.wholesale.ui.cart
 
 import android.content.Context
+import android.util.Log
 import com.zylod.wholesale.ZylodApp
 import com.zylod.wholesale.data.api.CartItemData
 import com.zylod.wholesale.data.api.calculatePrice
 import com.zylod.wholesale.data.session.SessionManager
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
@@ -36,18 +41,60 @@ object CartStore {
 
     data class State(val items: List<CartItemData> = emptyList())
 
-    private val _state = MutableStateFlow(State(loadPersisted()))
+    private val ioScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+
+    // t279 — the cold-start cart hydrate no longer runs inside object init on
+    // whatever thread first touches CartStore (that was the UI thread during
+    // root composition: a synchronous zylod_cart XML read + full JSON decode
+    // — a StrictMode disk read on EVERY first frame, jank scaling with the
+    // wholesale cart size). The flow seeds EMPTY and hydrates on Dispatchers.IO
+    // from app start; the hydrate completes milliseconds before a human can
+    // mutate anything, and a mutation that still wins the race is preserved
+    // (persisted lines MERGE in; they never clobber non-empty state).
+    private val _state = MutableStateFlow(State())
     val state: StateFlow<State> = _state.asStateFlow()
 
     val badgeCount: Int get() = _state.value.items.size
 
+    init {
+        ioScope.launch {
+            runCatching {
+                val persisted = loadPersisted()
+                if (_state.value.items.isEmpty()) {
+                    if (persisted.isNotEmpty()) _state.update { it.copy(items = persisted) }
+                } else {
+                    // A mutation won the race — merge the persisted lines in
+                    // instead of clobbering live state.
+                    persisted.forEach { line ->
+                        if (_state.value.items.none { it.mergeKey == line.mergeKey }) {
+                            _state.update { s -> s.copy(items = s.items + line) }
+                        }
+                    }
+                }
+            }.onFailure { Log.w("ZylodCart", "cart hydrate failed: ${it.message}") }
+        }
+    }
+
     private fun loadPersisted(): List<CartItemData> {
         return try {
-            val raw = ZylodApp.instance.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getString(KEY_ITEMS, null)
-            if (raw.isNullOrBlank()) emptyList()
-            else runCatching {
-                ApiJson.json.decodeFromString(ListSerializer(CartItemData.serializer()), raw)
-            }.getOrDefault(emptyList())
+            val prefs = ZylodApp.instance.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
+            val raw = prefs.getString(KEY_ITEMS, null)
+            if (raw.isNullOrBlank()) {
+                emptyList()
+            } else {
+                runCatching {
+                    ApiJson.json.decodeFromString(ListSerializer(CartItemData.serializer()), raw)
+                }.getOrElse {
+                    // t279 — a decode failure means the persisted payload no
+                    // longer matches the DTO shape (schema drift) or is
+                    // corrupt. DELETE it instead of leaving the dead string to
+                    // fail every future launch (and never resurrect as a
+                    // phantom line after a later format change).
+                    Log.w("ZylodCart", "persisted cart failed to decode — purging: ${it.message}")
+                    prefs.edit().remove(KEY_ITEMS).apply()
+                    emptyList()
+                }
+            }
         } catch (_: Exception) {
             emptyList()
         }
@@ -106,7 +153,7 @@ object CartStore {
     }
 
     /** cart-store.ts updateQuantity — tier price recomputed for the new qty. */
-    fun updateQuantity(itemId: String, quantity: Int): CartItemData? {
+    fun updateQuantity(itemId: String, quantity: Double): CartItemData? {
         val item = _state.value.items.firstOrNull { it.id == itemId } ?: return null
         val newPrice = calculatePrice(item, quantity)
         val updated = item.copy(

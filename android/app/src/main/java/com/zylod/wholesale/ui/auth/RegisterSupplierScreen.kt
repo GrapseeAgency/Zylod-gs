@@ -162,9 +162,14 @@ class RegisterSupplierViewModel(private val appContext: Context) : ViewModel() {
             val staged = withContext(Dispatchers.IO) { stageFile(uri) }
             staged.fold(
                 onSuccess = { file ->
+                    // t279 — a re-pick replaces the slot's staged file: the
+                    // PREVIOUS copy (national-ID / trade-license photo) is
+                    // deleted instead of accumulating in cacheDir forever.
+                    val previous = slotState(slot).localFile
                     updateSlot(slot) {
                         it.copy(contentUri = uri.toString(), localFile = file.absolutePath, fileName = file.name, sizeBytes = file.length(), error = null, url = null, progress = 0f)
                     }
+                    previous?.let { path -> runCatching { File(path).takeIf(File::exists)?.delete() } }
                 },
                 onFailure = { e -> updateSlot(slot) { it.copy(error = e.message ?: "Invalid document") } },
             )
@@ -224,7 +229,12 @@ class RegisterSupplierViewModel(private val appContext: Context) : ViewModel() {
                 }
                 result.fold(
                     onSuccess = { url ->
-                        updateSlot(slot) { it.copy(uploading = false, progress = 1f, url = url) }
+                        updateSlot(slot) { it.copy(uploading = false, progress = 1f, url = url, localFile = null) }
+                        // t279 — the document reached the server; the staged
+                        // local copy (national-ID / trade-license photo) is
+                        // deleted immediately instead of lingering in plaintext
+                        // cacheDir until the OS reclaims it.
+                        runCatching { if (file.exists()) file.delete() }
                         onUploaded()
                     },
                     onFailure = { e ->
@@ -350,7 +360,7 @@ class RegisterSupplierViewModel(private val appContext: Context) : ViewModel() {
         // t229e: same 1% progress throttle as upload() — submit() drives the
         // identical counting body through uploadBlocking.
         var lastEmitted = 0f
-        return withContext(Dispatchers.IO) {
+        val uploaded = withContext(Dispatchers.IO) {
             KycUploader.upload(base, file, kind) { fraction ->
                 if (fraction - lastEmitted >= 0.01f || fraction >= 1f) {
                     lastEmitted = fraction
@@ -358,6 +368,23 @@ class RegisterSupplierViewModel(private val appContext: Context) : ViewModel() {
                 }
             }.getOrNull()
         }
+        // t279 — same retention rule as upload(): a successfully delivered
+        // document's staged copy is deleted at once.
+        if (uploaded != null) {
+            updateSlot(slot) { it.copy(url = uploaded, localFile = null) }
+            runCatching { if (file.exists()) file.delete() }
+        }
+        return uploaded
+    }
+
+    /** t279 — the registration screen dying (back/out) means the abandoned
+     *  KYC photos (national-ID / trade-license images in plaintext cacheDir)
+     *  must NOT outlive the attempt: every still-staged file is deleted. */
+    override fun onCleared() {
+        listOf(slotState(KycSlot.NID_FRONT), slotState(KycSlot.NID_BACK), slotState(KycSlot.TRADE_LICENSE))
+            .mapNotNull { it.localFile }
+            .forEach { path -> runCatching { File(path).takeIf(File::exists)?.delete() } }
+        super.onCleared()
     }
 }
 

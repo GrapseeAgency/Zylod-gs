@@ -76,12 +76,12 @@ data class AddCartRequest(
     val buyerId: String? = null,
     val productId: String,
     val variantId: String? = null,
-    val quantity: Int,
+    val quantity: Double,
     val supplierId: String,
 )
 
 @Serializable
-data class UpdateCartRequest(val quantity: Int)
+data class UpdateCartRequest(val quantity: Double)
 
 @Serializable
 data class WishlistAddRequest(val productId: String, val note: String? = null)
@@ -214,8 +214,8 @@ data class AuthErrorDto(
     val accountStatus: String? = null,
     val suspension: SuspensionDto? = null,
     val detail: String? = null,
-    val stockAvailable: Int? = null,
-    val moq: Int? = null,
+    val stockAvailable: Double? = null,
+    val moq: Double? = null,
 )
 
 /** Parses a retrofit error body with the shared lenient Json instance. */
@@ -260,6 +260,24 @@ data class SupplierProfileBrief(
     val verificationStatus: String? = null,
     val rejectionReason: String? = null,
     val slug: String? = null,
+    /** t279 — the route ships it (profile/me/route.ts:71); the edit-profile
+     *  form prefills the supplier trade-license field from it. */
+    val tradeLicenseNumber: String? = null,
+    val ratingAvg: Double? = null,
+    val ratingCount: Int? = null,
+)
+
+/** t279 — PATCH api/profile/me body (profile/me/route.ts:96-107): every
+ *  field is optional server-side; only the non-blank ones ride the wire. */
+@Serializable
+data class ProfileUpdateRequest(
+    val fullName: String? = null,
+    val email: String? = null,
+    val phone: String? = null,
+    val companyName: String? = null,
+    val businessName: String? = null,
+    val businessType: String? = null,
+    val tradeLicenseNumber: String? = null,
 )
 
 /**

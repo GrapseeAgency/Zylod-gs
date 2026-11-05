@@ -55,6 +55,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.zylod.wholesale.data.api.ProductDto
+import com.zylod.wholesale.data.api.apiQty
 import com.zylod.wholesale.ui.pages.NativePageKind
 import com.zylod.wholesale.ui.pages.NativePageLink
 import com.zylod.wholesale.ui.pages.NativePageMeta
@@ -314,7 +315,7 @@ private fun SearchResultCard(product: ProductDto, openPage: (pageId: String, que
                     )
                     Spacer(Modifier.weight(1f))
                     Text(
-                        "MOQ ${product.moq}",
+                        "MOQ ${product.moq.apiQty()}",
                         fontSize = 9.sp,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,

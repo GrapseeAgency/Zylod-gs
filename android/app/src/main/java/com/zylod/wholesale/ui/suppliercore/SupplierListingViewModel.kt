@@ -402,6 +402,8 @@ private object SupplierListingCacheStore {
                 .edit()
                 .putString(key(supplierId), raw)
                 .apply()
+            // t279 — one key per supplier storefront visited; keep the newest 12.
+            com.zylod.wholesale.util.CacheTrim.trim(context, "native_supplier_core_supplier-listing_")
         }.onFailure { Log.w(TAG, "supplier listing cache write failed: ${it.message}") }
     }
 }

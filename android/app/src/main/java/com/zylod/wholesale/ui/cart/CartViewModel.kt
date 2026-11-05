@@ -8,6 +8,7 @@ import com.zylod.wholesale.data.api.ApiClient
 import com.zylod.wholesale.data.api.CartItemData
 import com.zylod.wholesale.data.api.ServerConfig
 import com.zylod.wholesale.data.api.UpdateCartRequest
+import com.zylod.wholesale.data.api.apiQty
 import com.zylod.wholesale.data.api.parseErrorBody
 import com.zylod.wholesale.data.api.toCartItemData
 import com.zylod.wholesale.data.session.SessionManager
@@ -182,15 +183,15 @@ class CartViewModel(private val appContext: Context) : ViewModel() {
 
     /** cart-page.tsx handleQtyChange: step = max(1, round(moq/5)), floor = MOQ. */
     fun stepFor(item: CartItemData): Int =
-        maxOf(1, Math.round(item.moq.coerceAtLeast(1) / 5.0f).toInt())
+        maxOf(1, Math.round(item.moq.coerceAtLeast(1.0) / 5.0).toInt())
 
     fun changeQuantity(item: CartItemData, delta: Int) {
         val step = if (delta < 0) -stepFor(item) else stepFor(item)
         setQuantity(item, item.quantity + step)
     }
 
-    fun setQuantity(item: CartItemData, rawQuantity: Int) {
-        val quantity = maxOf(item.moq.coerceAtLeast(1), rawQuantity)
+    fun setQuantity(item: CartItemData, rawQuantity: Double) {
+        val quantity = maxOf(item.moq.coerceAtLeast(1.0), rawQuantity)
         clearItemError(item.id)
         val isServer = CartStore.isServerItem(item)
         if (!isServer) {
@@ -215,8 +216,8 @@ class CartViewModel(private val appContext: Context) : ViewModel() {
                     val err = parseErrorBody(response.errorBody())
                     _itemErrors.update {
                         it + (item.id to when {
-                            err.stockAvailable != null -> "Only ${err.stockAvailable} available in stock"
-                            err.moq != null -> "Minimum order quantity is ${err.moq}"
+                            err.stockAvailable != null -> "Only ${err.stockAvailable.apiQty()} available in stock"
+                            err.moq != null -> "Minimum order quantity is ${err.moq.apiQty()}"
                             else -> err.error ?: "Could not update quantity"
                         })
                     }

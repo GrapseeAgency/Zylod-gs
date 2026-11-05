@@ -243,25 +243,36 @@ private fun ProductHeaderCard(
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                 )
-                Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(top = 2.dp)) {
-                    Icon(
-                        Icons.Filled.Star,
-                        null,
-                        tint = LocalZylodExtra.current.warning,
-                        modifier = Modifier.size(14.dp),
-                    )
-                    Spacer(Modifier.width(4.dp))
+                // t279 honesty: a star rating cannot exist with zero reviews
+                // (the old render showed "4.6 (0 reviews)" for seed rows).
+                if (product.reviewCount > 0) {
+                    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(top = 2.dp)) {
+                        Icon(
+                            Icons.Filled.Star,
+                            null,
+                            tint = LocalZylodExtra.current.warning,
+                            modifier = Modifier.size(14.dp),
+                        )
+                        Spacer(Modifier.width(4.dp))
+                        Text(
+                            String.format(Locale.US, "%.1f", product.ratingAvg),
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = LocalZylodExtra.current.warning,
+                        )
+                        Spacer(Modifier.width(4.dp))
+                        Text(
+                            "(${NumberFormat.getIntegerInstance(Locale.US).format(product.reviewCount)} reviews)",
+                            fontSize = 11.sp,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    }
+                } else {
                     Text(
-                        String.format(Locale.US, "%.1f", product.ratingAvg),
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = LocalZylodExtra.current.warning,
-                    )
-                    Spacer(Modifier.width(4.dp))
-                    Text(
-                        "(${NumberFormat.getIntegerInstance(Locale.US).format(product.reviewCount)} reviews)",
+                        "No reviews yet",
                         fontSize = 11.sp,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(top = 2.dp),
                     )
                 }
             }

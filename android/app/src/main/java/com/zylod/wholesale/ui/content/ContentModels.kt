@@ -112,6 +112,13 @@ internal object ContentCacheStore {
                 .edit()
                 .putString(key, raw)
                 .apply()
+            // t279 — per-slug detail keys grow unbounded; keep the newest 12
+            // per family (the shared feeds stay single-key).
+            if (key.startsWith(ContentCacheKeys.BLOG_POST_PREFIX)) {
+                com.zylod.wholesale.util.CacheTrim.trim(context, ContentCacheKeys.BLOG_POST_PREFIX)
+            } else if (key.startsWith(ContentCacheKeys.PRESS_RELEASE_PREFIX)) {
+                com.zylod.wholesale.util.CacheTrim.trim(context, ContentCacheKeys.PRESS_RELEASE_PREFIX)
+            }
         }.onFailure { Log.w(TAG, "content cache write failed: ${it.message}") }
     }
 }

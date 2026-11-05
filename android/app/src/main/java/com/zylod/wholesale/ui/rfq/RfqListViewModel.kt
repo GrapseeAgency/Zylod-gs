@@ -436,16 +436,23 @@ class RfqListViewModel(private val appContext: Context) : ViewModel() {
             return
         }
         val cached = withContext(Dispatchers.IO) { RfqListCacheStore.read(appContext) }
-        if (cached != null && cached.rows.isNotEmpty()) {
-            _state.value = RfqListUiState(
-                loading = false,
-                rows = cached.rows.map { it.toRfqRow() },
-                page = cached.page,
-                totalPages = cached.totalPages,
-                total = cached.total,
-                statusFilter = _state.value.statusFilter,
-                offlineFromCache = true,
-            )
+        // t279 — the snapshot is filter-tagged: the saved rows belong to the
+        // filter that fetched them. Restoring them under a DIFFERENT chip
+        // (offline filter switch) used to rebrand e.g. "quoted" rows as
+        // "open" — now it only restores on a match, else the honest error.
+        if (cached != null && cached.rows.isNotEmpty() && cached.statusFilter == _state.value.statusFilter) {
+            _state.update {
+                it.copy(
+                    loading = false,
+                    refreshing = false,
+                    loadingMore = false,
+                    rows = cached.rows.map { row -> row.toRfqRow() },
+                    page = cached.page,
+                    totalPages = cached.totalPages,
+                    total = cached.total,
+                    offlineFromCache = true,
+                )
+            }
         } else {
             _state.update { it.copy(loading = false, refreshing = false, loadingMore = false, error = message) }
         }
@@ -458,6 +465,7 @@ class RfqListViewModel(private val appContext: Context) : ViewModel() {
             page = page,
             totalPages = envelope.pagination?.totalPages?.takeIf { it > 0 } ?: 1,
             total = envelope.pagination?.total ?: envelope.data.orEmpty().size,
+            statusFilter = _state.value.statusFilter,
         )
         viewModelScope.launch(Dispatchers.IO) {
             RfqListCacheStore.write(appContext, payload)
@@ -478,6 +486,8 @@ private data class CachedRfqListPage(
     val page: Int = 1,
     val totalPages: Int = 1,
     val total: Int = 0,
+    /** t279 — the chip that fetched these rows ("" = all); restore only on a match. */
+    val statusFilter: String = "",
 )
 
 /**

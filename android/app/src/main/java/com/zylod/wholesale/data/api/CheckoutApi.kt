@@ -69,7 +69,7 @@ interface CheckoutApi {
 data class CheckoutCreateItem(
     val productId: String,
     val variantId: String? = null,
-    val quantity: Int,
+    val quantity: Double,
 )
 
 /** One POST api/orders shippingChoices[] row (supplierId → chosen methodId). */
@@ -191,7 +191,7 @@ data class CheckoutSuccessProductBrief(
 @Serializable
 data class CheckoutSuccessItem(
     val id: String,
-    val quantity: Int,
+    val quantity: Double = 0.0,
     val unitPrice: Double? = null,
     val totalPrice: Double? = null,
     val product: CheckoutSuccessProductBrief? = null,

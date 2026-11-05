@@ -3,6 +3,7 @@ package com.zylod.wholesale.ui.pages
 import android.content.Context
 import android.util.Log
 import com.zylod.wholesale.data.api.ApiClient
+import com.zylod.wholesale.util.CacheTrim
 
 /**
  * t233 — on-device saved native pages.
@@ -38,6 +39,8 @@ object NativePageCache {
                 .edit()
                 .putString(keyFor(pageId), raw)
                 .apply()
+            // t279 — one key per pageId ever visited; keep the newest 24.
+            CacheTrim.trim(context, KEY_PREFIX, keepN = 24)
         }.onFailure { Log.w(TAG, "page cache write failed ($pageId): ${it.message}") }
     }
 

@@ -55,6 +55,12 @@ class SearchViewModel(private val appContext: Context) : ViewModel() {
     private var api: com.zylod.wholesale.data.api.ZylodApi? = null
     private var debounceJob: Job? = null
     private var appendJob: Job? = null
+    // t279 — the page-1 fetch job itself: submit/refresh used to relaunch
+    // searchNow UNTRACKED, so two page-1 fetches could race on a slow network
+    // and the OLDER response could land last — shoe-results rendered under
+    // the "shoesh" query, then loadMore appended page 2 of the NEW query onto
+    // the OLD rows (a mixed list). One tracked job; relaunch cancels it.
+    private var searchJob: Job? = null
 
     fun onQueryChange(query: String) {
         _state.update { it.copy(query = query, offline = false) }
@@ -76,7 +82,8 @@ class SearchViewModel(private val appContext: Context) : ViewModel() {
         val trimmed = query.trim()
         if (trimmed.isEmpty()) return
         rememberRecent(trimmed)
-        viewModelScope.launch { searchNow(trimmed) }
+        searchJob?.cancel()
+        searchJob = viewModelScope.launch { searchNow(trimmed) }
     }
 
     fun loadMore() {
@@ -88,7 +95,10 @@ class SearchViewModel(private val appContext: Context) : ViewModel() {
 
     fun refresh() {
         val q = _state.value.searchedQuery.ifBlank { _state.value.query }
-        if (q.isNotBlank()) viewModelScope.launch { searchNow(q) }
+        if (q.isNotBlank()) {
+            searchJob?.cancel()
+            searchJob = viewModelScope.launch { searchNow(q) }
+        }
     }
 
     private suspend fun searchNow(query: String) {

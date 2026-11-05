@@ -191,6 +191,8 @@ class InvoiceDetailViewModel(
                 CachedInvoiceDetail.serializer(),
                 CachedInvoiceDetail(detail = detail),
             )
+            // t279 — one key per order invoice ever opened; keep the newest 12.
+            com.zylod.wholesale.util.CacheTrim.trim(appContext, CreditCacheKeys.INVOICE_DETAIL_PREFIX)
         }
     }
 

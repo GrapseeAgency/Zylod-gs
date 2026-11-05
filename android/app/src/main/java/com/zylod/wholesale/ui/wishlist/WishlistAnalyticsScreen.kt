@@ -55,6 +55,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.zylod.wholesale.data.api.WishlistItemDto
+import com.zylod.wholesale.data.api.apiQty
 import com.zylod.wholesale.ui.rewards.RewardsAuthGate
 import com.zylod.wholesale.ui.rewards.RewardsChip
 import com.zylod.wholesale.ui.rewards.RewardsEmptyCard
@@ -270,8 +271,8 @@ private fun AnalyticsRow(
     val name = product?.name ?: "Unnamed product"
     val imageUrl = remember(product?.thumbnailUrl) { resolveAnalyticsImageUrl(product?.thumbnailUrl) }
     val stockStatus = wishlistStockStatus(
-        product?.stockQuantity ?: 0,
-        (product?.moq ?: 1).takeIf { it > 0 },
+        product?.stockQuantity ?: 0.0,
+        (product?.moq ?: 1.0).takeIf { it > 0.0 },
     )
     Surface(
         shape = RoundedCornerShape(14.dp),
@@ -334,7 +335,7 @@ private fun AnalyticsRow(
                         shape = RoundedCornerShape(4.dp),
                     ) {
                         Text(
-                            "MOQ: ${product?.moq ?: 1}",
+                            "MOQ: ${(product?.moq ?: 1.0).apiQty()}",
                             fontSize = 10.sp,
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,

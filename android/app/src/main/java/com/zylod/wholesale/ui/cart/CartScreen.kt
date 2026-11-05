@@ -57,6 +57,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.zylod.wholesale.data.api.CartItemData
+import com.zylod.wholesale.data.api.apiQty
 import com.zylod.wholesale.ui.wallet.formatBdt
 import kotlinx.coroutines.launch
 
@@ -344,7 +345,7 @@ private fun CartItemCard(
                         )
                     }
                     Text(
-                        "${item.quantity} ${item.unit.ifBlank { "units" }}",
+                        "${item.quantity.apiQty()} ${item.unit.ifBlank { "units" }}",
                         fontSize = 10.sp,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
@@ -369,7 +370,7 @@ private fun CartItemCard(
 }
 
 @Composable
-private fun QuantityStepper(quantity: Int, onChange: (Int) -> Unit) {
+private fun QuantityStepper(quantity: Double, onChange: (Int) -> Unit) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
@@ -382,7 +383,7 @@ private fun QuantityStepper(quantity: Int, onChange: (Int) -> Unit) {
     ) {
         StepperIcon(Icons.Outlined.Remove, "Decrease quantity", enabled = true) { onChange(-1) }
         Text(
-            quantity.toString(),
+            quantity.apiQty(),
             fontSize = 12.sp,
             fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Center,
@@ -456,7 +457,7 @@ private fun CartSummaryCard(items: List<CartItemData>, onCheckout: () -> Unit) {
             HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f))
             Spacer(Modifier.height(10.dp))
 
-            SummaryLine("Subtotal (${items.size} products, $totalUnits units)", formatBdt(subtotal))
+            SummaryLine("Subtotal (${items.size} products, ${totalUnits.apiQty()} units)", formatBdt(subtotal))
             SummaryLine("Shipping", "Calculated at checkout")
 
             // t209: NO fake coupon entry — the previous card rendered a dead

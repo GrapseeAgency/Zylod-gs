@@ -86,7 +86,7 @@ data class DealItemDto(
     val originalPrice: Double? = null,
     val dealPrice: Double? = null,
     val discountPercent: Double? = null,
-    val moq: Int? = null,
+    val moq: Double? = null,
     val unit: String? = null,
     val rating: Double? = null,
     val soldCount: Double? = null,

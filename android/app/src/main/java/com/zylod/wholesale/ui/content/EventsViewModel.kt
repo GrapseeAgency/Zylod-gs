@@ -45,7 +45,8 @@ class EventsViewModel(
 
     /** Entry resolve (called on EVERY entry — the web refetches on mount). */
     fun load() {
-        _state.update { it.copy(loading = true, error = null, offlineFromCache = false) }
+        // t279 — rotation re-entry keeps the visible events on screen.
+        _state.update { it.copy(loading = it.events.isEmpty(), error = null, offlineFromCache = false) }
         fetchEvents()
     }
 

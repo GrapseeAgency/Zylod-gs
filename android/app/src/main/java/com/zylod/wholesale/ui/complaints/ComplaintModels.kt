@@ -91,6 +91,10 @@ object ComplaintCacheStore {
                 .edit()
                 .putString(key, raw)
                 .apply()
+            // t279 — one key per complaint detail ever opened; keep the newest 12.
+            if (key.startsWith(ComplaintCacheKeys.COMPLAINT_DETAIL_PREFIX)) {
+                com.zylod.wholesale.util.CacheTrim.trim(context, ComplaintCacheKeys.COMPLAINT_DETAIL_PREFIX)
+            }
         }.onFailure { Log.w(TAG, "complaints cache write failed ($key): ${it.message}") }
     }
 }

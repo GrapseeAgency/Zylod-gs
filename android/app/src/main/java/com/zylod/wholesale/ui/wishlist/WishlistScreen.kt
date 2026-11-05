@@ -53,6 +53,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.zylod.wholesale.data.api.WishlistItemDto
+import com.zylod.wholesale.data.api.apiQty
 import com.zylod.wholesale.ui.pages.NativePageKind
 import com.zylod.wholesale.ui.pages.NativePageLink
 import com.zylod.wholesale.ui.pages.NativePageMeta
@@ -230,7 +231,7 @@ private fun WishlistRow(
                 Text(
                     buildString {
                         product?.supplier?.companyName?.let { append("$it · ") }
-                        append("MOQ ${product?.moq ?: 1}")
+                        append("MOQ ${(product?.moq ?: 1.0).apiQty()}")
                     },
                     fontSize = 11.sp,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,

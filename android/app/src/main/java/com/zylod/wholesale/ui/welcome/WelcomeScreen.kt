@@ -34,6 +34,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -89,7 +90,8 @@ fun WelcomeScreen(
     onContinueAsGuest: () -> Unit,
 ) {
     val context = LocalContext.current
-    var slide by remember { mutableIntStateOf(0) }
+    // t279 — saveable: rotating mid-onboarding used to jump back to slide 1.
+    var slide by rememberSaveable { mutableIntStateOf(0) }
     val isLast = slide == SLIDES.lastIndex
 
     // CTA callbacks always mark onboarding seen first (web markSeen, L254-256).

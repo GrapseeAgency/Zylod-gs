@@ -833,7 +833,7 @@ private fun SharedProductCard(
                     )
                 }
                 // Honest stock overlay from the route's own stockQuantity.
-                if ((product?.stockQuantity ?: 0) == 0) {
+                if ((product?.stockQuantity ?: 0.0) <= 0.0) {
                     Surface(
                         color = MaterialTheme.colorScheme.surface.copy(alpha = 0.8f),
                         shape = RoundedCornerShape(50),

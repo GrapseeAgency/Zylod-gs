@@ -794,11 +794,19 @@ function DesktopProductDetailPage() {
                 {formatQty(product.weightKg)} kg per {isBundle ? 'bundle' : unit === 'pcs' ? 'pc' : unit}
               </Badge>
             )}
-            <div className="flex items-center gap-1 text-sm">
-              <Star className="h-4 w-4 fill-[primary] text-[primary]" />
-              <span className="font-medium">{productRating.toFixed(1)}</span>
-              <span className="text-muted-foreground">({productReviewCount} reviews)</span>
-            </div>
+            {/* t279 honesty: stars only when reviews exist — a rating cannot
+                exist with zero reviews (seed rows like "4.6 (0 reviews)"). */}
+            {productReviewCount > 0 ? (
+              <div className="flex items-center gap-1 text-sm">
+                <Star className="h-4 w-4 fill-[primary] text-[primary]" />
+                <span className="font-medium">{productRating.toFixed(1)}</span>
+                <span className="text-muted-foreground">({productReviewCount} reviews)</span>
+              </div>
+            ) : (
+              <div className="flex items-center gap-1 text-sm">
+                <span className="text-muted-foreground">No reviews yet</span>
+              </div>
+            )}
           </div>
 
           {/* ─── Stock Availability ─── */}

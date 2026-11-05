@@ -50,6 +50,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -353,6 +354,13 @@ private fun CreditTermsCard(
 
 @Composable
 private fun TermsRow(label: String, value: String, valueColor: Color = MaterialTheme.colorScheme.onSurface) {
+    // t279 — the value Text had NO width constraint: Compose measures
+    // unweighted children first, so a long value ("City Bank Wholesale Trade
+    // Partner", ~215dp at 12sp bold) claimed its full intrinsic width and the
+    // weighted label got the ~55dp remainder — "Underwriting" wrapped into
+    // char-per-line fragments ("Unde/rwr/it/ing") and "Sponsor" clipped under
+    // the navbar. Both sides now carry weights; each wraps within its own
+    // half with honest ellipsis instead of stealing the other's space.
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
@@ -363,6 +371,8 @@ private fun TermsRow(label: String, value: String, valueColor: Color = MaterialT
             label,
             fontSize = 12.sp,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis,
             modifier = Modifier.weight(1f),
         )
         Icon(
@@ -378,6 +388,9 @@ private fun TermsRow(label: String, value: String, valueColor: Color = MaterialT
             fontWeight = FontWeight.Bold,
             color = valueColor,
             textAlign = TextAlign.End,
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier.weight(1.35f),
         )
     }
 }

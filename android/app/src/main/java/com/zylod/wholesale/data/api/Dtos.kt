@@ -2,6 +2,28 @@ package com.zylod.wholesale.data.api
 
 import androidx.compose.runtime.Immutable
 import kotlinx.serialization.Serializable
+import java.util.Locale
+
+/**
+ * t279 — every Prisma Float column (moq/stockQuantity/soldCount/cart quantity)
+ * can carry decimals (kg: 2.5 is a valid line). The legacy Phase-1 DTOs typed
+ * these as Int, so one fractional value made kotlinx.serialization throw and
+ * fail the WHOLE list parse (screen error state). They are all Double now;
+ * display collapses whole values ("10") and keeps fractional ones ("2.5")
+ * — the supplierCoreQty convention, shared by every non-suppliercore surface.
+ */
+fun Double?.apiQty(): String {
+    if (this == null || isNaN()) return "—"
+    if (this == toLong().toDouble()) return toLong().toString()
+    return String.format(Locale.US, "%.2f", this).trimEnd('0').trimEnd('.')
+}
+
+/** Whole-value Int view of a Double qty (steppers/MOQ clamps — native steps
+ * in whole units; ceil so a 2.5 MOQ clamps to 3 purchasable units). */
+fun Double?.apiQtyInt(default: Int = 1): Int {
+    if (this == null || isNaN()) return default
+    return Math.ceil(this).toInt()
+}
 
 //
 // @Immutable on every wire model that reaches composition: Compose's default
@@ -66,12 +88,12 @@ data class ProductDto(
     val thumbnailUrl: String? = null,
     val images: List<ProductImageDto> = emptyList(),
     val unit: String? = null,
-    val moq: Int = 1,
+    val moq: Double = 1.0,
     // t262 — the wishlist/favorites product selects ship stockQuantity (the
     // web maps it into the stock badges); every other reader keeps the
     // defaulted 0.
-    val stockQuantity: Int = 0,
-    val soldCount: Int = 0,
+    val stockQuantity: Double = 0.0,
+    val soldCount: Double = 0.0,
     val ratingAvg: Double = 0.0,
     val reviewCount: Int = 0,
     val supplier: SupplierBrief? = null,

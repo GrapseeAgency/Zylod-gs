@@ -344,6 +344,8 @@ class ChatThreadViewModel(
                 val raw = ApiClient.json.encodeToString(CachedDmThread.serializer(), payload)
                 appContext.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
                     .edit().putString("$KEY_PREFIX$conversationId", raw).apply()
+                // t279 — one key per conversation ever opened; keep the newest 12.
+                com.zylod.wholesale.util.CacheTrim.trim(appContext, KEY_PREFIX)
             }.onFailure { Log.w(TAG, "dm thread cache write failed: ${it.message}") }
         }
     }

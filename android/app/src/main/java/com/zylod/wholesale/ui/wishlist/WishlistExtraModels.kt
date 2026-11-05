@@ -138,9 +138,9 @@ data class CachedSavedSearches(val rows: List<SavedSearchDto> = emptyList())
  * The web's stock-status derivation (wishlist-page.tsx:56-58 EXACT): 0 =
  * OUT_OF_STOCK, ≤ moq (moq || 10 fallback) = LOW_STOCK, else IN_STOCK.
  */
-fun wishlistStockStatus(stockQuantity: Int, moq: Int?): String = when {
-    stockQuantity == 0 -> "OUT_OF_STOCK"
-    stockQuantity <= (if (moq != null && moq > 0) moq else 10) -> "LOW_STOCK"
+fun wishlistStockStatus(stockQuantity: Double, moq: Double?): String = when {
+    stockQuantity <= 0 -> "OUT_OF_STOCK"
+    stockQuantity <= (if (moq != null && moq > 0) moq else 10.0) -> "LOW_STOCK"
     else -> "IN_STOCK"
 }
 
@@ -477,8 +477,8 @@ fun displayedWishlistRows(
         WishlistAnalyticsUiState.TAB_IN_STOCK ->
             rows.filter {
                 wishlistStockStatus(
-                    it.product?.stockQuantity ?: 0,
-                    (it.product?.moq ?: 1).takeIf { m -> m > 0 },
+                    it.product?.stockQuantity ?: 0.0,
+                    (it.product?.moq ?: 1.0).takeIf { m -> m > 0.0 },
                 ) == "IN_STOCK"
             }
         // The wire never carries an oldPrice (the web maps undefined on every

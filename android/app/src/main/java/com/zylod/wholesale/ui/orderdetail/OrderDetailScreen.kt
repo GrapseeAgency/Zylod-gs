@@ -86,6 +86,7 @@ import com.zylod.wholesale.data.api.OrderDetailPayment
 import com.zylod.wholesale.data.api.OrderDetailReceipt
 import com.zylod.wholesale.data.api.OrderDetailSubOrder
 import com.zylod.wholesale.data.api.OrderDetailTracking
+import com.zylod.wholesale.data.api.apiQty
 import com.zylod.wholesale.data.session.SessionManager
 import com.zylod.wholesale.ui.logistics.formatTaka
 import com.zylod.wholesale.ui.wallet.formatBdt
@@ -671,7 +672,7 @@ private fun OrderDetailItemRow(item: OrderDetailItem) {
                 Spacer(Modifier.weight(1f))
                 Surface(shape = RoundedCornerShape(6.dp), color = MaterialTheme.colorScheme.surfaceVariant) {
                     Text(
-                        "Qty: ${item.quantity}",
+                        "Qty: ${item.quantity.apiQty()}",
                         fontSize = 10.sp,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -1459,7 +1460,7 @@ private fun OrderDetailReceiptBody(receipt: OrderDetailReceipt) {
             Row(Modifier.fillMaxWidth()) {
                 Column(Modifier.weight(1f)) {
                     Text(item.productName ?: "--", fontSize = 11.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
-                    Text("Qty ${item.quantity} · ${formatTaka(item.unitPrice)} each", fontSize = 10.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text("Qty ${item.quantity.apiQty()} · ${formatTaka(item.unitPrice)} each", fontSize = 10.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
                 Text(formatTaka(item.total), fontSize = 11.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
             }

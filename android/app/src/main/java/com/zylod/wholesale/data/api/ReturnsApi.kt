@@ -130,7 +130,7 @@ data class ReturnSupplierBriefDto(
 data class ReturnOrderItemDto(
     val id: String? = null,
     val productId: String? = null,
-    val quantity: Int = 0,
+    val quantity: Double = 0.0,
     val unitPrice: Double = 0.0,
     val totalPrice: Double = 0.0,
     val product: ReturnProductBriefDto? = null,

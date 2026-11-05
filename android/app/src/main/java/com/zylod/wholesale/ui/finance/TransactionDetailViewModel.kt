@@ -206,6 +206,8 @@ class TransactionDetailViewModel(
                 CachedTransactionDetail.serializer(),
                 CachedTransactionDetail(detail = detail),
             )
+            // t279 — one key per transaction ever opened; keep the newest 12.
+            com.zylod.wholesale.util.CacheTrim.trim(appContext, FinanceCacheKeys.TRANSACTION_DETAIL_PREFIX)
         }
     }
 

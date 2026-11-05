@@ -48,10 +48,12 @@ class PressViewModel(
     fun load() {
         _state.update {
             it.copy(
-                loading = true,
+                // t279 — rotation re-entry keeps the visible releases on
+                // screen (loading only while nothing renderable yet).
+                loading = it.releases.isEmpty(),
                 releasesError = null,
                 offlineFromCache = false,
-                mediaKitLoading = true,
+                mediaKitLoading = it.mediaKit == null,
                 mediaKitError = null,
             )
         }

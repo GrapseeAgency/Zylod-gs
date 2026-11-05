@@ -25,11 +25,11 @@ data class CartItemData(
     val variantId: String? = null,
     val variantName: String? = null,
     val variantValue: String? = null,
-    val quantity: Int = 1,
+    val quantity: Double = 1.0,
     val unitPrice: Double = 0.0,
     val totalPrice: Double = 0.0,
-    val moq: Int = 1,
-    val maxOrderQty: Int? = null,
+    val moq: Double = 1.0,
+    val maxOrderQty: Double? = null,
     val supplierId: String,
     val supplierName: String = "",
     val supplierSlug: String = "",
@@ -47,7 +47,7 @@ data class CartItemData(
 }
 
 /** cart-store.ts:43-56 — tier-priced total, ported verbatim. */
-fun calculatePrice(item: CartItemData, quantity: Int): Double {
+fun calculatePrice(item: CartItemData, quantity: Double): Double {
     var applicablePrice = item.unitPrice
     if (item.priceTiers.isNotEmpty()) {
         for (tier in item.priceTiers) {
@@ -83,7 +83,7 @@ data class ServerCartItemDto(
     val id: String,
     val productId: String? = null,
     val variantId: String? = null,
-    val quantity: Int = 0,
+    val quantity: Double = 0.0,
     val supplierId: String? = null,
     val product: ServerCartProductDto? = null,
     val variant: ServerCartVariantDto? = null,
@@ -106,7 +106,7 @@ data class ServerCartProductDto(
     val slug: String? = null,
     val basePrice: Double = 0.0,
     val thumbnailUrl: String? = null,
-    val moq: Int = 1,
+    val moq: Double = 1.0,
     val unit: String? = null,
     val images: List<ProductImageDto> = emptyList(),
     val priceTiers: List<PriceTierDto> = emptyList(),
@@ -117,8 +117,8 @@ data class ServerCartProductDto(
     // landed weightless before, killing the whole quote rail), bundle/max
     // bound the PDP stepper.
     val weightKg: Double? = null,
-    val bundleSize: Int? = null,
-    val maxOrderQty: Int? = null,
+    val bundleSize: Double? = null,
+    val maxOrderQty: Double? = null,
 )
 
 @Serializable
@@ -172,7 +172,7 @@ fun ServerCartItemDto.toCartItemData(supplierName: String): CartItemData? {
         quantity = qty,
         unitPrice = unitPrice,
         totalPrice = lineTotal,
-        moq = product?.moq ?: 1,
+        moq = product?.moq ?: 1.0,
         maxOrderQty = product?.maxOrderQty,
         supplierId = supplierId ?: product?.supplier?.companyName.orEmpty(),
         supplierName = supplierName,

@@ -107,6 +107,10 @@ internal object CareersCacheStore {
                 .edit()
                 .putString(key, raw)
                 .apply()
+            // t279 — per-lookup detail keys grow unbounded; keep the newest 12.
+            if (key.startsWith(CareersCacheKeys.JOB_DETAIL_PREFIX)) {
+                com.zylod.wholesale.util.CacheTrim.trim(context, CareersCacheKeys.JOB_DETAIL_PREFIX)
+            }
         }.onFailure { Log.w(TAG, "careers cache write failed: ${it.message}") }
     }
 }

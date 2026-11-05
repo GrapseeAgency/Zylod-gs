@@ -10,6 +10,7 @@ import com.zylod.wholesale.data.api.ReturnOrderDto
 import com.zylod.wholesale.data.api.ReturnOrderItemDto
 import com.zylod.wholesale.data.api.ReturnSubmitBody
 import com.zylod.wholesale.data.api.ServerConfig
+import com.zylod.wholesale.data.api.apiQtyInt
 import com.zylod.wholesale.data.api.parseErrorBody
 import com.zylod.wholesale.data.session.SessionManager
 import com.zylod.wholesale.ui.logistics.orderIdFromQuery
@@ -431,7 +432,7 @@ private fun ReturnOrderItemDto.toRow() = ReturnItemRow(
     },
     unitPrice = unitPrice,
     unitLabel = product?.unit?.takeIf(String::isNotBlank) ?: "unit",
-    orderedQty = quantity,
+    orderedQty = quantity.apiQtyInt(0),
     thumbnailUrl = product?.thumbnailUrl?.takeIf(String::isNotBlank),
 )
 

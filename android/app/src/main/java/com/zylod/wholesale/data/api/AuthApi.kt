@@ -5,7 +5,9 @@ import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
+import retrofit2.http.PATCH
 import retrofit2.http.POST
+import retrofit2.http.PUT
 import retrofit2.http.Query
 
 /**
@@ -51,4 +53,10 @@ interface AuthApi {
 interface ProfileApi {
     @GET("api/profile/me")
     suspend fun me(): Response<ApiEnvelope<ProfileMeDto>>
+
+    /** t279 — PATCH api/profile/me (profile/me/route.ts:96-170): the SAME
+     *  update contract the web edit-profile page drives — user fields +
+     *  buyerProfile/supplierProfile upsert in one round-trip. */
+    @PATCH("api/profile/me")
+    suspend fun updateMe(@Body body: ProfileUpdateRequest): Response<ApiEnvelope<ProfileMeDto>>
 }

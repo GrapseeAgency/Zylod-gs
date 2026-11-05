@@ -77,11 +77,17 @@ class HomeViewModel(private val appContext: Context) : ViewModel() {
     private var page = 0
     private var totalPages = 1
 
-    /** Entry pull / retry. Silent refresh when data is already on screen. */
+    private var refreshJob: kotlinx.coroutines.Job? = null
+
+    /** Entry pull / retry. Silent refresh when data is already on screen.
+     *  t279 — the fetch job is tracked: rotation re-entry (LaunchedEffect
+     *  fires again while the first 6-call fan-out is still in flight) used to
+     *  spawn a SECOND full fan-out; one job, relaunch cancels it. */
     fun refresh() {
         val hasData = _state.value.products.isNotEmpty() || _state.value.categories.isNotEmpty()
         _state.update { it.copy(loading = !hasData, error = null) }
-        viewModelScope.launch { fetchFirstPage() }
+        refreshJob?.cancel()
+        refreshJob = viewModelScope.launch { fetchFirstPage() }
     }
 
     /** Auto-append (guarded: one fetch in flight, in-range pages only). */

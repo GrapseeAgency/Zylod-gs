@@ -128,6 +128,15 @@ class OfflineSyncWorker(context: Context, params: WorkerParameters) :
 
         dao.clearCompleted()
 
+        // t279 — retention: rows that burned their whole retry budget MORE
+        // than 7 days ago hold full action payloads (offline orders/RFQs with
+        // PII) in Room forever otherwise — the drain skipped them but nothing
+        // ever deleted them. Drop them at drain time (kept for a week so the
+        // failure is still diagnosable in the sync-queue screen).
+        runCatching {
+            dao.purgeBurned(MAX_RETRIES, System.currentTimeMillis() - 7L * 24 * 60 * 60 * 1000)
+        }
+
         if (syncedCount > 0) notifySynced(syncedCount)
 
         if (hadTransientFailure) Result.retry() else Result.success()

@@ -281,16 +281,20 @@ class LogisticsViewModel(
         val warehouses = cachedWarehouses?.rows.orEmpty()
         if (methods.isNotEmpty() || warehouses.isNotEmpty()) {
             Log.i(TAG, "degrade → cache methods=${methods.size} warehouses=${warehouses.size}")
-            _state.value = LogisticsUiState(
-                loading = false,
-                methods = methods.map { it.toMethodRow() },
-                warehouses = warehouses.map { it.toWarehouseRow() },
-                districts = cachedWarehouses?.districts.orEmpty(),
-                quoteWeight = _state.value.quoteWeight,
-                quoteSubtotal = _state.value.quoteSubtotal,
-                quoteDistrict = _state.value.quoteDistrict,
-                offlineFromCache = true,
-            )
+            // t279 — copy() from CURRENT state instead of building a fresh
+            // LogisticsUiState: the old constructor reset warehouseQuery and
+            // quoteOptions to their defaults, so an offline refresh silently
+            // wiped the user's typed warehouse search AND the visible fetched
+            // shipping rates mid-session.
+            _state.update {
+                it.copy(
+                    loading = false,
+                    methods = methods.map { m -> m.toMethodRow() },
+                    warehouses = warehouses.map { w -> w.toWarehouseRow() },
+                    districts = cachedWarehouses?.districts.orEmpty(),
+                    offlineFromCache = true,
+                )
+            }
         } else {
             _state.update { it.copy(loading = false, loadError = message) }
         }

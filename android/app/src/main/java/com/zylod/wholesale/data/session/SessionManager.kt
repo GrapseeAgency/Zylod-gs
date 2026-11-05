@@ -126,6 +126,28 @@ object SessionManager {
         }
         clearWebviewAuthCookie()
         runCatching { CartStore.clear() }
+        clearAccountCaches()
+    }
+
+    /** t279: purge every account-scoped feature cache from the SHARED
+     *  zylod_config prefs. ~60 offline caches live there (wallet balance,
+     *  bank accounts, invoices, addresses, DM threads, notifications,
+     *  complaints, favorites, coupons, seller/admin dashboards …) keyed
+     *  `native_*`. None of them were cleared on logout, so on a shared
+     *  device user B's offline render showed user A's wallet/favorites —
+     *  a cross-account data leak. Fail-closed: every `native_*` key is
+     *  dropped EXCEPT the server-config pair (device-level, not user data);
+     *  public content caches (blog/deals/…) re-fetch and cost nothing. */
+    private fun clearAccountCaches() {
+        runCatching {
+            val prefs = ZylodApp.instance.getSharedPreferences("zylod_config", android.content.Context.MODE_PRIVATE)
+            val doomed = prefs.all.keys.filter { it.startsWith("native_") && it != "native_base_url" && it != "native_base_url_reason" }
+            if (doomed.isNotEmpty()) {
+                val editor = prefs.edit()
+                doomed.forEach { editor.remove(it) }
+                editor.apply()
+            }
+        }
     }
 
     /** t277-1b: expire the auth-token cookie on the cached base + every

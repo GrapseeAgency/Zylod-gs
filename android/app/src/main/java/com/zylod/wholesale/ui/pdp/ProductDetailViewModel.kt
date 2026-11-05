@@ -14,6 +14,7 @@ import com.zylod.wholesale.data.api.ProductVariantDto
 import com.zylod.wholesale.data.api.ServerConfig
 import com.zylod.wholesale.data.api.SpecificationsDto
 import com.zylod.wholesale.data.api.WishlistAddRequest
+import com.zylod.wholesale.data.api.apiQty
 import com.zylod.wholesale.data.api.calculatePrice
 import com.zylod.wholesale.data.session.SessionManager
 import com.zylod.wholesale.ui.cart.CartStore
@@ -136,7 +137,7 @@ class ProductDetailViewModel(private val appContext: Context) : ViewModel() {
                         // t216: a same-product silent refresh must not reset
                         // the stepper/variant the user already chose (Back
                         // from login/buy-now used to snap both back to MOQ).
-                        quantity = if (alreadyLoaded) it.quantity else product.moq.coerceAtLeast(1),
+                        quantity = if (alreadyLoaded) it.quantity else product.moq.apiQtyInt(),
                         selectedVariantId = if (alreadyLoaded) it.selectedVariantId else null,
                     )
                 }
@@ -196,12 +197,12 @@ class ProductDetailViewModel(private val appContext: Context) : ViewModel() {
 
     fun setQuantity(quantity: Int) {
         val product = _state.value.product ?: return
-        _state.update { it.copy(quantity = quantity.coerceAtLeast(product.moq.coerceAtLeast(1))) }
+        _state.update { it.copy(quantity = quantity.coerceAtLeast(product.moq.apiQtyInt())) }
     }
 
     fun adjustQuantity(delta: Int) {
         val product = _state.value.product ?: return
-        _state.update { it.copy(quantity = (it.quantity + delta).coerceAtLeast(product.moq.coerceAtLeast(1))) }
+        _state.update { it.copy(quantity = (it.quantity + delta).coerceAtLeast(product.moq.apiQtyInt())) }
     }
 
     fun selectVariant(variantId: String?) {
@@ -377,12 +378,12 @@ class ProductDetailViewModel(private val appContext: Context) : ViewModel() {
             }
             return
         }
-        if (stock in 1 until quantity) {
-            _state.update { it.copy(toast = "Quantity exceeds available stock ($stock)") }
+        if (stock >= 1 && stock < quantity) {
+            _state.update { it.copy(toast = "Quantity exceeds available stock (${stock.apiQty()})") }
             return
         }
         if (quantity < product.moq) {
-            _state.update { it.copy(toast = "Minimum order quantity is ${product.moq}") }
+            _state.update { it.copy(toast = "Minimum order quantity is ${product.moq.apiQty()}") }
             return
         }
         // The line's honest cap (web parity: currentVariantStock, never the
@@ -405,7 +406,7 @@ class ProductDetailViewModel(private val appContext: Context) : ViewModel() {
                 variantId = variant?.id,
                 variantName = variant?.variantName,
                 variantValue = variant?.variantValue,
-                quantity = quantity,
+                quantity = quantity.toDouble(),
                 unitPrice = unitPrice,
                 totalPrice = unitPrice * quantity,
                 moq = product.moq,
@@ -451,24 +452,24 @@ class ProductDetailViewModel(private val appContext: Context) : ViewModel() {
                         // pre-add quantity when the add landed on an existing
                         // line) instead of leaving a phantom unshippable row,
                         // and clamp the stepper to the honest ceiling.
-                        val available = err.stockAvailable ?: 0
+                        val available = err.stockAvailable ?: 0.0
                         if (existingBefore != null) {
                             CartStore.updateQuantity(stored.id, existingBefore.quantity)
                         } else {
                             CartStore.removeItem(stored.id)
                         }
-                        if (available >= product.moq) setQuantity(minOf(quantity, available))
+                        if (available >= product.moq) setQuantity(minOf(quantity, available.apiQtyInt()))
                         _state.update {
                             it.copy(
                                 justAdded = false,
-                                toast = "Only $available available in stock — the item was not added",
+                                toast = "Only ${available.apiQty()} available in stock — the item was not added",
                             )
                         }
                     } else {
                         _state.update {
                             it.copy(
                                 toast = when {
-                                    err.moq != null -> "Minimum order quantity is ${err.moq}"
+                                    err.moq != null -> "Minimum order quantity is ${err.moq.apiQty()}"
                                     else -> err.error ?: "Cart sync failed — kept locally"
                                 },
                             )
@@ -511,13 +512,13 @@ class ProductDetailViewModel(private val appContext: Context) : ViewModel() {
             }
             return
         }
-        if (product.stockQuantity == 0) {
+        if (product.stockQuantity <= 0) {
             _state.update { it.copy(toast = "This product is out of stock") }
             return
         }
         val quantity = _state.value.quantity
         if (quantity < product.moq) {
-            _state.update { it.copy(toast = "Minimum order quantity is ${product.moq}") }
+            _state.update { it.copy(toast = "Minimum order quantity is ${product.moq.apiQty()}") }
             return
         }
         _state.update { it.copy(buyNowRequested = true) }

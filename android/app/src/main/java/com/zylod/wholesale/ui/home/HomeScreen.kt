@@ -57,6 +57,7 @@ import com.zylod.wholesale.data.api.BannerDto
 import com.zylod.wholesale.data.api.CategoryDto
 import com.zylod.wholesale.data.api.DealDto
 import com.zylod.wholesale.data.api.ProductDto
+import com.zylod.wholesale.data.api.apiQty
 import com.zylod.wholesale.data.api.StatsDto
 import com.zylod.wholesale.ui.pages.NativePageKind
 import com.zylod.wholesale.ui.pages.NativePageMeta
@@ -492,7 +493,7 @@ private fun FeaturedCard(product: ProductDto, openPage: (pageId: String, query: 
                     )
                     Spacer(Modifier.weight(1f))
                     Text(
-                        "MOQ ${product.moq}",
+                        "MOQ ${product.moq.apiQty()}",
                         fontSize = 9.sp,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,

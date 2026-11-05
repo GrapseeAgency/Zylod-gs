@@ -30,8 +30,8 @@ data class PdpCategoryDto(
 @Serializable
 data class PriceTierDto(
     val id: String? = null,
-    val minQty: Int = 1,
-    val maxQty: Int? = null,
+    val minQty: Double = 1.0,
+    val maxQty: Double? = null,
     val pricePerUnit: Double = 0.0,
 )
 
@@ -40,7 +40,7 @@ data class ProductVariantDto(
     val id: String,
     val variantName: String? = null,
     val variantValue: String? = null,
-    val stockQuantity: Int = 0,
+    val stockQuantity: Double = 0.0,
     val priceOverride: Double? = null,
 )
 
@@ -76,15 +76,15 @@ data class ProductDetailDto(
     val unit: String? = null,
     val basePrice: Double = 0.0,
     val currency: String? = null,
-    val moq: Int = 1,
-    val maxOrderQty: Int? = null,
-    val stockQuantity: Int = 0,
+    val moq: Double = 1.0,
+    val maxOrderQty: Double? = null,
+    val stockQuantity: Double = 0.0,
     /** Task 95 checkout: kg per ONE purchasable unit; null = honestly unquotable. */
     val weightKg: Double? = null,
     val thumbnailUrl: String? = null,
     val ratingAvg: Double = 0.0,
     val reviewCount: Int = 0,
-    val soldCount: Int = 0,
+    val soldCount: Double = 0.0,
     val isCustomizable: Boolean = false,
     val isActive: Boolean = true,
     val isApproved: Boolean = true,

@@ -20,6 +20,13 @@ interface SyncQueueDao {
     @Query("DELETE FROM offline_sync_queue WHERE isSynced = 1")
     suspend fun clearCompleted()
 
+    /** t279 — retention purge: burned rows (retryCount ≥ maxRetries, still
+     *  unsynced) hold full action payloads (offline orders/RFQs with PII)
+     *  forever otherwise; the drain skips them but never deletes them.
+     *  Rows older than the cutoff are dropped at drain time. */
+    @Query("DELETE FROM offline_sync_queue WHERE isSynced = 0 AND retryCount >= :maxRetries AND createdAt < :olderThanMillis")
+    suspend fun purgeBurned(maxRetries: Int, olderThanMillis: Long)
+
     @Query("SELECT COUNT(*) FROM offline_sync_queue WHERE isSynced = 0")
     suspend fun getPendingCount(): Int
 }

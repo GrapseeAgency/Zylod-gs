@@ -48,6 +48,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -200,7 +201,10 @@ private val FULFILLMENT_FILTERS = listOf(
 private fun AdminOrdersList(state: AdminOrdersUiState, vm: AdminOrdersViewModel) {
     // Draft text — committed to the VM on the search action, NOT per keystroke
     // (each commit is a real server round-trip that resets pagination).
-    var searchDraft by remember { mutableStateOf("") }
+    // t279 — rememberSaveable + re-seed from the committed query: rotate
+    // mid-search used to blank the box while the list stayed filtered by the
+    // now-invisible term ("No orders match" under an empty search field).
+    var searchDraft by rememberSaveable(state.searchQuery) { mutableStateOf(state.searchQuery) }
 
     LazyColumn(
         modifier = Modifier.fillMaxSize(),

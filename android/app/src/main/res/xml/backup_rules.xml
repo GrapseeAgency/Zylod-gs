@@ -11,4 +11,12 @@
          account's rows into the new account's server cart on first login —
          a cross-account data leak. It never travels with a backup. -->
     <exclude domain="sharedpref" path="zylod_cart.xml"/>
+    <!-- t279: zylod_config holds ~60 account-scoped offline caches (wallet
+         balance, bank accounts, invoices, addresses, DM threads,
+         notifications …) in ONE file alongside the server-config pair.
+         Backup rules are file-granular and the account data is strictly more
+         sensitive than the cart, so the whole file never travels — same
+         cross-account rationale as zylod_cart (B7). The only loss on restore
+         is the chosen server URL, which the provenance probe re-selects. -->
+    <exclude domain="sharedpref" path="zylod_config.xml"/>
 </full-backup-content>

@@ -59,6 +59,14 @@ private val dayFormat = SimpleDateFormat("MMM d", Locale.US).apply {
     timeZone = TimeZone.getTimeZone("UTC")
 }
 
+/** t279 — date-only, UTC: membership/anniversary style dates have no
+ *  meaningful time-of-day, and the old absoluteFormat (no timezone set)
+ *  rendered a UTC createdAt in DEVICE-local time — "Jan 5, 2025 20:30Z"
+ *  became "Jan 6, 2025 02:30" for the UTC+6 primary market (day shifted). */
+private val dateOnlyFormat = SimpleDateFormat("MMM d, yyyy", Locale.US).apply {
+    timeZone = TimeZone.getTimeZone("UTC")
+}
+
 /**
  * Short date text for order/sample/warehouse/directory rows: absolute
  * "Jan 5, 2025 14:30". Unparsable input yields "" so the caller drops the
@@ -72,6 +80,13 @@ fun supplierCoreDate(iso: String?): String {
 
 /** Date-or-dash helper for nullable wire dates — never an invented fallback. */
 fun supplierCoreDateOrDash(iso: String?): String = supplierCoreDate(iso).ifBlank { "—" }
+
+/** t279 — date-only UTC text ("Jan 5, 2025") for membership-style dates. */
+fun supplierCoreDateOnly(iso: String?): String {
+    if (iso.isNullOrBlank()) return ""
+    val parsed = runCatching { isoParser.parse(iso) }.getOrNull() ?: return ""
+    return dateOnlyFormat.format(parsed)
+}
 
 /**
  * "Jan 5" from a plain "2025-01-05" day key — day keys WITHOUT a time part

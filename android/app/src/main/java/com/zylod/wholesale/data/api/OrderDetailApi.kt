@@ -157,7 +157,7 @@ data class OrderDetailVariantBrief(
 data class OrderDetailItem(
     val id: String,
     val productId: String? = null,
-    val quantity: Int = 0,
+    val quantity: Double = 0.0,
     val unitPrice: Double? = null,
     val totalPrice: Double? = null,
     val product: OrderDetailProductBrief? = null,
@@ -329,7 +329,7 @@ data class OrderDetailReceipt(
 data class OrderDetailReceiptItem(
     val productName: String? = null,
     val sku: String? = null,
-    val quantity: Int = 0,
+    val quantity: Double = 0.0,
     val unitPrice: Double = 0.0,
     val total: Double = 0.0,
 )

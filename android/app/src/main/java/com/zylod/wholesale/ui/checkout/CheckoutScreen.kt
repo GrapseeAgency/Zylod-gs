@@ -74,6 +74,7 @@ import com.zylod.wholesale.data.api.AddressDto
 import com.zylod.wholesale.data.api.CheckoutCreatedOrder
 import com.zylod.wholesale.data.api.CheckoutQuoteOption
 import com.zylod.wholesale.data.api.CartItemData
+import com.zylod.wholesale.data.api.apiQty
 import com.zylod.wholesale.ui.wallet.formatBdt
 import java.util.Locale
 
@@ -439,7 +440,7 @@ private fun CheckoutFormBody(
             }
         }
         item(key = "address") {
-            CheckoutAddressCard(state = state, openPage = openPage)
+            CheckoutAddressCard(state = state, openPage = openPage, onSelectAddress = { vm.selectAddress(it) })
         }
         item(key = "items") {
             CheckoutItemsCard(items = state.items)
@@ -620,6 +621,7 @@ private fun CheckoutSelectedAddressBody(address: AddressDto) {
 private fun CheckoutAddressCard(
     state: CheckoutUiState,
     openPage: (pageId: String, query: String) -> Unit,
+    onSelectAddress: (String) -> Unit,
 ) {
     CheckoutSectionCard(
         title = "Shipping Address",
@@ -649,6 +651,66 @@ private fun CheckoutAddressCard(
                 val address = state.selectedAddress
                 if (address != null) {
                     CheckoutSelectedAddressBody(address = address)
+                    // t279 — multi-address buyers could never switch the
+                    // delivery address mid-checkout: the only affordance was
+                    // "Edit" → a static page, and CheckoutViewModel.selectAddress
+                    // had ZERO callers (checkout was hard-locked to the default
+                    // address). With >1 saved address the card now renders a
+                    // compact tappable switcher — selecting re-quotes shipping
+                    // for the new district (selectAddress → refreshQuotes).
+                    if (state.addresses.size > 1) {
+                        Spacer(Modifier.height(10.dp))
+                        HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.4f))
+                        Spacer(Modifier.height(6.dp))
+                        Text(
+                            "Deliver to a different address",
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                        Spacer(Modifier.height(4.dp))
+                        state.addresses.forEach { candidate ->
+                            val selected = candidate.id != null && candidate.id == state.selectedAddressId
+                            if (!selected && candidate.id != null) {
+                                Surface(
+                                    onClick = { onSelectAddress(candidate.id) },
+                                    shape = RoundedCornerShape(12.dp),
+                                    color = MaterialTheme.colorScheme.surfaceContainer,
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(top = 4.dp),
+                                ) {
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
+                                    ) {
+                                        RadioButton(selected = false, onClick = { onSelectAddress(candidate.id) })
+                                        Column(Modifier.weight(1f)) {
+                                            Text(
+                                                listOfNotNull(
+                                                    candidate.label?.takeIf(String::isNotBlank),
+                                                    candidate.city?.takeIf(String::isNotBlank),
+                                                ).joinToString(" · ").ifBlank { "Saved address" },
+                                                fontSize = 12.sp,
+                                                fontWeight = FontWeight.Bold,
+                                                maxLines = 1,
+                                                overflow = TextOverflow.Ellipsis,
+                                            )
+                                            candidate.district?.takeIf(String::isNotBlank)?.let {
+                                                Text(
+                                                    it,
+                                                    fontSize = 10.sp,
+                                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                                    maxLines = 1,
+                                                    overflow = TextOverflow.Ellipsis,
+                                                )
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
             }
             else -> Column {
@@ -725,7 +787,7 @@ private fun CheckoutItemsCard(items: List<CartItemData>) {
                                 ""
                             }
                         Text(
-                            "Qty: ${item.quantity} · ${item.supplierName.ifBlank { "Supplier" }}$variantSuffix",
+                            "Qty: ${item.quantity.apiQty()} · ${item.supplierName.ifBlank { "Supplier" }}$variantSuffix",
                             fontSize = 11.sp,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             maxLines = 1,

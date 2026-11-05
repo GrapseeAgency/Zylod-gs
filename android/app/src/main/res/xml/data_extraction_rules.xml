@@ -9,14 +9,20 @@
     <!-- t206 B7: zylod_cart.xml (the account-scoped local cart) is excluded
          from both transports too — a restored cart would POST the previous
          account's lines into a new account's server cart. -->
+    <!-- t279: zylod_config.xml is excluded from both transports as well — it
+         carries the account-scoped offline caches (wallet/bank/invoice/
+         address/chat/notification payloads) for whichever account last used
+         the device; only the server-config pair is lost on restore. -->
     <cloud-backup>
         <include domain="sharedpref" path="."/>
         <exclude domain="sharedpref" path="zylod_secure.xml"/>
         <exclude domain="sharedpref" path="zylod_cart.xml"/>
+        <exclude domain="sharedpref" path="zylod_config.xml"/>
     </cloud-backup>
     <device-transfer>
         <include domain="sharedpref" path="."/>
         <exclude domain="sharedpref" path="zylod_secure.xml"/>
         <exclude domain="sharedpref" path="zylod_cart.xml"/>
+        <exclude domain="sharedpref" path="zylod_config.xml"/>
     </device-transfer>
 </data-extraction-rules>

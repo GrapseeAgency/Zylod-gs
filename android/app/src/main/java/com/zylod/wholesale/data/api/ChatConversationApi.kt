@@ -132,7 +132,7 @@ data class ConversationProductDto(
     val thumbnailUrl: String? = null,
     val basePrice: Double? = null,
     val unit: String? = null,
-    val moq: Int? = null,
+    val moq: Double? = null,
 )
 
 /** The newest message preview (messages[0] of the server's desc take-1). */

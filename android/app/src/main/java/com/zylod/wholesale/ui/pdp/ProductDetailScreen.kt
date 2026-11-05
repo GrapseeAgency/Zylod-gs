@@ -99,6 +99,7 @@ import com.zylod.wholesale.data.api.ProductDetailDto
 import com.zylod.wholesale.data.api.ProductQaItemDto
 import com.zylod.wholesale.data.api.ReviewDto
 import com.zylod.wholesale.data.api.ServerConfig
+import com.zylod.wholesale.data.api.apiQty
 import com.zylod.wholesale.ui.components.InfoTile
 import com.zylod.wholesale.ui.components.StarRow
 import com.zylod.wholesale.ui.theme.LocalZylodExtra
@@ -519,14 +520,14 @@ private fun ProductInfo(
                 StarRow(rating = product.ratingAvg.toInt().coerceIn(0, 5), starSize = 14)
                 Spacer(Modifier.width(6.dp))
                 Text(
-                    "${product.ratingAvg} (${product.reviewCount} reviews)",
+                    if (product.reviewCount > 0) "${product.ratingAvg} (${product.reviewCount} reviews)" else "No reviews yet",
                     fontSize = 12.sp,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
                 if (product.soldCount > 0) {
                     Spacer(Modifier.width(6.dp))
                     Text(
-                        "• ${compact(product.soldCount)} sold",
+                        "• ${compact(product.soldCount.toLong())} sold",
                         fontSize = 12.sp,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
@@ -614,7 +615,7 @@ private fun ProductInfo(
                 modifier = Modifier.padding(top = 14.dp),
             ) {
                 Text(
-                    "Quantity (MOQ: ${product.moq})",
+                    "Quantity (MOQ: ${product.moq.apiQty()})",
                     fontSize = 12.sp,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.weight(1f),
@@ -718,7 +719,7 @@ private fun TierTable(tiers: List<PriceTierDto>, quantity: Int, basePrice: Doubl
                             ),
                     ) {
                         Text(
-                            "${tier.minQty}${tier.maxQty?.let { "-$it" } ?: "+"} $unit",
+                            "${tier.minQty.apiQty()}${tier.maxQty?.let { "-${it.apiQty()}" } ?: "+"} $unit",
                             fontSize = 12.sp,
                             modifier = Modifier
                                 .padding(horizontal = 12.dp, vertical = 10.dp)
@@ -928,7 +929,7 @@ private fun DetailsTab(product: ProductDetailDto) {
                 "${NumberFormat.getIntegerInstance().format(product.stockQuantity)} ${product.unit ?: "piece"}",
                 Modifier.weight(1f),
             )
-            InfoTile("Min. Order", "${product.moq} ${product.unit ?: "piece"}", Modifier.weight(1f))
+            InfoTile("Min. Order", "${product.moq.apiQty()} ${product.unit ?: "piece"}", Modifier.weight(1f))
         }
         product.brand?.takeIf { it.isNotBlank() }?.let { brand ->
             InfoTile("Brand", brand, Modifier.fillMaxWidth().padding(top = 12.dp))
@@ -1514,5 +1515,5 @@ private fun resolveImageUrl(raw: String?): String? {
 // the old copy rendered Bengali/Arabic-Indic digits while checkout/wallet
 // rendered Latin digits — mixed digit systems inside one purchase flow.
 
-private fun compact(count: Int): String =
+private fun compact(count: Long): String =
     if (count >= 1000) String.format(Locale.US, "%.1fk", count / 1000.0) else count.toString()
