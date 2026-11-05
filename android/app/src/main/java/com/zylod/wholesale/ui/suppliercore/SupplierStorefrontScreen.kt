@@ -232,7 +232,15 @@ private fun StorefrontList(state: SupplierStorefrontUiState, data: SupplierCoreS
 @Composable
 private fun HeaderCard(data: SupplierCoreStorefrontData) {
     val ratingLabel = remember(data) {
-        "★ ${supplierCoreRating(data.ratingAvg)} (${supplierCoreCount(data.ratingCount)})"
+        // t281 5-c: web parity gate (seller-storefront-page.tsx:249 renders
+        // "—" unless ratingCount > 0) — the raw pair "★ 0.9 (0)" mixed the
+        // product-derived average with a zero supplier-review count (VLM run
+        // 175, captures 56/58); the t279 PDP honesty phrase renders instead.
+        if (data.ratingCount > 0) {
+            "★ ${supplierCoreRating(data.ratingAvg)} (${supplierCoreCount(data.ratingCount)})"
+        } else {
+            "No reviews yet"
+        }
     }
     // t279 — date-only UTC: "Member since Jan 5, 2026" (was "Jan 5, 2026
     // 14:30" in device-local time — a meaningless clock time that could even

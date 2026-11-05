@@ -411,6 +411,158 @@ const EVENTS = [
   },
 ]
 
+// t281 5-c: public FAQs — the FAQ/help-center surfaces rendered
+// 'No matching questions found' on every CI run (faqItems was seeded by
+// NOTHING — prisma/seed-support-docs.ts exists but no CI path runs it;
+// the VLM audit of artifact 13386389669 flagged capture 35). Ten entries
+// lifted verbatim from prisma/seed-support-docs.ts (EN+BN).
+const FAQS = [
+  {
+    "category": "orders",
+    "questionEn": "How do I place a wholesale order on Zylod?",
+    "answerEn": "Search or browse products, choose your quantity meeting or exceeding the Minimum Order Quantity (MOQ), check tier pricing discounts, add to cart, select delivery address, and pay securely via bKash, Nagad, bank transfer, or card. View our [How It Works Guide](/how-it-works) or [Browse Catalog](/product-list).",
+    "questionBn": "জাইলোড-এ কীভাবে পাইকারি অর্ডার করবেন?",
+    "answerBn": "পণ্য সার্চ বা ব্রাউজ করুন, নূন্যতম অর্ডার পরিমাণ (MOQ) বা তার বেশি সিলেক্ট করুন, টায়ার প্রাইসিং ডিসকাউন্ট দেখুন, কার্টে যোগ করুন, ডেলিভারি ঠিকানা নির্বাচন করুন এবং বিকাশ, নগদ, ব্যাংক ট্রান্সফার বা কার্ড দিয়ে নিরাপদে পেমেন্ট করুন। বিস্তারিত জানতে [কীভাবে কাজ করে](/how-it-works) দেখুন।",
+    "sortOrder": 1
+  },
+  {
+    "category": "orders",
+    "questionEn": "What is Minimum Order Quantity (MOQ)?",
+    "answerEn": "MOQ is the lowest number of units a manufacturer or wholesale supplier agrees to sell in a single order. Different price tiers unlock higher discounts at higher quantities. Read our [Bulk Pricing & MOQ Guide](/bulk-pricing-guide).",
+    "questionBn": "মিনিমাম অর্ডার কোয়ান্টিটি (MOQ) কী?",
+    "answerBn": "MOQ হলো সর্বনিম্ন পণ্যের সংখ্যা যা একজন প্রস্তুতকারক বা পাইকারি বিক্রেতা একটি অর্ডারে বিক্রি করতে রাজি হন। বেশি পরিমাণের অর্ডারে বেশি ছাড় পাওয়া যায়। বিস্তারিত জানতে [বাল্ক প্রাইসিং গাইড](/bulk-pricing-guide) পড়ুন।",
+    "sortOrder": 2
+  },
+  {
+    "category": "payments",
+    "questionEn": "How does Zylod Escrow Payment Protection work?",
+    "answerEn": "When you pay for an order, Zylod holds your funds in escrow. The payment is only released to the seller after you confirm receipt and inspect the goods within the 48-hour inspection window. Read our [SafePay Escrow Guide](/escrow-protection-guide).",
+    "questionBn": "জাইলোড এস্ক্রো পেমেন্ট সুরক্ষা কীভাবে কাজ করে?",
+    "answerBn": "অর্ডারের পেমেন্ট করার পর জাইলোড তা এস্ক্রো একাউন্টে সুরক্ষিত রাখে। পণ্য হাতে পেয়ে ৪৮ ঘণ্টার মধ্যে যাচাই করে নিশ্চিত করলেই কেবল বিক্রেতাকে টাকা পরিশোধ করা হয়। বিস্তারিত দেখুন [এস্ক্রো পলিসি](/escrow-protection-guide)।",
+    "sortOrder": 3
+  },
+  {
+    "category": "payments",
+    "questionEn": "What payment methods are supported in Bangladesh?",
+    "answerEn": "We support bKash, Nagad, Rocket, Upay, Visa/Mastercard debit/credit cards, and direct B2B Bank Transfers with RTGS/BEFTN/NPSB. Manage payment options in your [Wallet Dashboard](/wallet).",
+    "questionBn": "বাংলাদেশে কোন কোন পেমেন্ট মাধ্যম গ্রহণ করা হয়?",
+    "answerBn": "আমরা বিকাশ, নগদ, রকেট, উপায়, ভিসা/মাস্টারকার্ড এবং সরাসরি বি২বি ব্যাংক ট্রান্সফার (RTGS/BEFTN/NPSB) সমর্থন করি। আপনার [ওয়ালেট ড্যাশবোর্ড](/wallet) থেকে পেমেন্ট পরিচালনা করুন।",
+    "sortOrder": 4
+  },
+  {
+    "category": "shipping",
+    "questionEn": "How are wholesale products delivered across Bangladesh?",
+    "answerEn": "Products are shipped via partner courier networks (Steadfast, Pathao, RedX, eCourier, SA Paribahan, Sundarban Courier) or supplier self-logistics. Read the full [Logistics & Courier Delivery Policy](/logistics-delivery-policy).",
+    "questionBn": "সারা দেশে কীভাবে পণ্য ডেলিভারি দেওয়া হয়?",
+    "answerBn": "আমাদের অনুমোদিত কুরিয়ার পার্টনার (স্টিডফাস্ট, পাঠাও, রেডএক্স, এসএ পরিবহন, সুন্দরবন কুরিয়ার) বা সেলারের নিজস্ব পরিবহনে পণ্য পাঠানো হয়। বিস্তারিত জানতে [লজিস্টিকস নীতিমালা](/logistics-delivery-policy) দেখুন।",
+    "sortOrder": 5
+  },
+  {
+    "category": "shipping",
+    "questionEn": "Can I track my consignment in real time?",
+    "answerEn": "Yes! Navigate to [Track Order](/orders) to view the live GPS status, driver notes, and courier consignment ID updates.",
+    "questionBn": "আমি কি রিয়েল টাইমে ডেলিভারি ট্র্যাক করতে পারব?",
+    "answerBn": "হ্যাঁ! আপনার ড্যাশবোর্ডের [অর্ডার ট্র্যাকিং](/orders) সেকশনে গিয়ে রিয়েল-টাইম কুরিয়ার কনসাইনমেন্ট স্ট্যাটাস দেখতে পাবেন।",
+    "sortOrder": 6
+  },
+  {
+    "category": "returns",
+    "questionEn": "What is the return policy for wholesale damaged goods?",
+    "answerEn": "If goods arrive damaged, defective, or do not match specifications, raise a dispute within 48 hours of delivery with unboxing photo/video evidence. Learn more in our [Buyer Protection Policy](/buyer-protection-policy) or [Open Dispute Ticket](/submit-ticket).",
+    "questionBn": "নষ্ট বা ভুল পণ্য পাওয়ার পর রিটার্ন পলিসি কী?",
+    "answerBn": "ডেলিভারির ৪৮ ঘণ্টার মধ্যে আনবক্সিং ছবি বা ভিডিও প্রমাণসহ ডিসপুট ওপেন করলে সেলার রিপ্লেসমেন্ট দিতে বাধ্য থাকবে অথবা এস্ক্রো থেকে সম্পূর্ণ রিফান্ড দেওয়া হবে। দেখুন [ক্রেতা সুরক্ষা পলিসি](/buyer-protection-policy) অথবা [টিকেট ওপেন করুন](/submit-ticket)।",
+    "sortOrder": 7
+  },
+  {
+    "category": "sellers",
+    "questionEn": "What documents are required to become a verified supplier?",
+    "answerEn": "You need an updated Trade License (ট্রেড লাইসেন্স), National ID (NID), TIN Certificate, and a commercial bank account under your company name. Review our [Supplier Verification Guide](/seller-verification-guide) or [Upload Documents Now](/seller-verification).",
+    "questionBn": "ভেরিফায়েড সেলার হতে কী কী কাগজপত্র প্রয়োজন?",
+    "answerBn": "হালনাগাদ ট্রেড লাইসেন্স, জাতীয় পরিচয়পত্র (NID), ই-টিন (TIN) সার্টিফিকেট এবং প্রতিষ্ঠানের নামে খোলা একটি ভ্যালিড ব্যাংক একাউন্ট প্রয়োজন। দেখুন [সেলার ভেরিফিকেশন গাইড](/seller-verification-guide) অথবা [ডকুমেন্টস আপলোড করুন](/seller-verification)।",
+    "sortOrder": 8
+  },
+  {
+    "category": "sellers",
+    "questionEn": "How do suppliers receive payouts for fulfilled orders?",
+    "answerEn": "Once the buyer confirms receipt or the 48-hour inspection window passes without dispute, funds are disbursed automatically via BEFTN/NPSB to the verified bank account within 1-3 business days. Read our [Seller Handbook](/seller-guide).",
+    "questionBn": "সেলাররা কীভাবে বিক্রির টাকা পাবেন?",
+    "answerBn": "ক্রেতা ডেলিভারি নিশ্চিত করার পর অথবা ৪৮ ঘণ্টা সময় পার হওয়ার পর কোনো অভিযোগ না থাকলে ১-৩ কার্যদিবসের মধ্যে BEFTN/NPSB এর মাধ্যমে সেলারের ব্যাংক একাউন্টে টাকা চলে যাবে। দেখুন [সেলার সহায়িকা](/seller-guide)।",
+    "sortOrder": 9
+  },
+  {
+    "category": "account",
+    "questionEn": "How do I protect my account with Two-Factor Authentication (2FA)?",
+    "answerEn": "Go to [Account Settings](/profile-settings) to enable OTP verification via SMS or Authenticator App on every login and high-value transaction. For help, contact our [Live Chat Team](/live-chat).",
+    "questionBn": "টু-ফ্যাক্টর অথেনটিকেশন (2FA) কীভাবে চালু করবেন?",
+    "answerBn": "আপনার [অ্যাকাউন্ট সেটিংস](/profile-settings)-এ গিয়ে এসএমএস বা অথেনটিকেটর অ্যাপের মাধ্যমে অতিরিক্ত নিরাপত্তা চালু করতে পারেন। প্রয়োজনে [লাইভ চ্যাটে যোগাযোগ করুন](/live-chat)।",
+    "sortOrder": 10
+  },
+]
+
+// t281 5-c: public blog posts — the blog surface rendered "No articles
+// published yet" on every CI run (blogPosts was seeded by NOTHING; the VLM
+// audit of artifact 13386389669 flagged capture 43). Covers reuse the home
+// banner art (thematically consistent, no new assets).
+const BLOG_POSTS = [
+  {
+    slug: 'sourcing-textiles-from-narayanganj-mills',
+    title: 'Sourcing Textiles from Narayanganj Mills: A Buyer Field Guide',
+    excerpt: 'Denim, muslin, and finished-goods clusters within 25km of Dhaka — what MOQs, lead times, and tier pricing to expect when you buy direct.',
+    category: 'Sourcing guide',
+    coverImageUrl: '/images/banners/textile-warehouse.png',
+    contentEn: `Narayanganj holds the densest concentration of textile mills in Bangladesh. This guide walks through the practical numbers buyers should expect.
+
+## Typical MOQs
+Woven denim lots start at 500-1,000 meters; knit jersey from 300kg. Mills reward commitment: a 3-tier price ladder usually unlocks 5-12% at the second tier and 10-15% at the third.
+
+## Lead times
+Stock programs ship in 3-5 days. Made-to-order dyeing adds 10-18 days depending on shade cards. Always confirm the mill's current loom allocation before committing a delivery date to your own buyers.
+
+## Inspection windows
+Book third-party inspection before dispatch on qualifying Zylod orders. The 48-hour post-delivery inspection window applies to escrow-protected orders.
+
+## Working the relationship
+Mills prioritize repeat buyers during capacity crunches. Consolidating your seasonal buys with two or three mills — rather than spreading across ten — gets you better tiers and faster restocks.`,
+    daysAgo: 6,
+  },
+  {
+    slug: 'bkash-nagad-b2b-payment-flows',
+    title: 'bKash & Nagad for B2B: Payment Flows That Scale Past 5 Lakh Taka',
+    excerpt: 'Mobile financial services now clear large wholesale invoices — how escrow, RTGS rails, and verified merchant wallets fit together.',
+    category: 'Market news',
+    coverImageUrl: '/images/banners/electronics-factory.png',
+    contentEn: `Mobile financial services have quietly become settlement rails for mid-size wholesale in Bangladesh.
+
+## Where MFS fits
+For invoices under 5 lakh BDT, bKash and Nagad merchant settlements typically clear same-day — faster than BEFTN batches. Above that, splitting across rails or moving to RTGS keeps compliance clean.
+
+## Escrow changes the risk math
+Zylod SafePay holds funds until you confirm receipt within the inspection window. Suppliers ship faster against escrowed money; buyers stop pre-paying strangers.
+
+## Verification still matters
+Counterparty checks — trade license, bank-account matching — remain the cheapest fraud control. Verified suppliers on Zylod carry the badge on every storefront.`,
+    daysAgo: 13,
+  },
+  {
+    slug: 'container-consolidation-chattogram',
+    title: 'Container Consolidation from Chattogram: Cutting Landed Cost 8-12%',
+    excerpt: 'Sharing a 20ft container with complementary loads — the paperwork, the freight-forwarder negotiation, and the customs line items.',
+    category: 'Logistics',
+    coverImageUrl: '/images/banners/bulk-goods.png',
+    contentEn: `Landed cost on small export lots is dominated by fixed container overhead. Consolidation attacks exactly that.
+
+## Finding co-load partners
+Category-compatible, schedule-compatible, and clean-documentation loads are the three filters. Zylod RFQ threads let you post a consolidation ask alongside your regular sourcing.
+
+## The paperwork
+One bill of lading per container, one harmonized line per co-load, and a written split of terminal handling. Agree the split BEFORE the box is stuffed.
+
+## Realistic savings
+8-12% on landed cost for loads between 4-9 CBM. Below 3 CBM, LCL rates usually win; above 12 CBM you are near a full container anyway.`,
+    daysAgo: 27,
+  },
+]
+
 async function main() {
   // Legal documents (upsert by docType)
   for (const d of LEGAL_DOCS) {
@@ -459,12 +611,34 @@ async function main() {
   }
   console.log(`[seed-content] tradeEvents: ${EVENTS.length}`)
 
+  // t281 5-c: FAQs (findFirst by category+question — the model has no unique
+  // key besides id, so upsert-by-slug does not apply; tradeEvents precedent)
+  for (const f of FAQS) {
+    const existing = await db.faqItems.findFirst({ where: { category: f.category, questionEn: f.questionEn } })
+    if (!existing) await db.faqItems.create({ data: { ...f, isActive: true } })
+  }
+  console.log(`[seed-content] faqItems: ${FAQS.length}`)
+
+  // t281 5-c: blog posts (upsert by unique slug)
+  for (const b of BLOG_POSTS) {
+    const { daysAgo, contentEn, ...post } = b
+    await db.blogPosts.upsert({
+      where: { slug: post.slug },
+      create: { ...post, content: contentEn, isPublished: true, publishedAt: new Date(Date.now() - daysAgo * 86400e3) },
+      update: { title: post.title, excerpt: post.excerpt, category: post.category, content: contentEn, coverImageUrl: post.coverImageUrl },
+    })
+  }
+  console.log(`[seed-content] blogPosts: ${BLOG_POSTS.length}`)
+
+
   const counts = {
     legalDocuments: await db.legalDocuments.count(),
     helpArticles: await db.helpArticles.count(),
     jobListings: await db.jobListings.count(),
     pressReleases: await db.pressReleases.count(),
     tradeEvents: await db.tradeEvents.count(),
+    faqItems: await db.faqItems.count(),
+    blogPosts: await db.blogPosts.count(),
   }
   console.log('[seed-content] totals:', counts)
 }

@@ -171,7 +171,14 @@ private fun DirectoryList(
 @Composable
 private fun SupplierCard(row: SupplierCoreSupplierRow) {
     val ratingLine = remember(row) {
-        "★ ${supplierCoreRating(row.ratingAvg)} (${row.ratingCount} reviews)"
+        // t281 5-c: same impossible-pair gate as the storefront header — a
+        // product-derived average with zero supplier reviews renders the
+        // honest "No reviews yet" instead of "★ 0.9 (0 reviews)".
+        if (row.ratingCount > 0) {
+            "★ ${supplierCoreRating(row.ratingAvg)} (${row.ratingCount} reviews)"
+        } else {
+            "No reviews yet"
+        }
     }
     val productsLine = remember(row) { "${row.productCount} products" }
     val placeLine = remember(row) {

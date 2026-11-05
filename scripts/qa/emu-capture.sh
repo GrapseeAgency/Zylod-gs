@@ -2673,6 +2673,22 @@ else
     echo "buyer-failure-reason=ensure_home failed — the buyer-orders deeplink was skipped (queue desync guard)"
   } >> screenshots/buyer-session-check.txt 2>/dev/null || true
 fi
+# t281 5-e: THE ACCOUNT FAMILY (72-76) — the five typed t280 screens shipped
+# with ZERO capture coverage (the t280 worklog claimed "android-screenshots
+# re-runs the new account family" but no capture steps ever existed). They
+# run in the freshly-reinjected BUYER session zone right after
+# 18-orders-authed — every one needs the signed-in state:
+#   72 account-settings (section pills, GET settings+notifications parallel)
+#   73 notification-preferences (14 category cards, quiet hours)
+#   74 profile-photo (avatar state from GET me)
+#   75 two-factor-auth (enrollment method select)
+#   76 backup-codes (auto-generate on mount)
+# All non-fatal (guarded_deeplink degrades to a warning on budget/queue).
+guarded_deeplink "72-account-settings" 12 "zylod://account-settings"
+guarded_deeplink "73-notification-preferences" 12 "zylod://notification-preferences"
+guarded_deeplink "74-profile-photo" 12 "zylod://profile-photo"
+guarded_deeplink "75-two-factor-auth" 12 "zylod://two-factor-auth"
+guarded_deeplink "76-backup-codes" 12 "zylod://backup-codes"
 # t248: the two typed admin surfaces — moderation + operations queues.
 guarded_deeplink "19-admin-users" 10 "zylod://admin-users"
 guarded_deeplink "20-admin-orders" 10 "zylod://admin-orders"

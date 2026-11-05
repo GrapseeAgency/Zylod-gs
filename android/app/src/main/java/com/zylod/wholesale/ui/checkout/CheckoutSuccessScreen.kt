@@ -55,6 +55,7 @@ import coil.compose.AsyncImage
 import com.zylod.wholesale.data.api.CheckoutSuccessItem
 import com.zylod.wholesale.data.api.CheckoutSuccessOrder
 import com.zylod.wholesale.data.api.apiQty
+import com.zylod.wholesale.util.breakableOrderToken
 import com.zylod.wholesale.ui.wallet.formatBdt
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -408,10 +409,12 @@ private fun CheckoutSuccessContent(
             modifier = Modifier.padding(top = 16.dp),
         )
         val itemWord = if (allItems.size == 1) "item" else "items"
+        // t281 5-c: dash-boundary break opportunities — the 18-char token
+        // wrapped mid-glyph on 320dp screens (VLM run 175, capture 70).
         val subLine = if (allItems.isEmpty()) {
-            "Order #${order.orderNumber} was created and sent to the supplier."
+            "Order #${breakableOrderToken(order.orderNumber)} was created and sent to the supplier."
         } else {
-            "Order #${order.orderNumber} was created and sent to the supplier with ${allItems.size} $itemWord."
+            "Order #${breakableOrderToken(order.orderNumber)} was created and sent to the supplier with ${allItems.size} $itemWord."
         }
         Text(
             subLine,
@@ -439,7 +442,8 @@ private fun CheckoutSuccessContent(
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                         Text(
-                            order.orderNumber,
+                            // t281 5-c: same dash-boundary break helper.
+                            breakableOrderToken(order.orderNumber),
                             fontSize = 13.sp,
                             fontWeight = FontWeight.Bold,
                             color = onSurface,

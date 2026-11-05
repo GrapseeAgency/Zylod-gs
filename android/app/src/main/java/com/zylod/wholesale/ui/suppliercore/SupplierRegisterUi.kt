@@ -87,7 +87,10 @@ internal data class SupplierRegisterStepChip(
 internal val SUPPLIER_REGISTER_STEPS = listOf(
     SupplierRegisterStepChip("Company Info", Icons.Outlined.Storefront),
     SupplierRegisterStepChip("NID Upload", Icons.Outlined.Description),
-    SupplierRegisterStepChip("Trade License & TIN", Icons.Outlined.VerifiedUser),
+    // t281 5-c: "License & TIN" (not "Trade License & TIN") — the full label
+    // ellipsized to "Trade Licen…" in the ~76dp chip on 320dp AVDs (VLM run
+    // 175, capture 62); the step card below keeps the full "Trade License" name.
+    SupplierRegisterStepChip("License & TIN", Icons.Outlined.VerifiedUser),
     SupplierRegisterStepChip("Bank Details", Icons.Outlined.AccountBalance),
 )
 

@@ -84,6 +84,7 @@ import com.zylod.wholesale.data.api.OrderDetailItem
 import com.zylod.wholesale.data.api.OrderDetailOrder
 import com.zylod.wholesale.data.api.OrderDetailPayment
 import com.zylod.wholesale.data.api.OrderDetailReceipt
+import com.zylod.wholesale.util.breakableOrderToken
 import com.zylod.wholesale.data.api.OrderDetailSubOrder
 import com.zylod.wholesale.data.api.OrderDetailTracking
 import com.zylod.wholesale.data.api.apiQty
@@ -364,7 +365,8 @@ private fun OrderDetailStatusCard(
         Row(verticalAlignment = Alignment.Top) {
             Column(Modifier.weight(1f)) {
                 Text(
-                    "Order #${order.orderNumber ?: "--"}",
+                    // t281 5-c: dash-boundary break opportunities (no mid-glyph wrap).
+                    "Order #${breakableOrderToken(order.orderNumber ?: "--")}",
                     fontSize = 15.sp,
                     fontWeight = FontWeight.Black,
                     color = MaterialTheme.colorScheme.onSurface,
@@ -407,18 +409,21 @@ private fun OrderDetailStatusCard(
                     MaterialTheme.colorScheme.error
                 },
             )
-            if (hasPendingVerification) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(Icons.Outlined.Schedule, null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(11.dp))
-                    Spacer(Modifier.width(3.dp))
-                    Text(
-                        "PAYMENT VERIFICATION PENDING",
-                        fontSize = 9.sp,
-                        fontWeight = FontWeight.Black,
-                        color = MaterialTheme.colorScheme.primary,
-                        letterSpacing = 0.6.sp,
-                    )
-                }
+        }
+
+        // t281 5-c: the pending-verification marker renders as its OWN pill row
+        // below the status chips (VLM run 175, capture 71: the old inline icon +
+        // raw 3-line text started mid-chip and misaligned the row on 320dp).
+        if (hasPendingVerification) {
+            Spacer(Modifier.height(6.dp))
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(Icons.Outlined.Schedule, null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(11.dp))
+                Spacer(Modifier.width(5.dp))
+                OrderDetailChip(
+                    text = "PAYMENT VERIFICATION PENDING",
+                    bg = MaterialTheme.colorScheme.primary.copy(alpha = 0.10f),
+                    fg = MaterialTheme.colorScheme.primary,
+                )
             }
         }
 

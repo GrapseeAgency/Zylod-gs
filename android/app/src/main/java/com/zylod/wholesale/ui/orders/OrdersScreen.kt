@@ -38,6 +38,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import com.zylod.wholesale.util.breakableOrderToken
 import androidx.compose.runtime.remember
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
@@ -318,9 +319,10 @@ private fun deriveOrderStatus(subOrders: List<SubOrderDto>): String {
     return "processing"
 }
 
-/** orders-page.tsx:103 — `PO #<order_number>`, falling back to the id. */
+/** orders-page.tsx:103 — `PO #<order_number>`, falling back to the id.
+ * t281 5-c: dash-boundary break opportunities (no mid-glyph token wrap). */
 private fun poNumberLabel(order: OrderDto): String =
-    order.orderNumber?.takeIf { it.isNotBlank() }?.let { "PO #$it" }
+    order.orderNumber?.takeIf { it.isNotBlank() }?.let { "PO #${breakableOrderToken(it)}" }
         ?: order.id?.takeIf { it.isNotBlank() }
         ?: "--"
 

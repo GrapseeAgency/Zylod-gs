@@ -212,8 +212,17 @@ class CartViewModel(private val appContext: Context) : ViewModel() {
     }
 
     /** cart-page.tsx handleQtyChange: step = max(1, round(moq/5)), floor = MOQ. */
-    fun stepFor(item: CartItemData): Int =
-        maxOf(1, Math.round(item.moq.coerceAtLeast(1.0) / 5.0).toInt())
+    // t281 5-f: web parity CLOSED (cart-page.tsx:87-88) — "kg lines step in
+    // 0.5 kg; discrete units keep the MOQ-derived integer step". The t279
+    // note assumed whole-unit stepping was designed parity; the web contract
+    // says otherwise, and the Decimal-quantity parse side (t279-C) already
+    // renders "2.5" — the stepper can now produce it.
+    fun stepFor(item: CartItemData): Double =
+        if (item.unit.equals("kg", ignoreCase = true)) {
+            0.5
+        } else {
+            maxOf(1.0, Math.round(item.moq.coerceAtLeast(1.0) / 5.0).toDouble())
+        }
 
     fun changeQuantity(item: CartItemData, delta: Int) {
         val step = if (delta < 0) -stepFor(item) else stepFor(item)

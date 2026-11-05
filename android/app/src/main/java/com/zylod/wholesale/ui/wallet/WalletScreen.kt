@@ -349,7 +349,10 @@ private fun QuickActions(openPage: (pageId: String, query: String) -> Unit) {
         QuickAction("Withdraw", Icons.Outlined.ArrowUpward, Modifier.weight(1f)) {
             openPage("withdraw-money", "")
         }
-        QuickAction("Bank Accounts", Icons.Outlined.AccountBalance, Modifier.weight(1f)) {
+        // t281 5-c: "Bank A/C" (not "Bank Accounts") — the third equal-width
+        // tile ellipsized to "Bank Accou…" on the 320dp AVD (VLM run 175,
+        // capture 13); the BD-market abbreviation fits without a layout change.
+        QuickAction("Bank A/C", Icons.Outlined.AccountBalance, Modifier.weight(1f)) {
             openPage("bank-accounts", "")
         }
     }
