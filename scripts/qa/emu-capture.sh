@@ -345,7 +345,11 @@ scroll_swipe () { # one upward swipe — content scrolls down
 # placed orderId from 69, zylod://orders/<id> opens the TYPED detail screen
 # (status stepper, shipments, payment summary); without one it skips
 # non-fatally).
-budget_left () { [ $((3240 - SECONDS)) -gt 10 ]; }
+# (t283: raised to 3340s — captures 77/78-best-sellers/group-buy join the
+# segment as the FIRST WebScreen captures (25s settles each + deeplink
+# overhead); still far under the 60-minute job ceiling, and every skipped
+# capture degrades non-fatally).
+budget_left () { [ $((3340 - SECONDS)) -gt 10 ]; }
 budget_stop () {
   if [ "$BUDGET_EXHAUSTED" -eq 0 ] && ! budget_left; then
     BUDGET_EXHAUSTED=1
@@ -2689,6 +2693,22 @@ guarded_deeplink "73-notification-preferences" 12 "zylod://notification-preferen
 guarded_deeplink "74-profile-photo" 12 "zylod://profile-photo"
 guarded_deeplink "75-two-factor-auth" 12 "zylod://two-factor-auth"
 guarded_deeplink "76-backup-codes" 12 "zylod://backup-codes"
+# t283: 77/78-best-sellers/group-buy — the FIRST WebScreen captures in the
+# suite. best-sellers + group-buy are the two DEAL_IDS ids the native
+# registry does NOT own as typed screens (the t281 registry surgery routed
+# them to WebScreen → the SPA's generic deals page), so they are the only
+# captures that can prove the t283 deals-grid fix END-TO-END on the
+# emulator: the WebView boots the SPA, the SPA fetches /api/deals, and the
+# grid must render REAL flash + daily deal cards (before t283 the page
+# showed "No active deals right now" on EVERY run — the
+# Array.isArray(json.data) guard never matched the {flashDeals, dailyDeals}
+# envelope). 25s settles (vs 12s typed) because a WebScreen capture must
+# cover intent → route → WebView mount → SPA boot → generic chunk →
+# fetch → render. PUBLIC surfaces — no buyer session needed, and they sit
+# AFTER the money-path block so they cannot disturb it. Non-fatal on
+# budget/queue as ever (guarded_deeplink degrades to a warning).
+guarded_deeplink "77-best-sellers-web" 25 "zylod://best-sellers"
+guarded_deeplink "78-group-buy-web" 25 "zylod://group-buy"
 # t248: the two typed admin surfaces — moderation + operations queues.
 guarded_deeplink "19-admin-users" 10 "zylod://admin-users"
 guarded_deeplink "20-admin-orders" 10 "zylod://admin-orders"

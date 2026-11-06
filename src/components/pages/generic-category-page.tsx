@@ -35,13 +35,46 @@ const CATEGORY_META: Record<string, { name: string; description: string; icon: R
   'textiles-fabrics': { name: 'Textiles & Fabrics', description: 'Premium Bangladeshi textiles — from Dhaka muslin to Narayanganj silk', icon: <Shirt className="h-8 w-8 text-white" />, colorFrom: '#E53935', colorTo: '#FF8A80' },
   'agriculture-food': { name: 'Agriculture & Food', description: 'Fresh Bangladeshi produce — from Rajshahi rice to Sylhet tea', icon: <Wheat className="h-8 w-8 text-white" />, colorFrom: '#2E7D32', colorTo: '#81C784' },
   'electronics': { name: 'Electronics & Components', description: 'Wholesale electronics and components', icon: <Cpu className="h-8 w-8 text-white" />, colorFrom: '#262626', colorTo: '#404040' },
-  'construction': { name: 'Construction & Real Estate', description: 'Building materials, hardware, and safety gear', icon: <HardHat className="h-8 w-8 text-white" />, colorFrom: '#E65100', colorTo: '#FFB74D' },
-  'packaging-printing': { name: 'Packaging & Printing', description: 'Boxes, bags, containers, and print materials', icon: <Box className="h-8 w-8 text-white" />, colorFrom: '#6A1B9A', colorTo: '#BA68C8' },
+  'construction': { name: 'Construction & Hardware', description: 'Building materials, hardware, and safety gear', icon: <HardHat className="h-8 w-8 text-white" />, colorFrom: '#E65100', colorTo: '#FFB74D' },
+  'packaging': { name: 'Packaging & Printing', description: 'Boxes, bags, containers, and print materials', icon: <Box className="h-8 w-8 text-white" />, colorFrom: '#6A1B9A', colorTo: '#BA68C8' },
   'home-garden': { name: 'Home & Garden', description: 'Home decor, cookware, and garden supplies', icon: <Leaf className="h-8 w-8 text-white" />, colorFrom: '#00695C', colorTo: '#4DB6AC' },
   'beauty-personal-care': { name: 'Beauty & Personal Care', description: 'Cosmetics, skincare, and personal care wholesale', icon: <Palette className="h-8 w-8 text-white" />, colorFrom: '#AD1457', colorTo: '#F06292' },
   'gifts-crafts': { name: 'Gifts & Crafts', description: 'Traditional Bangladeshi handicrafts and promotional items', icon: <Gift className="h-8 w-8 text-white" />, colorFrom: '#C62828', colorTo: '#EF9A9A' },
+  'garments': { name: 'Garments & Apparel', description: 'Ready-made garments and apparel from BGMEA-grade factories', icon: <Shirt className="h-8 w-8 text-white" />, colorFrom: '#4527A0', colorTo: '#7986CB' },
+  'spices': { name: 'Spices & Condiments', description: 'Whole and ground spices direct from Chattogram importers', icon: <Flame className="h-8 w-8 text-white" />, colorFrom: '#BF360C', colorTo: '#FF8A65' },
+  'automotive': { name: 'Automotive & Transport', description: 'Parts, accessories, and transport equipment wholesale', icon: <Car className="h-8 w-8 text-white" />, colorFrom: '#37474F', colorTo: '#78909C' },
+  'medical-supplies': { name: 'Health & Medical', description: 'Medical supplies and equipment from licensed distributors', icon: <Pill className="h-8 w-8 text-white" />, colorFrom: '#00838F', colorTo: '#4DD0E1' },
   'flash-sale': { name: 'Flash Deals', description: 'Time-limited deals with deep discounts', icon: <Flame className="h-8 w-8 text-white" />, colorFrom: '#D84315', colorTo: '#FF7043' },
   'new-arrivals': { name: 'New Arrivals', description: 'Latest products added to the catalog', icon: <Sparkles className="h-8 w-8 text-white" />, colorFrom: '#4A148C', colorTo: '#AB47BC' },
+}
+
+/**
+ * t283: pageId → REAL category slug for the server filter.
+ * page-loader.ts CATEGORY_IDS uses short marketing ids, but the categories
+ * table (prisma/seed.ts) keys products by full slugs — six ids need the
+ * near-match translated, the rest match exactly. Ids with NO seeded category
+ * (sports-fitness, books-stationery, toys, jewelry, furniture) pass through
+ * unfiltered-by-design: the API returns zero rows and the page renders its
+ * honest "No products found" state instead of an unrelated grid under a
+ * category banner (the old unfiltered fetch showed the SAME 24 products on
+ * every category surface — money-adjacent misinformation for buyers).
+ */
+const CATEGORY_SLUG_MAP: Record<string, string> = {
+  'textiles-fabrics': 'textiles-fabrics',
+  'agriculture-food': 'agriculture-food',
+  'electronics': 'electronics',
+  'construction': 'construction-hardware',
+  'packaging': 'packaging-printing',
+  'home-garden': 'home-garden',
+  'gifts-crafts': 'gifts-crafts',
+  'beauty-personal-care': 'beauty-personal-care',
+  'promotional-items': 'promotional-items',
+  'garments': 'garments-apparel',
+  'spices': 'spices-condiments',
+  'mobile-accessories': 'mobile-accessories',
+  'led-lighting': 'led-lighting',
+  'automotive': 'automotive-transport',
+  'medical-supplies': 'health-medical',
 }
 
 interface GenericCategoryPageProps {
@@ -71,7 +104,12 @@ export function GenericCategoryPage({ pageId }: GenericCategoryPageProps) {
 
   useEffect(() => {
     setLoading(true)
-    fetch(`/api/products?limit=24`)
+    // t283: the grid is now SCOPED to the banner — /api/products supports
+    // ?category=<slug> (where.category = { slug }) and the map above
+    // translates the marketing pageId into the real seeded slug. Unmapped
+    // ids keep the pageId itself as the filter: zero rows, honest empty state.
+    const slug = CATEGORY_SLUG_MAP[pageId] ?? pageId
+    fetch(`/api/products?limit=24&category=${encodeURIComponent(slug)}`)
       .then(res => res.json())
       .then(json => {
         if (json.success && Array.isArray(json.data)) {
@@ -92,9 +130,11 @@ export function GenericCategoryPage({ pageId }: GenericCategoryPageProps) {
               thumbnailUrl: p.images?.[0]?.imageUrl || p.thumbnailUrl || null,
             }))
           )
+        } else {
+          setProducts([])
         }
       })
-      .catch(() => {})
+      .catch(() => setProducts([]))
       .finally(() => setLoading(false))
   }, [pageId])
 
@@ -183,8 +223,12 @@ export function GenericCategoryPage({ pageId }: GenericCategoryPageProps) {
         ) : filtered.length === 0 ? (
           <div className="text-center py-16 bg-card rounded-2xl border border-border/50">
             <Package className="h-12 w-12 text-muted-foreground mx-auto mb-3" />
-            <h3 className="font-semibold text-lg">No products found</h3>
-            <p className="text-sm text-muted-foreground mt-1">Try resetting filters to view more products.</p>
+            <h3 className="font-semibold text-lg">No products in {meta.name} yet</h3>
+            <p className="text-sm text-muted-foreground mt-1">
+              {CATEGORY_SLUG_MAP[pageId]
+                ? 'Verified suppliers are still listing into this category — check back soon.'
+                : 'This category has no listings on Zylod yet. We only show real, verified inventory — never placeholder products.'}
+            </p>
           </div>
         ) : (
           <div className={viewMode === 'grid' ? 'grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4' : 'flex flex-col gap-4'}>

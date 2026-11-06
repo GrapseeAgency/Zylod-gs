@@ -15,6 +15,7 @@ interface DealProduct {
   price: number
   originalPrice: number
   moq: number
+  unit: string
   sold: number
   stock: number
   supplier: string
@@ -52,28 +53,47 @@ export function GenericDealsPage({ pageId }: GenericDealsPageProps) {
 
   useEffect(() => {
     setLoading(true)
+    // t283: GET /api/deals returns `{ data: { flashDeals: [...], dailyDeals: [...] } }`
+    // — the old `Array.isArray(json.data)` guard was ALWAYS false on that object
+    // shape, so every DEAL_IDS surface (mega-sale, top-deals, week-special,
+    // group-buy, best-sellers, …) rendered the "No active deals right now"
+    // wall while REAL flash + daily deals were live. Parse BOTH lists, merge,
+    // and dedupe by productId (a product can run in both windows at once).
     fetch(`/api/deals?limit=20`)
       .then(res => res.json())
       .then(json => {
-        if (json.success && Array.isArray(json.data)) {
-          setProducts(
-            json.data.map((d: any) => ({
-              id: d.id,
-              productId: d.productId,
-              name: d.productName || d.product?.name || 'Deal Product',
-              price: d.dealPrice || d.product?.basePrice || 0,
-              originalPrice: d.originalPrice || d.product?.basePrice || 0,
-              moq: d.product?.moq || 1,
-              sold: d.soldCount || 0,
-              stock: d.remainingStock ?? d.totalStock ?? 0,
-              supplier: d.product?.supplier?.companyName || '',
+        const envelope = json?.data
+        const rows: Record<string, unknown>[] = Array.isArray(envelope)
+          ? envelope
+          : [...(envelope?.flashDeals ?? []), ...(envelope?.dailyDeals ?? [])]
+        if (json?.success && Array.isArray(rows)) {
+          const seen = new Set<string>()
+          const merged: DealProduct[] = []
+          for (const d of rows) {
+            const pid = (d.productId ?? d.id) as string | undefined
+            if (pid && seen.has(pid)) continue // flash + daily overlap — one card
+            if (pid) seen.add(pid)
+            merged.push({
+              id: (d.id ?? pid ?? '') as string,
+              productId: (pid ?? '') as string,
+              name: ((d.productName as string) || 'Deal Product'),
+              price: (d.dealPrice as number) ?? 0,
+              originalPrice: (d.originalPrice as number) ?? 0,
+              moq: (d.moq as number) ?? 1,
+              unit: ((d.unit as string) || 'pcs'),
+              sold: (d.soldCount as number) ?? 0,
+              stock: (d.remainingStock as number) ?? (d.totalStock as number) ?? 0,
+              supplier: ((d.supplierName as string) || ''),
               location: '',
-              thumbnailUrl: d.productThumbnail || d.product?.images?.[0]?.imageUrl || null,
-            }))
-          )
+              thumbnailUrl: ((d.productThumbnail as string) || null),
+            })
+          }
+          setProducts(merged)
+        } else {
+          setProducts([])
         }
       })
-      .catch(() => {})
+      .catch(() => setProducts([]))
       .finally(() => setLoading(false))
   }, [pageId])
 
@@ -175,9 +195,14 @@ export function GenericDealsPage({ pageId }: GenericDealsPageProps) {
                       )}
                     </div>
                     <div className="mt-1 flex items-center justify-between text-[10px] text-muted-foreground">
-                      <span>MOQ: {product.moq}</span>
+                      <span>MOQ: {product.moq} {product.unit}</span>
                       <span>{product.sold} claimed</span>
                     </div>
+                    {product.stock > 0 && product.stock <= 50 && (
+                      <div className="mt-1 text-[10px] font-semibold text-amber-600 dark:text-amber-400">
+                        Only {product.stock} left at deal price
+                      </div>
+                    )}
                     <div className="mt-2 pt-2 border-t border-border/40 flex items-center justify-between text-[10px] text-muted-foreground">
                       <span className="truncate">{product.supplier}</span>
                       {product.location && <span className="flex items-center gap-0.5"><MapPin className="h-2.5 w-2.5" />{product.location}</span>}

@@ -415,30 +415,46 @@ const EVENTS = [
 // t281 5-d seeded the CURRENT app version row (the download page and the
 // in-app updater read the LATEST published appVersions row; the repo's APKs
 // sat at the v2.4.7 era while the code shipped v2.4.42 — the t229h stale-APK
-// class). t282 bumps the row to 2.4.43/283 alongside the green 9b7778d
-// release build; size is the real artifact byte count.
+// class). t283 bumps the row to 2.4.44/284 alongside the round-7 sweep;
+// size is the real artifact byte count (updated from the green CI build
+// when the APK refresh lands).
 const APP_VERSION = {
-  id: 'android-v283',
+  id: 'android-v284',
   platform: 'android',
-  versionNumber: '2.4.43',
-  versionCode: 283,
+  versionNumber: '2.4.44',
+  versionCode: 284,
   minSupportedVersion: '2.4.0',
   isMandatory: false,
-  changelogEn: `- Account Settings section pills now scroll sideways like the web (the squeezed "Appearance" pill is gone)
-- Notification preferences: Mute All / Unmute All buttons render on one line
-- Backup codes: "Copy to Clipboard" label no longer truncates
-- Two-factor setup: the SMS hint text is readable again on disabled accounts
-- Room database schemas are now exported and versioned for safe migrations`,
-  changelogBn: `- অ্যাকাউন্ট সেটিংসের সেকশন পিলগুলো এখন ওয়েবের মতো পাশে স্ক্রল করে
-- নোটিফিকেশন প্রেফারেন্সের মিউট বাটনগুলো এক লাইনে দেখা যায়
-- ব্যাকআপ কোডের "Copy to Clipboard" লেখা আর কাটা পড়ে না
-- টু-ফ্যাক্টর সেটআপের SMS হিন্ট টেক্সট এখন পঠনযোগ্য
-- রুম ডেটাবেস স্কিমা এখন সংস্করণসহ এক্সপোর্ট হয়`,
-  apkDownloadUrl: '/downloads/zylod-b2b-v2.4.43.apk',
-  apkSizeBytes: BigInt(26690415),  // real 9b7778d release artifact size
-  releaseNotes: 'Round-6 native sweep (settings pills, mute buttons, backup-code labels, 2FA hint legibility, Room schema export).',
+  changelogEn: `- Deal pages (Mega Sale, Top Deals, Week Special, Best Sellers…) now list the REAL live flash + daily deals — they previously showed "No active deals" while deals were running
+- Category pages now show products from THEIR OWN category only — the grid used to be the same unfiltered list under every banner
+- /dl/ deep links (product, store, deal, live, rfq, order) now open the correct page on the web — printed QR codes previously 404'd
+- Deal cards show MOQ with unit and a low-stock warning when under 50 units remain`,
+  changelogBn: `- ডিল পেজগুলো (মেগা সেল, টপ ডিলস, উইক স্পেশাল, বেস্ট সেলারস…) এখন সত্যিকারের লাইভ ফ্ল্যাশ ও ডেইলি ডিল দেখায় — আগে ডিল চলমান থাকলেও "কোনো ডিল নেই" দেখাত
+- ক্যাটাগরি পেজ এখন শুধু নিজের ক্যাটাগরির পণ্য দেখায় — আগে প্রতিটি ব্যানারের নিচে একই আনফিল্টার্ড তালিকা ছিল
+- /dl/ ডিপ-লিংক (প্রোডাক্ট, স্টোর, ডিল, লাইভ, আরএফকিউ, অর্ডার) এখন ওয়েবে সঠিক পেজ খোলে — আগে প্রিন্টেড QR কোড 404 দিত
+- ডিল কার্ডে MOQ সহ ইউনিট এবং ৫০-এর কম স্টক থাকলে লো-স্টক সতর্কতা দেখা যায়`,
+  apkDownloadUrl: '/downloads/zylod-b2b-v2.4.44.apk',
+  apkSizeBytes: BigInt(26690415),  // placeholder until the green 284 artifact lands (refreshed at APK publish)
+  releaseNotes: 'Round-7 sweep (live deal grids, category-scoped grids, /dl/ deep-link route end-to-end).',
   isPublished: true,
 }
+
+// t283: public deep-link routes — the deep-link-handler page lists these
+// rows via /api/app/deep-links and NOTHING seeded the table on any CI path
+// (prisma/seed-app-level.ts owns the data but no workflow runs it — the
+// same class as the t281 faqItems/blogPosts find). Canonical slugs from
+// the QR/link-generator surfaces; targets normalized to the live pageIds
+// (supplier→seller-storefront per the t277 D9 retirement, store kept as
+// the link-generator alias).
+const DEEP_LINK_ROUTES = [
+  { slug: 'product', pathPattern: '/dl/product/:id', targetPage: 'product-detail', description: 'Direct wholesale product details' },
+  { slug: 'supplier', pathPattern: '/dl/supplier/:id', targetPage: 'seller-storefront', description: 'Direct factory mill storefront' },
+  { slug: 'store', pathPattern: '/dl/store/:id', targetPage: 'seller-storefront', description: 'Storefront alias used by the link generator' },
+  { slug: 'deal', pathPattern: '/dl/deal/:id', targetPage: 'exclusive-deal-detail', description: 'Exclusive bulk discount link' },
+  { slug: 'live', pathPattern: '/dl/live/:id', targetPage: 'live-shopping-detail', description: 'Live factory broadcast stream' },
+  { slug: 'rfq', pathPattern: '/dl/rfq', targetPage: 'rfq-list', description: 'Instant bulk quotation request' },
+  { slug: 'order', pathPattern: '/dl/order/:id', targetPage: 'shipping-tracker', description: 'Real-time courier telemetry tracker' },
+]
 
 // t281 5-c: public FAQs — the FAQ/help-center surfaces rendered
 // 'No matching questions found' on every CI run (faqItems was seeded by
@@ -667,6 +683,17 @@ async function main() {
   })
   console.log(`[seed-content] appVersions: ${APP_VERSION.versionNumber}/${APP_VERSION.versionCode}`)
 
+  // t283: public deep-link routes (upsert by unique slug — the
+  // deep-link-handler page and /api/app/deep-links read this table)
+  for (const route of DEEP_LINK_ROUTES) {
+    await db.deepLinkRoutes.upsert({
+      where: { slug: route.slug },
+      create: { ...route, isDynamic: true, isActive: true },
+      update: { pathPattern: route.pathPattern, targetPage: route.targetPage, description: route.description, isActive: true },
+    })
+  }
+  console.log(`[seed-content] deepLinkRoutes: ${DEEP_LINK_ROUTES.length}`)
+
 
 
 
@@ -679,6 +706,7 @@ async function main() {
     faqItems: await db.faqItems.count(),
     blogPosts: await db.blogPosts.count(),
     appVersions: await db.appVersions.count(),
+    deepLinkRoutes: await db.deepLinkRoutes.count(),
   }
   console.log('[seed-content] totals:', counts)
 }

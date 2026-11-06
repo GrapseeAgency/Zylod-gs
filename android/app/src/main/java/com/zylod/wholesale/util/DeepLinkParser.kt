@@ -56,6 +56,44 @@ object DeepLinkParser {
 
         // Handle HTTPS scheme: https://zylod.com/product/123
         if (scheme == "https" && (host == "zylod.com" || host == "www.zylod.com")) {
+            // t283: the PUBLIC /dl/ deep-link prefix — the QR generator
+            // (qr-deeplink-page) and the campaign link generator
+            // (link-generator-page) both emit https://zylod.com/dl/<slug>[/<id>]
+            // URLs for print/QR/share distribution, but this parser used to
+            // fall through to the generic firstSegment branch and resolve
+            // them to a bogus "dl" pageId. Strip the prefix and resolve the
+            // SAME canonical slugs the web /dl/[...path] route serves —
+            // cross-platform parity for every printed code:
+            //   /dl/product/<id>  → product-detail (id)
+            //   /dl/store|supplier/<id> → seller-storefront (id)
+            //   /dl/deal/<id>     → exclusive-deal-detail (id)
+            //   /dl/live/<id>     → live-shopping-detail (id)
+            //   /dl/rfq           → rfq-list
+            //   /dl/order/<id>    → order-detail (orderId) — the native
+            //     zylod://orders/<id> precedent (t206 B5), not the web's
+            //     shipping-tracker: the typed order-detail is the richer
+            //     surface and both carry the tracking leg.
+            // Unknown /dl/ slugs degrade to home (the web route's
+            // matched:false → 'home' contract).
+            if (pathSegments.isNotEmpty() && pathSegments[0] == "dl") {
+                val rest = pathSegments.drop(1)
+                val slug = rest.getOrNull(0)?.lowercase()
+                val dlId = rest.getOrNull(1)
+                val dlQuery = collectParams()
+                if (slug != null) {
+                    return when (slug) {
+                        "product" -> ParsedDeepLink("product-detail", (dlId?.let { mapOf("id" to it) } ?: emptyMap()) + dlQuery)
+                        "supplier", "store" -> ParsedDeepLink("seller-storefront", (dlId?.let { mapOf("id" to it) } ?: emptyMap()) + dlQuery)
+                        "deal" -> ParsedDeepLink("exclusive-deal-detail", (dlId?.let { mapOf("id" to it) } ?: emptyMap()) + dlQuery)
+                        "live" -> ParsedDeepLink("live-shopping-detail", (dlId?.let { mapOf("id" to it) } ?: emptyMap()) + dlQuery)
+                        "rfq" -> ParsedDeepLink("rfq-list", dlQuery)
+                        "order" -> if (dlId != null) ParsedDeepLink("order-detail", mapOf("orderId" to dlId) + dlQuery) else ParsedDeepLink("buyer-orders", dlQuery)
+                        else -> ParsedDeepLink("home", dlQuery)
+                    }
+                }
+                return ParsedDeepLink("home", dlQuery)
+            }
+
             // t207-c: SPA query-param deep links — the payload BOTH PDP QR
             // codes encode (web ProductQRCodeDialog product-qr-code.tsx and
             // native QrDialog ProductDetailScreen.kt:267):

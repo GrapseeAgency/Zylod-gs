@@ -38,7 +38,12 @@ export async function GET(request: NextRequest) {
       // Parse custom scheme zylod:// or https://zylod.com/dl/...
       let path = rawUrl.replace(/^zylod:\/\//, '/').replace(/^https?:\/\/[^/]+/, '')
       const segments = path.split('/').filter(Boolean)
-      const primarySlug = segments[0] || ''
+      // t283: the PUBLIC deep-link prefix — https://zylod.com/dl/product/123
+      // used to resolve with primarySlug='dl' (no match → home). The web
+      // /dl/[...path] route and the native parser gained the same branch.
+      const dlStripped = segments[0] === 'dl' ? segments.slice(1) : segments
+      const primarySlug = dlStripped[0] || ''
+      const paramValue = dlStripped[1] || null
 
       const route = await db.deepLinkRoutes.findFirst({
         where: {
@@ -64,7 +69,7 @@ export async function GET(request: NextRequest) {
           data: {
             matched: true,
             targetPage: route.targetPage,
-            paramValue: segments[1] || null,
+            paramValue,
             route,
           },
         })
