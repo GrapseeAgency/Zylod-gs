@@ -421,28 +421,30 @@ const EVENTS = [
 // t285 publishes the round-8 build: the green run-491 (3665bfe) release
 // artifact — 26,690,415 bytes, sha256 60f9cadd…, byte-identical to the CI
 // artifact (manifest string pool carries 2.4.45 + the 3665bfe suffix).
+// t286 publishes the round-9 build (the t285 handover): the green run-493
+// (7ce88a1) release artifact — 26,690,415 bytes, sha256 910d8b6c…,
+// byte-identical to the CI artifact (manifest string pool carries
+// 2.4.46-7ce88a1; verified before publish). The appVersions row had been
+// deliberately held at 2.4.45/285 in t285 so the /downloads URL never
+// 404'd while the APK was pending — this row un-holds it.
 const APP_VERSION = {
-  id: 'android-v285',
+  id: 'android-v286',
   platform: 'android',
-  versionNumber: '2.4.45',
-  versionCode: 285,
+  versionNumber: '2.4.46',
+  versionCode: 286,
   minSupportedVersion: '2.4.0',
   isMandatory: false,
-  changelogEn: `- Every policy screen (Privacy Policy, Terms, Returns, Shipping, Wholesale Terms, Cookies, DMCA, Refunds) now shows the REAL policy document with sections and version — no more placeholder bullets
-- Checkout success page: the Estimated-Delivery note now sits in its own column, cleanly separated from the order number
-- Rewards page no longer slides under the top bar; the balance hero is fully visible
-- Supplier pages show star ratings only when a real rating exists — no more "★ 0.0" rows
-- Admin audit logs read as clean "key: value" lines instead of raw JSON
-- Assorted polish: order "1 shipment" line stays on one line, careers quick-nav labels wrap fully, two-factor SMS icon clearly visible, credit-limit meter no longer shows a false full marker`,
-  changelogBn: `- প্রতিটি পলিসি স্ক্রিন (প্রাইভেসি পলিসি, শর্তাবলী, রিটার্ন, শিপিং, হোলসেল শর্ত, কুকি, DMCA, রিফান্ড) এখন আসল পলিসি ডকুমেন্ট সেকশন ও ভার্সন সহ দেখায় — আর কোনো প্লেসহোল্ডার বুলেট নেই
-- চেকআউট সাকসেস পেজে আনুমানিক ডেলিভারি নোটটি এখন নিজের কলামে, অর্ডার নম্বর থেকে পরিষ্কভাবে আলাদা
-- রিওয়ার্ডস পেজ আর টপ বারের নিচে চাপা পড়ে না; ব্যালেন্স হিরো পুরোপুরি দেখা যায়
-- সাপ্লায়ার পেজে রিয়েল রেটিং থাকলেই তারা চিহ্ন দেখায় — আর "★ 0.0" সারি নেই
-- অ্যাডমিন অডিট লগ এখন পরিষ্কার "কী: ভ্যালু" লাইনে পড়া যায়, কাঁচা JSON নয়
-- আরও পলিশ: অর্ডারের "1 shipment" লাইন এক লাইনে থাকে, ক্যারিয়ার্স কুইক-নেভ লেবেল পুরো দেখা যায়, টু-ফ্যাক্টর SMS আইকন স্পষ্ট, ক্রেডিট-লিমিট মিটারে আর ভুয়া ফুল মার্কার নেই`,
-  apkDownloadUrl: '/downloads/zylod-b2b-v2.4.45.apk',
-  apkSizeBytes: BigInt(26690415),  // real byte count of the green run-491 release artifact (t285 publish)
-  releaseNotes: 'Round-8 sweep (real policy documents in-app, checkout/rewards/orders/supplier layout fixes, audit-log readability).',
+  changelogEn: `- Releases archive: the version-history and changelog screens now list every real published release — per-release APK download links, dates and sizes — instead of a static "No releases published yet" wall (web + new native Releases screen)
+- Admin orders: the PROCESSING badge no longer clips the last character of long order numbers on narrow screens
+- Deals cards: "MOQ: 1000 pcs" and "0 claimed" no longer wrap mid-phrase on small widths
+- Assorted polish: order-number text wraps at dash boundaries, supplier rating rows only appear with real reviews`,
+  changelogBn: `- রিলিজ আর্কাইভ: ভার্সন-হিস্টরি ও চেঞ্জলগ স্ক্রিন এখন প্রকাশিত প্রতিটি রিলিজ দেখায় — প্রতি রিলিজের APK ডাউনলোড লিংক, তারিখ ও সাইজ সহ — স্থির "কোনো রিলিজ প্রকাশিত হয়নি" দেয়ালের বদলে (ওয়েব + নতুন নেটিভ Releases স্ক্রিন)
+- অ্যাডমিন অর্ডারে PROCESSING ব্যাজ আর সরু স্ক্রিনে লম্বা অর্ডার নম্বরের শেষ অক্ষর কেটে দেখায় না
+- ডিলস কার্ডে "MOQ: 1000 pcs" ও "0 claimed" আর ছোট প্রস্থে শব্দের মাঝে ভেঙে যায় না
+- আরও পলিশ: অর্ডার নম্বর ড্যাশ-সীমায় ভেঙে পড়ে, সাপ্লায়ার রেটিং সারি শুধু আসল রিভিউ থাকলেই দেখা যায়`,
+  apkDownloadUrl: '/downloads/zylod-b2b-v2.4.46.apk',
+  apkSizeBytes: BigInt(26690415),  // real byte count of the green run-493 release artifact (t286 publish)
+  releaseNotes: 'Round-9 sweep (real releases archive on web + native, admin badge clip fix, deals phrase-wrap fix).',
   isPublished: true,
 }
 
