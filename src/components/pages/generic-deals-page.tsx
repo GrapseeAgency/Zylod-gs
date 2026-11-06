@@ -194,9 +194,13 @@ export function GenericDealsPage({ pageId }: GenericDealsPageProps) {
                         <span className="text-[10px] text-muted-foreground line-through">{formatPrice(product.originalPrice)}</span>
                       )}
                     </div>
-                    <div className="mt-1 flex items-center justify-between text-[10px] text-muted-foreground">
-                      <span>MOQ: {product.moq} {product.unit}</span>
-                      <span>{product.sold} claimed</span>
+                    {/* t285: nowrap + wrap keeps each phrase whole — the 320dp
+                        WebView card used to wrap "MOQ: 1000 / pcs" and
+                        "0 / claimed" mid-phrase (capture 77 VLM audit),
+                        orphaning the unit and verb on their own lines. */}
+                    <div className="mt-1 flex flex-wrap items-center justify-between gap-x-1.5 text-[10px] text-muted-foreground">
+                      <span className="whitespace-nowrap">MOQ:&nbsp;{product.moq}&nbsp;{product.unit}</span>
+                      <span className="whitespace-nowrap">{product.sold}&nbsp;claimed</span>
                     </div>
                     {product.stock > 0 && product.stock <= 50 && (
                       <div className="mt-1 text-[10px] font-semibold text-amber-600 dark:text-amber-400">

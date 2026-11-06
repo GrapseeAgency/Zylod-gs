@@ -371,7 +371,14 @@ private fun AdminOrderCard(
         modifier = Modifier.fillMaxWidth(),
     ) {
         Column(Modifier.padding(12.dp)) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
+            // t285: spacedBy gives the token↔badge pair the web's breathing
+            // room (admin-orders-page.tsx gap-3) — at 320dp the 18-char token
+            // previously met the PROCESSING badge with ZERO gap and the badge
+            // edge clipped the final glyph (round-9 VLM audit, capture 27).
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
                 Text(
                     row.orderNumber,
                     fontSize = 13.sp,

@@ -87,6 +87,11 @@ export async function GET(request: NextRequest) {
           versionCode: h.versionCode,
           changelogEn: h.changelogEn,
           releasedAt: h.releasedAt,
+          // t285: the version-history / update-changelog pages render the
+          // archive rows with their real APK links — additive fields, no
+          // existing consumer reads them.
+          apkDownloadUrl: h.apkDownloadUrl,
+          apkSizeBytes: h.apkSizeBytes ? Number(h.apkSizeBytes) : undefined,
         })),
       }
     }

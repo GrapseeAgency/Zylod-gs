@@ -351,7 +351,9 @@ scroll_swipe () { # one upward swipe — content scrolls down
 # capture degrades non-fatally).
 # (t284: raised to 3370s — 79-privacy-policy-legal joins (12s settle) to
 # CI-prove the LEGAL live-fetch wiring on the round-8 tree.)
-budget_left () { [ $((3370 - SECONDS)) -gt 10 ]; }
+# (t285: raised to 3382s — 80-version-history-releases joins (12s settle)
+# to CI-prove the RELEASES live-fetch wiring on the round-9 tree.)
+budget_left () { [ $((3382 - SECONDS)) -gt 10 ]; }
 budget_stop () {
   if [ "$BUDGET_EXHAUSTED" -eq 0 ] && ! budget_left; then
     BUDGET_EXHAUSTED=1
@@ -2726,6 +2728,16 @@ guarded_deeplink "78-group-buy-web" 25 "zylod://group-buy"
 # REAL seeded policy — the round-8 VLM audit catch. 12s settle (typed screen
 # + one API fetch); public surface; non-fatal.
 guarded_deeplink "79-privacy-policy-legal" 12 "zylod://privacy-policy"
+# t285: the RELEASES live proof — version-history now fetches
+# GET /api/app/version through the new NativePageKind.RELEASES parser
+# (one INFO card per published release: version · build, changelog lines,
+# released date + APK size). Before t285 this screen rendered curated
+# engineering bullets while the server held the REAL published releases
+# (appVersions seeds on every CI run since t281) — the t281 empty-surface
+# class, native leg (the round-9 sweep caught the web twin rendering
+# "No releases published yet" and audited the native leg from there).
+# 12s settle (typed screen + one API fetch); public surface; non-fatal.
+guarded_deeplink "80-version-history-releases" 12 "zylod://version-history"
 # t248: the two typed admin surfaces — moderation + operations queues.
 guarded_deeplink "19-admin-users" 10 "zylod://admin-users"
 guarded_deeplink "20-admin-orders" 10 "zylod://admin-orders"

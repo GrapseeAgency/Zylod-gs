@@ -40,9 +40,9 @@ data object VersionHistoryPageMeta : NativePageMeta() {
     override val pageId = "version-history"
     override val title = "Version History"
     override val category = "Zylod Marketplace"
-    override val kind = NativePageKind.CONTENT
-    override val endpoint: String? = null
-    override val summary = "Version History — a Zylod marketplace surface. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val kind = NativePageKind.RELEASES
+    override val endpoint: String? = "api/app/version?platform=android"
+    override val summary = "Version History — the real published release archive (version, build, date, change notes, APK size), served live from the app-versions rail. Earlier builds rendered curated bullets while real releases existed — this screen now lists them honestly."
     override val tabHint = ""
     override val bullets = listOf(
         "Curated native content — no fabricated server data, ever.",

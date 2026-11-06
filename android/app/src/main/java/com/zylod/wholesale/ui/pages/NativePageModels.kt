@@ -50,6 +50,14 @@ enum class NativePageKind {
      * the same class the VLM round-8 audit caught on privacy-policy.
      */
     LEGAL,
+    /**
+     * t285 — release-archive shaped: GET api/app/version (latestVersion +
+     * history array). The version-history / update-changelog pageIds
+     * previously rendered curated engineering bullets while the server held
+     * the REAL published releases (appVersions seeds on every CI run since
+     * t281) — the t281 empty-surface class, native leg.
+     */
+    RELEASES,
     /** No obvious endpoint — the page renders its curated Kotlin metadata. */
     CONTENT,
 }

@@ -521,7 +521,12 @@ private fun UserCard(row: AdminUserRow) {
         modifier = Modifier.fillMaxWidth(),
     ) {
         Column(Modifier.padding(12.dp)) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
+            // t285: token↔chip breathing room (the capture-27 zero-gap class,
+            // AdminOrdersScreen precedent — web cards gap-3).
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
                 Text(
                     row.label,
                     fontSize = 13.sp,
@@ -643,7 +648,12 @@ private fun OrderCard(row: AdminOrderRow) {
         modifier = Modifier.fillMaxWidth(),
     ) {
         Column(Modifier.padding(12.dp)) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
+            // t285: token↔chip breathing room (the capture-27 zero-gap class,
+            // AdminOrdersScreen precedent — web cards gap-3).
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
                 Text(
                     row.orderNumber,
                     fontSize = 13.sp,

@@ -40,9 +40,9 @@ data object UpdateChangelogPageMeta : NativePageMeta() {
     override val pageId = "update-changelog"
     override val title = "Update Changelog"
     override val category = "Settings & App"
-    override val kind = NativePageKind.CONTENT
-    override val endpoint: String? = null
-    override val summary = "Update Changelog — app-level settings and device-side controls. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val kind = NativePageKind.RELEASES
+    override val endpoint: String? = "api/app/version?platform=android"
+    override val summary = "Update Changelog — the real release notes of the current published release (notes + changelog + date + APK size), served live from the app-versions rail, with the previous releases below. Earlier builds rendered curated bullets while real releases existed — this screen now shows them honestly."
     override val tabHint = ""
     override val bullets = listOf(
         "Curated native content — no fabricated server data, ever.",

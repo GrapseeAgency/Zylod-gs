@@ -84,6 +84,7 @@ object NativePageContent {
             NativePageKind.WISHLIST -> parseWishlist(meta, json)
             NativePageKind.NOTIFICATIONS -> parseNotifications(meta, json)
             NativePageKind.LEGAL -> parseLegal(meta, json)
+            NativePageKind.RELEASES -> parseReleases(meta, json)
             NativePageKind.CONTENT -> null
         }
     }
@@ -407,6 +408,95 @@ object NativePageContent {
 
         return NativePageData(
             title = doc.str("titleEn") ?: meta.title,
+            subtitle = subtitle,
+            sections = sections,
+        )
+    }
+
+    // ── t285: release archive (GET api/app/version) ──────────────────────
+
+    /**
+     * Wire shape: { data: { updateAvailable, latestVersion: { versionNumber,
+     * versionCode, changelogEn, releaseNotes, releasedAt, apkDownloadUrl,
+     * apkSizeBytes }, history: [ { versionNumber, versionCode, changelogEn,
+     * releasedAt, apkDownloadUrl, apkSizeBytes } ] } }.
+     *
+     * version-history renders the full archive (one INFO card per published
+     * release, newest first — the endpoint's history is already sorted);
+     * update-changelog leads with the CURRENT release's own card (release
+     * notes + changelog) and follows with the previous releases. Changelog
+     * lines drop their leading "- " so the INFO card's flowing text reads
+     * cleanly; the released date + APK size ride the card detail line.
+     */
+    private fun parseReleases(meta: NativePageMeta, json: JSONObject): NativePageData? {
+        val data = json.optJSONObject("data") ?: return null
+        val historyRows = data.optJSONArray("history")?.rowObjects().orEmpty()
+        val latest = data.optJSONObject("latestVersion")
+
+        fun releaseCard(row: JSONObject, key: String): NativePageCard? {
+            val number = row.str("versionNumber") ?: return null
+            val code = row.optInt("versionCode", -1)
+            if (code <= 0) return null
+            val title = "v$number · Build #$code"
+            val changelog = row.str("changelogEn")
+                ?.lines()
+                ?.map { it.trim().removePrefix("-").trim() }
+                ?.filter { it.isNotEmpty() }
+                .orEmpty()
+            val notes = row.str("releaseNotes")?.trim().orEmpty()
+            // The INFO renderer draws title + subtitle only — the released
+            // date + APK size ride the subtitle body's last line instead of
+            // the (unused here) detail field.
+            val detailParts = mutableListOf<String>()
+            row.str("releasedAt")?.take(10)?.let { detailParts.add("released $it") }
+            val bytes = row.optLong("apkSizeBytes", 0L)
+            if (bytes > 0) {
+                val mb = bytes / (1024.0 * 1024.0)
+                detailParts.add(if (mb < 1) "${bytes / 1024} KB APK" else String.format(java.util.Locale.US, "%.1f MB APK", mb))
+            }
+            val body = buildString {
+                if (notes.isNotEmpty()) append(notes).append('\n')
+                changelog.forEach { append(it).append('\n') }
+                if (detailParts.isNotEmpty()) append(detailParts.joinToString(" · "))
+            }.trim().ifBlank { null }
+            return NativePageCard(
+                id = key,
+                title = title,
+                subtitle = body,
+            )
+        }
+
+        val sections = mutableListOf<NativePageSection>()
+        if (meta.pageId == "update-changelog") {
+            val currentCard = latest?.let { releaseCard(it, "current") }
+            if (currentCard != null) {
+                sections.add(
+                    NativePageSection("current", "Current release", NativeSectionStyle.INFO, "No release notes published yet.", listOf(currentCard)),
+                )
+            }
+            val previous = historyRows.drop(1).mapIndexedNotNull { i, row -> releaseCard(row, "prev-$i") }
+            if (previous.isNotEmpty()) {
+                sections.add(
+                    NativePageSection("previous", "Previous releases", NativeSectionStyle.INFO, "No earlier releases published.", previous),
+                )
+            }
+        } else {
+            val cards = historyRows.mapIndexedNotNull { i, row -> releaseCard(row, "rel-$i") }
+            if (cards.isNotEmpty()) {
+                sections.add(
+                    NativePageSection("releases", "Published releases", NativeSectionStyle.INFO, "No releases published yet — we list real releases only.", cards),
+                )
+            }
+        }
+        if (sections.isEmpty()) return null
+
+        val subtitle = latest?.let {
+            val n = it.str("versionNumber")
+            val c = it.optInt("versionCode", -1)
+            if (n != null && c > 0) "Latest: v$n (Build #$c)" else null
+        }
+        return NativePageData(
+            title = meta.title,
             subtitle = subtitle,
             sections = sections,
         )

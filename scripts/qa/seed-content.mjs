@@ -418,24 +418,31 @@ const EVENTS = [
 // class). t283 bumps the row to 2.4.44/284 alongside the round-7 sweep;
 // t284 published the APK from the green run-489 (0863d4e) release artifact —
 // 26,690,415 bytes, sha256 a5178cae…, byte-identical to the CI artifact.
+// t285 publishes the round-8 build: the green run-491 (3665bfe) release
+// artifact — 26,690,415 bytes, sha256 60f9cadd…, byte-identical to the CI
+// artifact (manifest string pool carries 2.4.45 + the 3665bfe suffix).
 const APP_VERSION = {
-  id: 'android-v284',
+  id: 'android-v285',
   platform: 'android',
-  versionNumber: '2.4.44',
-  versionCode: 284,
+  versionNumber: '2.4.45',
+  versionCode: 285,
   minSupportedVersion: '2.4.0',
   isMandatory: false,
-  changelogEn: `- Deal pages (Mega Sale, Top Deals, Week Special, Best Sellers…) now list the REAL live flash + daily deals — they previously showed "No active deals" while deals were running
-- Category pages now show products from THEIR OWN category only — the grid used to be the same unfiltered list under every banner
-- /dl/ deep links (product, store, deal, live, rfq, order) now open the correct page on the web — printed QR codes previously 404'd
-- Deal cards show MOQ with unit and a low-stock warning when under 50 units remain`,
-  changelogBn: `- ডিল পেজগুলো (মেগা সেল, টপ ডিলস, উইক স্পেশাল, বেস্ট সেলারস…) এখন সত্যিকারের লাইভ ফ্ল্যাশ ও ডেইলি ডিল দেখায় — আগে ডিল চলমান থাকলেও "কোনো ডিল নেই" দেখাত
-- ক্যাটাগরি পেজ এখন শুধু নিজের ক্যাটাগরির পণ্য দেখায় — আগে প্রতিটি ব্যানারের নিচে একই আনফিল্টার্ড তালিকা ছিল
-- /dl/ ডিপ-লিংক (প্রোডাক্ট, স্টোর, ডিল, লাইভ, আরএফকিউ, অর্ডার) এখন ওয়েবে সঠিক পেজ খোলে — আগে প্রিন্টেড QR কোড 404 দিত
-- ডিল কার্ডে MOQ সহ ইউনিট এবং ৫০-এর কম স্টক থাকলে লো-স্টক সতর্কতা দেখা যায়`,
-  apkDownloadUrl: '/downloads/zylod-b2b-v2.4.44.apk',
-  apkSizeBytes: BigInt(26690415),  // real byte count of the green run-489 release artifact (t284 publish)
-  releaseNotes: 'Round-7 sweep (live deal grids, category-scoped grids, /dl/ deep-link route end-to-end).',
+  changelogEn: `- Every policy screen (Privacy Policy, Terms, Returns, Shipping, Wholesale Terms, Cookies, DMCA, Refunds) now shows the REAL policy document with sections and version — no more placeholder bullets
+- Checkout success page: the Estimated-Delivery note now sits in its own column, cleanly separated from the order number
+- Rewards page no longer slides under the top bar; the balance hero is fully visible
+- Supplier pages show star ratings only when a real rating exists — no more "★ 0.0" rows
+- Admin audit logs read as clean "key: value" lines instead of raw JSON
+- Assorted polish: order "1 shipment" line stays on one line, careers quick-nav labels wrap fully, two-factor SMS icon clearly visible, credit-limit meter no longer shows a false full marker`,
+  changelogBn: `- প্রতিটি পলিসি স্ক্রিন (প্রাইভেসি পলিসি, শর্তাবলী, রিটার্ন, শিপিং, হোলসেল শর্ত, কুকি, DMCA, রিফান্ড) এখন আসল পলিসি ডকুমেন্ট সেকশন ও ভার্সন সহ দেখায় — আর কোনো প্লেসহোল্ডার বুলেট নেই
+- চেকআউট সাকসেস পেজে আনুমানিক ডেলিভারি নোটটি এখন নিজের কলামে, অর্ডার নম্বর থেকে পরিষ্কভাবে আলাদা
+- রিওয়ার্ডস পেজ আর টপ বারের নিচে চাপা পড়ে না; ব্যালেন্স হিরো পুরোপুরি দেখা যায়
+- সাপ্লায়ার পেজে রিয়েল রেটিং থাকলেই তারা চিহ্ন দেখায় — আর "★ 0.0" সারি নেই
+- অ্যাডমিন অডিট লগ এখন পরিষ্কার "কী: ভ্যালু" লাইনে পড়া যায়, কাঁচা JSON নয়
+- আরও পলিশ: অর্ডারের "1 shipment" লাইন এক লাইনে থাকে, ক্যারিয়ার্স কুইক-নেভ লেবেল পুরো দেখা যায়, টু-ফ্যাক্টর SMS আইকন স্পষ্ট, ক্রেডিট-লিমিট মিটারে আর ভুয়া ফুল মার্কার নেই`,
+  apkDownloadUrl: '/downloads/zylod-b2b-v2.4.45.apk',
+  apkSizeBytes: BigInt(26690415),  // real byte count of the green run-491 release artifact (t285 publish)
+  releaseNotes: 'Round-8 sweep (real policy documents in-app, checkout/rewards/orders/supplier layout fixes, audit-log readability).',
   isPublished: true,
 }
 
