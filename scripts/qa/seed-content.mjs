@@ -416,8 +416,8 @@ const EVENTS = [
 // in-app updater read the LATEST published appVersions row; the repo's APKs
 // sat at the v2.4.7 era while the code shipped v2.4.42 — the t229h stale-APK
 // class). t283 bumps the row to 2.4.44/284 alongside the round-7 sweep;
-// size is the real artifact byte count (updated from the green CI build
-// when the APK refresh lands).
+// t284 published the APK from the green run-489 (0863d4e) release artifact —
+// 26,690,415 bytes, sha256 a5178cae…, byte-identical to the CI artifact.
 const APP_VERSION = {
   id: 'android-v284',
   platform: 'android',
@@ -434,7 +434,7 @@ const APP_VERSION = {
 - /dl/ ডিপ-লিংক (প্রোডাক্ট, স্টোর, ডিল, লাইভ, আরএফকিউ, অর্ডার) এখন ওয়েবে সঠিক পেজ খোলে — আগে প্রিন্টেড QR কোড 404 দিত
 - ডিল কার্ডে MOQ সহ ইউনিট এবং ৫০-এর কম স্টক থাকলে লো-স্টক সতর্কতা দেখা যায়`,
   apkDownloadUrl: '/downloads/zylod-b2b-v2.4.44.apk',
-  apkSizeBytes: BigInt(26690415),  // placeholder until the green 284 artifact lands (refreshed at APK publish)
+  apkSizeBytes: BigInt(26690415),  // real byte count of the green run-489 release artifact (t284 publish)
   releaseNotes: 'Round-7 sweep (live deal grids, category-scoped grids, /dl/ deep-link route end-to-end).',
   isPublished: true,
 }

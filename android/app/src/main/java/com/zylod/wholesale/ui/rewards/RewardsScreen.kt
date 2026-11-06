@@ -117,13 +117,25 @@ fun RewardsScreen(
             }
             state.error != null -> {
                 val errorMessage = state.error
-                RewardsErrorCard(message = errorMessage.orEmpty(), onRetry = vm::retry)
+                Box(Modifier.fillMaxSize().padding(padding)) {
+                    RewardsErrorCard(message = errorMessage.orEmpty(), onRetry = vm::retry)
+                }
             }
-            else -> RewardsContent(
-                state = state,
-                vm = vm,
-                onOpenLoyalty = { openPage("loyalty-points", "") },
-            )
+            else -> Box(
+                // t284: this branch dropped the Scaffold's contentPadding — the
+                // BalanceHero slid UNDER the TopAppBar and its tier line was
+                // sliced mid-glyph at the card's top edge (round-8 VLM audit,
+                // capture 39). needsAuth already applied it; parity restored.
+                Modifier
+                    .fillMaxSize()
+                    .padding(padding),
+            ) {
+                RewardsContent(
+                    state = state,
+                    vm = vm,
+                    onOpenLoyalty = { openPage("loyalty-points", "") },
+                )
+            }
         }
     }
 }

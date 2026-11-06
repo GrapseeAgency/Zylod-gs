@@ -40,8 +40,8 @@ data object DmcaPolicyPageMeta : NativePageMeta() {
     override val pageId = "dmca-policy"
     override val title = "DMCA Policy"
     override val category = "Support & Help"
-    override val kind = NativePageKind.CONTENT
-    override val endpoint: String? = null
+    override val kind = NativePageKind.LEGAL
+    override val endpoint: String? = "api/legal/dmca_policy"
     override val summary = "DMCA Policy — help, policies and buyer/seller protection on Zylod. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
     override val tabHint = ""
     override val bullets = listOf(

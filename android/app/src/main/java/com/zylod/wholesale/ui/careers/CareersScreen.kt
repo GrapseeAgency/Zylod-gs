@@ -600,8 +600,12 @@ private fun QuickNavLink(label: String, modifier: Modifier = Modifier, onClick: 
                 fontSize = 11.sp,
                 fontWeight = FontWeight.SemiBold,
                 color = MaterialTheme.colorScheme.onSurface,
-                maxLines = 1,
+                // t284: the round-8 VLM audit caught "Employee Ben…" clipped in
+                // the half-width quick-nav cells on 320dp phones — two lines
+                // fit every label the web ships (web wraps the button text).
+                maxLines = 2,
                 overflow = TextOverflow.Ellipsis,
+                lineHeight = 14.sp,
                 modifier = Modifier.weight(1f),
             )
             Icon(

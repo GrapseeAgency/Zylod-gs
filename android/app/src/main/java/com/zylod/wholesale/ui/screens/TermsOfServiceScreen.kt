@@ -40,8 +40,8 @@ data object TermsOfServicePageMeta : NativePageMeta() {
     override val pageId = "terms-of-service"
     override val title = "Terms Of Service"
     override val category = "Support & Help"
-    override val kind = NativePageKind.CONTENT
-    override val endpoint: String? = null
+    override val kind = NativePageKind.LEGAL
+    override val endpoint: String? = "api/legal/terms_of_service"
     override val summary = "Terms Of Service — help, policies and buyer/seller protection on Zylod. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
     override val tabHint = ""
     override val bullets = listOf(

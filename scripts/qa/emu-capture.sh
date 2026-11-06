@@ -349,7 +349,9 @@ scroll_swipe () { # one upward swipe — content scrolls down
 # segment as the FIRST WebScreen captures (25s settles each + deeplink
 # overhead); still far under the 60-minute job ceiling, and every skipped
 # capture degrades non-fatally).
-budget_left () { [ $((3340 - SECONDS)) -gt 10 ]; }
+# (t284: raised to 3370s — 79-privacy-policy-legal joins (12s settle) to
+# CI-prove the LEGAL live-fetch wiring on the round-8 tree.)
+budget_left () { [ $((3370 - SECONDS)) -gt 10 ]; }
 budget_stop () {
   if [ "$BUDGET_EXHAUSTED" -eq 0 ] && ! budget_left; then
     BUDGET_EXHAUSTED=1
@@ -1813,12 +1815,14 @@ sleep 2
 cap screenshots/01-welcome.png
 # t265: advance onboarding with VERIFICATION — loop tap Next until it is
 # gone, then Get Started; at most 8 rounds, each round re-dumps the UI.
+# t284 fix: the loop used to tap "Get Started" itself and break — 01b then
+# captured the POST-onboarding transition (a near-blank home mid-boot under
+# the bottom nav), never the last slide it is named for. Break BEFORE the
+# tap; the explicit tap below advances the flow.
 ADV_ROUNDS=0
 while [ $ADV_ROUNDS -lt 8 ]; do
   ADV_ROUNDS=$((ADV_ROUNDS + 1))
   if any_text_on_screen "Get Started"; then
-    tap_text "Get Started"
-    sleep 4
     break
   elif any_text_on_screen "Next" "Skip"; then
     tap_text "Next" || true
@@ -1908,16 +1912,21 @@ cap screenshots/24-back-from-search.png
 
 # Footer build badge inside the native shell (web commit + APK versionName).
 # t229g: the HOME feed is infinite-scroll — the footer sits below an
-# ever-growing feed, so the badge is captured on a SHORT Tier-3 page instead
-# (privacy-policy renders the legal doc with the footer right below it).
+# ever-growing feed, so the badge is captured on a SHORT Tier-3 page instead.
+# t284 RETARGET: privacy-policy became a NATIVE screen at t233 — the native
+# Scaffold has no web footer, so this capture has shown a badge-less native
+# page bottom ever since (the round-8 VLM audit caught it: "expected build
+# badge absent"). best-sellers routes to WebScreen (the 77 capture's proven
+# path) — the SPA's mobile footer with the BuildBadge renders below the
+# deals grid, which the 8 swipes reach.
 # Swipe coordinates are computed from the ACTUAL screen size (the previous
 # hardcoded 540/1800 values were off-screen on the 320x640 default AVD).
 # t238: guarded by ensure_home — this link must be fired from HOME_ROUTE or
 # it queues behind whatever is pending.
 if ensure_home; then
-  deeplink "25-footer-build-badge-pre" 12 "zylod://privacy-policy"
+  deeplink "25-footer-build-badge-pre" 12 "zylod://best-sellers"
 else
-  adbt 15 am start -a android.intent.action.VIEW -d "zylod://privacy-policy" com.zylod.wholesale.debug > /dev/null 2>&1
+  adbt 15 am start -a android.intent.action.VIEW -d "zylod://best-sellers" com.zylod.wholesale.debug > /dev/null 2>&1
   sleep 12
 fi
 SW=$(timeout 20 adb shell wm size | grep -oE '[0-9]+' | head -1 | tr -d '[:space:]')
@@ -2709,6 +2718,14 @@ guarded_deeplink "76-backup-codes" 12 "zylod://backup-codes"
 # budget/queue as ever (guarded_deeplink degrades to a warning).
 guarded_deeplink "77-best-sellers-web" 25 "zylod://best-sellers"
 guarded_deeplink "78-group-buy-web" 25 "zylod://group-buy"
+# t284: the legal-family LIVE proof — privacy-policy now fetches
+# GET /api/legal/privacy_policy through the new NativePageKind.LEGAL parser
+# (sections from contentEn, version subtitle, related-policy chips). Before
+# t284 this screen rendered curated engineering bullets ("Curated native
+# content — no fabricated server data, ever.") while the server held the
+# REAL seeded policy — the round-8 VLM audit catch. 12s settle (typed screen
+# + one API fetch); public surface; non-fatal.
+guarded_deeplink "79-privacy-policy-legal" 12 "zylod://privacy-policy"
 # t248: the two typed admin surfaces — moderation + operations queues.
 guarded_deeplink "19-admin-users" 10 "zylod://admin-users"
 guarded_deeplink "20-admin-orders" 10 "zylod://admin-orders"

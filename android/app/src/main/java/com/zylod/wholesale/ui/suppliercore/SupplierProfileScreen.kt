@@ -142,7 +142,13 @@ private fun ProfileList(state: SupplierProfileUiState, data: SupplierCoreDashboa
 @Composable
 private fun IdentityCard(data: SupplierCoreDashboardData) {
     val supplier = data.supplier
-    val ratingLabel = remember(supplier) { "★ ${supplierCoreRating(supplier?.ratingAvg)}" }
+    // t284: web parity (supplier-dashboard-page :480) — the star renders
+    // only when ratingAvg > 0; a zero average reads as "No reviews yet",
+    // never "★ 0.0" (the t281 honesty gate, extended to this card).
+    val ratingLabel = remember(supplier) {
+        val avg = supplier?.ratingAvg
+        if (avg != null && avg > 0.0) "★ ${supplierCoreRating(avg)}" else null
+    }
     Surface(
         shape = RoundedCornerShape(16.dp),
         color = MaterialTheme.colorScheme.surfaceContainer,
@@ -166,12 +172,14 @@ private fun IdentityCard(data: SupplierCoreDashboardData) {
                     supplier?.verificationStatus ?: "unknown",
                     supplier?.verificationStatus.orEmpty(),
                 )
-                Spacer(Modifier.width(8.dp))
-                Text(
-                    ratingLabel,
-                    fontSize = 12.sp,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
+                ratingLabel?.let {
+                    Spacer(Modifier.width(8.dp))
+                    Text(
+                        it,
+                        fontSize = 12.sp,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
             }
         }
     }
@@ -202,9 +210,15 @@ private fun SectionCard(title: String, content: @Composable () -> Unit) {
 /** One performance row: name + category + sales + revenue + star rating. */
 @Composable
 private fun PerfRow(row: SupplierCoreProductPerfRow) {
+    // t284: web parity (supplier-dashboard-page :381) — the star renders
+    // only when rating > 0; "★ 0.0" on an unreviewed product read as broken
+    // data in the round-8 VLM audit (capture 58).
     val line = remember(row) {
-        "sales ${supplierCoreQty(row.sales)} · ${supplierCoreMoney(row.revenue)} · " +
-            "★ ${supplierCoreRating(row.rating)}"
+        listOfNotNull(
+            "sales ${supplierCoreQty(row.sales)}",
+            supplierCoreMoney(row.revenue),
+            (row.rating ?: 0.0).takeIf { it > 0.0 }?.let { "★ ${supplierCoreRating(it)}" },
+        ).joinToString(" · ")
     }
     Column(Modifier.padding(top = 4.dp)) {
         Text(

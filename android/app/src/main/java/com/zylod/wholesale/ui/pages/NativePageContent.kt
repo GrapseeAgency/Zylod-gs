@@ -83,6 +83,7 @@ object NativePageContent {
             NativePageKind.CATEGORIES -> parseCategories(meta, json)
             NativePageKind.WISHLIST -> parseWishlist(meta, json)
             NativePageKind.NOTIFICATIONS -> parseNotifications(meta, json)
+            NativePageKind.LEGAL -> parseLegal(meta, json)
             NativePageKind.CONTENT -> null
         }
     }
@@ -319,6 +320,95 @@ object NativePageContent {
             sections = listOf(
                 NativePageSection("notifications", "Notifications", NativeSectionStyle.ROWS, "No notifications yet.", cards),
             ),
+        )
+    }
+
+    // ── t284: legal documents (GET api/legal/<docType>) ───────────────────
+
+    /**
+     * Wire shape: { data: { document: { titleEn, version, effectiveDate,
+     * updatedAt, contentEn, … }, faqs: [...], related: [...] } }.
+     *
+     * contentEn is plain "N. Heading" + bullet/prose lines (scripts/qa/
+     * seed-content.mjs LEGAL_DOCS format — the only seeder any CI path
+     * runs). Each numbered heading becomes one INFO card (heading = title,
+     * body = subtitle); bullets drop their marker so the renderer's flowing
+     * text reads cleanly. docType → native pageId is mechanical for the 9
+     * policy ids (privacy_policy → privacy-policy …), so related docs link
+     * straight into the sibling native screens.
+     */
+    private fun parseLegal(meta: NativePageMeta, json: JSONObject): NativePageData? {
+        val data = json.optJSONObject("data") ?: return null
+        val doc = data.optJSONObject("document") ?: return null
+        val content = doc.str("contentEn") ?: doc.str("content")
+        if (content.isNullOrBlank()) return null
+
+        val headingRegex = Regex("^\\d+\\.\\s+\\S.*")
+        val cards = mutableListOf<NativePageCard>()
+        var heading: String? = null
+        val body = StringBuilder()
+        fun flush() {
+            val t = heading ?: return
+            val b = body.toString().trim()
+            cards.add(NativePageCard(id = "sec-${cards.size}", title = t, subtitle = b.ifBlank { null }))
+            body.clear()
+        }
+        content.lines().forEach { raw ->
+            // Tolerate markdown-style "## 1. …" headings from other seeders.
+            val line = raw.trim().trimStart('#').trim()
+            if (line.isEmpty()) return@forEach
+            if (headingRegex.matches(line)) {
+                flush()
+                heading = line
+            } else {
+                if (heading == null) heading = meta.title
+                val text = if (line.length > 1 && (line[0] == '-' || line[0] == '•')) {
+                    line.drop(1).trim()
+                } else {
+                    line
+                }
+                if (body.isNotEmpty()) body.append('\n')
+                body.append(text)
+            }
+        }
+        flush()
+        if (cards.isEmpty()) return null
+
+        val subtitle = listOfNotNull(
+            doc.str("version")?.let { "Version $it" },
+            doc.str("updatedAt")?.take(10)?.let { "updated $it" },
+        ).joinToString(" · ").ifBlank { null }
+
+        val sections = mutableListOf(
+            NativePageSection("policy", meta.title, NativeSectionStyle.INFO, "No policy text published yet.", cards),
+        )
+
+        val faqRows = data.optJSONArray("faqs")?.rowObjects().orEmpty()
+        if (faqRows.isNotEmpty()) {
+            val faqCards = faqRows.mapIndexedNotNull { i, row ->
+                val q = row.str("questionEn", "question", "title") ?: return@mapIndexedNotNull null
+                NativePageCard(id = "faq-$i", title = q, subtitle = row.str("answerEn", "answer", "body"))
+            }
+            if (faqCards.isNotEmpty()) {
+                sections.add(NativePageSection("faqs", "Frequently asked questions", NativeSectionStyle.INFO, "No questions yet.", faqCards))
+            }
+        }
+
+        val relatedRows = data.optJSONArray("related")?.rowObjects().orEmpty()
+        if (relatedRows.isNotEmpty()) {
+            val relCards = relatedRows.mapIndexedNotNull { i, row ->
+                val docType = row.str("docType") ?: return@mapIndexedNotNull null
+                NativePageCard(id = "rel-$i", title = row.str("titleEn") ?: docType, targetPageId = docType.replace('_', '-'))
+            }
+            if (relCards.isNotEmpty()) {
+                sections.add(NativePageSection("related", "Related policies", NativeSectionStyle.CHIPS, "No related policies.", relCards))
+            }
+        }
+
+        return NativePageData(
+            title = doc.str("titleEn") ?: meta.title,
+            subtitle = subtitle,
+            sections = sections,
         )
     }
 

@@ -187,6 +187,11 @@ private fun AuditLogCard(row: AdminOpsAuditLogRow) {
         } ?: "System / unknown actor"
     }
     val dateLabel = remember(row) { adminOpsDateOrDash(row.createdAt) }
+    // t284: the wire metadata is raw JSON (e.g. banner writes carry
+    // {"title":…,"position":…}) — the VLM round-8 audit caught it rendered
+    // verbatim as a debug wall. Prettify into "key: value" pairs; anything
+    // non-JSON passes through unchanged.
+    val metaLine = remember(row) { prettifyAuditMetadata(row.metadata) }
 
     Surface(
         shape = RoundedCornerShape(16.dp),
@@ -211,7 +216,7 @@ private fun AuditLogCard(row: AdminOpsAuditLogRow) {
             }
             AdminOpsKeyValue("Actor:", actorLine)
             AdminOpsKeyValue("When:", dateLabel)
-            row.metadata?.takeIf(String::isNotBlank)?.let { meta ->
+            metaLine?.let { meta ->
                 Text(
                     meta,
                     fontSize = 10.sp,
@@ -223,4 +228,30 @@ private fun AuditLogCard(row: AdminOpsAuditLogRow) {
             }
         }
     }
+}
+
+/**
+ * t284 — audit metadata as a human line: a JSON object renders as
+ * "title: Electronics Wholesale Lots · position: home_top" (keys in wire
+ * order, strings unquoted); scalars/arrays and non-JSON text pass through
+ * verbatim (still capped at 3 lines by the caller).
+ */
+internal fun prettifyAuditMetadata(raw: String?): String? {
+    if (raw.isNullOrBlank()) return null
+    val trimmed = raw.trim()
+    if (!trimmed.startsWith("{")) return trimmed
+    return runCatching {
+        val obj = org.json.JSONObject(trimmed)
+        val parts = mutableListOf<String>()
+        for (key in obj.keys()) {
+            val value = obj.opt(key)
+            val rendered = when (value) {
+                null, org.json.JSONObject.NULL -> "null"
+                is String -> value
+                else -> value.toString()
+            }
+            parts.add("$key: $rendered")
+        }
+        parts.joinToString(" · ").ifBlank { null }
+    }.getOrNull() ?: trimmed
 }

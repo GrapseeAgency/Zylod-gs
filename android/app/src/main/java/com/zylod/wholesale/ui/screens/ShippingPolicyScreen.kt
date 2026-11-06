@@ -40,8 +40,8 @@ data object ShippingPolicyPageMeta : NativePageMeta() {
     override val pageId = "shipping-policy"
     override val title = "Shipping Policy"
     override val category = "Orders & Logistics"
-    override val kind = NativePageKind.CONTENT
-    override val endpoint: String? = null
+    override val kind = NativePageKind.LEGAL
+    override val endpoint: String? = "api/legal/shipping_policy"
     override val summary = "Shipping Policy — order, shipping and delivery operations for Zylod buyers. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
     override val tabHint = ""
     override val bullets = listOf(

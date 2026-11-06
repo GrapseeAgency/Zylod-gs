@@ -190,7 +190,19 @@ private fun MethodCard(icon: androidx.compose.ui.graphics.vector.ImageVector, ti
             .let { m -> if (enabled) m.clickable(onClick = onClick) else m },
     ) {
         Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(16.dp)) {
-            Icon(icon, title, tint = if (enabled) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline, modifier = Modifier.size(22.dp))
+            // t284: the disabled SMS card's icon used the outline tint — at
+            // 320dp the round-8 VLM audit read it as a blank/broken
+            // placeholder (capture 75). Keep it visibly an icon, just muted.
+            Icon(
+                icon,
+                title,
+                tint = if (enabled) {
+                    MaterialTheme.colorScheme.primary
+                } else {
+                    MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.55f)
+                },
+                modifier = Modifier.size(22.dp),
+            )
             Spacer(Modifier.width(14.dp))
             Column(Modifier.weight(1f)) {
                 Text(title, fontSize = 14.sp, fontWeight = FontWeight.Bold)

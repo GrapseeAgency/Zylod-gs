@@ -330,7 +330,10 @@ private fun poNumberLabel(order: OrderDto): String =
 private fun dateLine(order: OrderDto): String? {
     val date = formatDate(order.placedAt ?: order.updatedAt)
     val count = order.subOrders.size
-    val shipments = if (count > 0) "$count shipment${if (count == 1) "" else "s"}" else ""
+    // t284: NBSP binds the count to its unit — the narrow left column used
+    // to wrap "… · 1" / "shipment" onto separate lines (round-8 VLM audit,
+    // capture 18: an orphaned lowercase "shipment" fragment).
+    val shipments = if (count > 0) "$count\u00A0shipment${if (count == 1) "" else "s"}" else ""
     return when {
         date.isNotBlank() && shipments.isNotBlank() -> "$date • $shipments"
         date.isNotBlank() -> date

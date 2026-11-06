@@ -40,8 +40,8 @@ data object WholesaleTermsPageMeta : NativePageMeta() {
     override val pageId = "wholesale-terms"
     override val title = "Wholesale Terms"
     override val category = "Support & Help"
-    override val kind = NativePageKind.CONTENT
-    override val endpoint: String? = null
+    override val kind = NativePageKind.LEGAL
+    override val endpoint: String? = "api/legal/wholesale_terms"
     override val summary = "Wholesale Terms — help, policies and buyer/seller protection on Zylod. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
     override val tabHint = ""
     override val bullets = listOf(

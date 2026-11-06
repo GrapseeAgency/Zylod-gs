@@ -694,8 +694,10 @@ private fun SocialConsentDialog(
         text = {
             Column {
                 Text(
+                    // t284: round-8 VLM audit read the old "signs you in on
+                    // Zylod's own server" phrasing as dev-facing copy.
                     "Enter your email to create or access your Zylod account. " +
-                        "This signs you in on Zylod's own server — it is not a Google or Facebook sign-in.",
+                        "This uses your Zylod account directly — no Google or Facebook sign-in involved.",
                     fontSize = 12.sp,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )

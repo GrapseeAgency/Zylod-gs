@@ -42,6 +42,14 @@ enum class NativePageKind {
     WISHLIST,
     /** Authenticated notification-feed shaped: GET api/notifications. */
     NOTIFICATIONS,
+    /**
+     * t284 — legal-document shaped: GET api/legal/<docType> (document +
+     * FAQs + related). The 9 policy pageIds (privacy/terms/return/shipping/
+     * payment/wholesale/cookie/dmca/refund) previously rendered curated
+     * engineering bullets while the server held the REAL seeded policy —
+     * the same class the VLM round-8 audit caught on privacy-policy.
+     */
+    LEGAL,
     /** No obvious endpoint — the page renders its curated Kotlin metadata. */
     CONTENT,
 }

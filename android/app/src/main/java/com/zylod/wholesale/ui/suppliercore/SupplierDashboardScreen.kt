@@ -144,8 +144,15 @@ private fun DashboardList(state: SupplierDashboardUiState, data: SupplierCoreDas
         }
         item(key = "sdash-revenue", contentType = "section") {
             SectionCard(title = "Last 6 months") {
+                // t284: all-zero months used to draw the 2dp baseline stubs —
+                // at a glance the round-8 VLM audit read the section as a
+                // blank/broken chart (capture 55). Zero revenue is honest
+                // data; SAY it instead of drawing an empty plot.
+                val anyRevenue = data.monthlyRevenue.any { it.revenue > 0.0 }
                 if (data.monthlyRevenue.isEmpty()) {
                     SupplierCoreEmptyState("No revenue months reported yet.")
+                } else if (!anyRevenue) {
+                    SupplierCoreEmptyState("No revenue in the last 6 months yet.")
                 } else {
                     RevenueBars(data.monthlyRevenue)
                 }

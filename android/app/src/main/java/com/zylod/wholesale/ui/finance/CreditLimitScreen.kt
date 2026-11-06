@@ -258,8 +258,13 @@ private fun CreditGaugeCard(
                     color = MaterialTheme.colorScheme.primary,
                 )
             }
+            // t284: M3's LinearProgressIndicator draws a stop-indicator dot at
+            // the END of the track by default — at 0% utilization the round-8
+            // VLM audit read it as a misplaced "full" marker at the far right.
+            // The gauge's data is the fill only; drop the decorative dot.
             LinearProgressIndicator(
                 progress = { creditUtilizationFraction(usedCredit, creditLimit) },
+                drawStopIndicator = {},
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(10.dp)

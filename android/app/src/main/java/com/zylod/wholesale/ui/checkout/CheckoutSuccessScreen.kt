@@ -449,7 +449,16 @@ private fun CheckoutSuccessContent(
                             color = onSurface,
                         )
                     }
-                    Column(horizontalAlignment = Alignment.End) {
+                    // t284: the Est.-Delivery column had NO width bound — its
+                    // long fallback ("To be scheduled by the supplier") took
+                    // the full intrinsic width and visually interleaved with
+                    // the wrapped order-number lines (round-8 VLM audit,
+                    // capture 70). Web parity = two balanced columns: bound
+                    // both to weight(1f) so each wraps inside its own half.
+                    Column(
+                        horizontalAlignment = Alignment.End,
+                        modifier = Modifier.weight(1f),
+                    ) {
                         Text(
                             "Est. Delivery",
                             fontSize = 11.sp,
@@ -459,6 +468,7 @@ private fun CheckoutSuccessContent(
                             estDelivery ?: "To be scheduled by the supplier",
                             fontSize = 13.sp,
                             fontWeight = FontWeight.Bold,
+                            textAlign = TextAlign.End,
                             color = primary,
                         )
                     }
