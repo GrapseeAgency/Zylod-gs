@@ -448,6 +448,292 @@ const APP_VERSION = {
   isPublished: true,
 }
 
+
+// t287 — the published-release history. Every APK that physically exists
+// in public/downloads gets an appVersions row, so the release archive
+// (web version-history / update-changelog + the native RELEASES screen)
+// renders the real lineage on ANY fresh database instead of a single
+// card (the t285 feature's value was thin on CI: fresh DBs seeded only
+// the current row). Changelogs are lifted VERBATIM from each round's
+// seed via git history (9b7778d/828b11c/0863d4e/7ce88a1); the v281 row
+// is the round-5 summary from 8c121e0's commit record (v282's changelog
+// minus the capture-73 fix that shipped in v282); the pre-t281 era rows
+// carry brief honest lineage notes — detailed notes were not kept then,
+// and the byte sizes + dates below are the artifacts' own (ls + file
+// mtimes + publish-commit dates). versionCode mapping 240-247 is the
+// documented convention (schema comment + route floor comments:
+// '247 = v2.4.7', '248 = v2.4.8').
+const APP_VERSION_HISTORY = [
+  {
+    id: 'android-v240',
+    platform: 'android',
+    versionNumber: '2.4.0',
+    versionCode: 240,
+    minSupportedVersion: '1.0.0',
+    isMandatory: false,
+    changelogEn: `- Early access build from the pre-audit era (initial public releases)
+- Core marketplace flows: product browsing, supplier directory, cart and checkout
+- Detailed release notes were not kept for this line; superseded by the audited v2.4.6+ releases`,
+    changelogBn: `- প্রি-অডিট যুগের আর্লি অ্যাক্সেস বিল্ড (প্রাথমিক পাবলিক রিলিজ)
+- মূল মার্কেটপ্লেস ফ্লো: প্রোডাক্ট ব্রাউজিং, সাপ্লায়ার ডিরেক্টরি, কার্ট ও চেকআউট
+- এই লাইনের বিস্তারিত রিলিজ নোট রাখা হয়নি; অডিটেড v2.4.6+ রিলিজগুলো একে প্রতিস্থাপন করেছে`,
+    apkDownloadUrl: '/downloads/zylod-b2b-v2.4.0.apk',
+    apkSizeBytes: BigInt(27914879),
+    releaseNotes: 'Early access era (2.4.0).',
+    isPublished: true,
+    releasedAt: new Date('2026-09-10T12:00:00Z'),
+  },
+  {
+    id: 'android-v241',
+    platform: 'android',
+    versionNumber: '2.4.1',
+    versionCode: 241,
+    minSupportedVersion: '1.0.0',
+    isMandatory: false,
+    changelogEn: `- Early access build from the pre-audit era (initial public releases)
+- Core marketplace flows: product browsing, supplier directory, cart and checkout
+- Detailed release notes were not kept for this line; superseded by the audited v2.4.6+ releases`,
+    changelogBn: `- প্রি-অডিট যুগের আর্লি অ্যাক্সেস বিল্ড (প্রাথমিক পাবলিক রিলিজ)
+- মূল মার্কেটপ্লেস ফ্লো: প্রোডাক্ট ব্রাউজিং, সাপ্লায়ার ডিরেক্টরি, কার্ট ও চেকআউট
+- এই লাইনের বিস্তারিত রিলিজ নোট রাখা হয়নি; অডিটেড v2.4.6+ রিলিজগুলো একে প্রতিস্থাপন করেছে`,
+    apkDownloadUrl: '/downloads/zylod-b2b-v2.4.1.apk',
+    apkSizeBytes: BigInt(27911108),
+    releaseNotes: 'Early access era (2.4.1).',
+    isPublished: true,
+    releasedAt: new Date('2026-09-10T12:00:00Z'),
+  },
+  {
+    id: 'android-v242',
+    platform: 'android',
+    versionNumber: '2.4.2',
+    versionCode: 242,
+    minSupportedVersion: '1.0.0',
+    isMandatory: false,
+    changelogEn: `- Early access build from the pre-audit era (initial public releases)
+- Core marketplace flows: product browsing, supplier directory, cart and checkout
+- Detailed release notes were not kept for this line; superseded by the audited v2.4.6+ releases`,
+    changelogBn: `- প্রি-অডিট যুগের আর্লি অ্যাক্সেস বিল্ড (প্রাথমিক পাবলিক রিলিজ)
+- মূল মার্কেটপ্লেস ফ্লো: প্রোডাক্ট ব্রাউজিং, সাপ্লায়ার ডিরেক্টরি, কার্ট ও চেকআউট
+- এই লাইনের বিস্তারিত রিলিজ নোট রাখা হয়নি; অডিটেড v2.4.6+ রিলিজগুলো একে প্রতিস্থাপন করেছে`,
+    apkDownloadUrl: '/downloads/zylod-b2b-v2.4.2.apk',
+    apkSizeBytes: BigInt(27911124),
+    releaseNotes: 'Early access era (2.4.2).',
+    isPublished: true,
+    releasedAt: new Date('2026-09-10T12:00:00Z'),
+  },
+  {
+    id: 'android-v243',
+    platform: 'android',
+    versionNumber: '2.4.3',
+    versionCode: 243,
+    minSupportedVersion: '1.0.0',
+    isMandatory: false,
+    changelogEn: `- Early access build from the pre-audit era (initial public releases)
+- Core marketplace flows: product browsing, supplier directory, cart and checkout
+- Detailed release notes were not kept for this line; superseded by the audited v2.4.6+ releases`,
+    changelogBn: `- প্রি-অডিট যুগের আর্লি অ্যাক্সেস বিল্ড (প্রাথমিক পাবলিক রিলিজ)
+- মূল মার্কেটপ্লেস ফ্লো: প্রোডাক্ট ব্রাউজিং, সাপ্লায়ার ডিরেক্টরি, কার্ট ও চেকআউট
+- এই লাইনের বিস্তারিত রিলিজ নোট রাখা হয়নি; অডিটেড v2.4.6+ রিলিজগুলো একে প্রতিস্থাপন করেছে`,
+    apkDownloadUrl: '/downloads/zylod-b2b-v2.4.3.apk',
+    apkSizeBytes: BigInt(27924545),
+    releaseNotes: 'Early access era (2.4.3).',
+    isPublished: true,
+    releasedAt: new Date('2026-09-10T12:00:00Z'),
+  },
+  {
+    id: 'android-v244',
+    platform: 'android',
+    versionNumber: '2.4.4',
+    versionCode: 244,
+    minSupportedVersion: '1.0.0',
+    isMandatory: false,
+    changelogEn: `- Early access build from the pre-audit era (initial public releases)
+- Core marketplace flows: product browsing, supplier directory, cart and checkout
+- Detailed release notes were not kept for this line; superseded by the audited v2.4.6+ releases`,
+    changelogBn: `- প্রি-অডিট যুগের আর্লি অ্যাক্সেস বিল্ড (প্রাথমিক পাবলিক রিলিজ)
+- মূল মার্কেটপ্লেস ফ্লো: প্রোডাক্ট ব্রাউজিং, সাপ্লায়ার ডিরেক্টরি, কার্ট ও চেকআউট
+- এই লাইনের বিস্তারিত রিলিজ নোট রাখা হয়নি; অডিটেড v2.4.6+ রিলিজগুলো একে প্রতিস্থাপন করেছে`,
+    apkDownloadUrl: '/downloads/zylod-b2b-v2.4.4.apk',
+    apkSizeBytes: BigInt(27911120),
+    releaseNotes: 'Early access era (2.4.4).',
+    isPublished: true,
+    releasedAt: new Date('2026-09-10T12:00:00Z'),
+  },
+  {
+    id: 'android-v245',
+    platform: 'android',
+    versionNumber: '2.4.5',
+    versionCode: 245,
+    minSupportedVersion: '1.0.0',
+    isMandatory: false,
+    changelogEn: `- Early access build from the pre-audit era (initial public releases)
+- Core marketplace flows: product browsing, supplier directory, cart and checkout
+- Detailed release notes were not kept for this line; superseded by the audited v2.4.6+ releases`,
+    changelogBn: `- প্রি-অডিট যুগের আর্লি অ্যাক্সেস বিল্ড (প্রাথমিক পাবলিক রিলিজ)
+- মূল মার্কেটপ্লেস ফ্লো: প্রোডাক্ট ব্রাউজিং, সাপ্লায়ার ডিরেক্টরি, কার্ট ও চেকআউট
+- এই লাইনের বিস্তারিত রিলিজ নোট রাখা হয়নি; অডিটেড v2.4.6+ রিলিজগুলো একে প্রতিস্থাপন করেছে`,
+    apkDownloadUrl: '/downloads/zylod-b2b-v2.4.5.apk',
+    apkSizeBytes: BigInt(27911124),
+    releaseNotes: 'Early access era (2.4.5).',
+    isPublished: true,
+    releasedAt: new Date('2026-09-10T12:00:00Z'),
+  },
+  {
+    id: 'android-v246',
+    platform: 'android',
+    versionNumber: '2.4.6',
+    versionCode: 246,
+    minSupportedVersion: '2.4.0',
+    isMandatory: false,
+    changelogEn: `- First release published through the audited release pipeline (CI-built, byte-verified APK artifact)
+- Image-preview fixes across product surfaces
+- Navy chrome refresh lineage`,
+    changelogBn: `- অডিটেড রিলিজ পাইপলাইনের মাধ্যমে প্রকাশিত প্রথম রিলিজ (CI-বিল্ট, বাইট-ভেরিফায়েড APK আর্টিফ্যাক্ট)
+- প্রোডাক্ট সারফেসগুলোতে ইমেজ-প্রিভিউ ফিক্স
+- নেভি ক্রোম রিফ্রেশ লিনেজ`,
+    apkDownloadUrl: '/downloads/zylod-b2b-v2.4.6.apk',
+    apkSizeBytes: BigInt(24232681),
+    releaseNotes: 'First pipeline-published release (t229h).',
+    isPublished: true,
+    releasedAt: new Date('2026-10-29T16:30:00Z'),
+  },
+  {
+    id: 'android-v247',
+    platform: 'android',
+    versionNumber: '2.4.7',
+    versionCode: 247,
+    minSupportedVersion: '2.4.0',
+    isMandatory: false,
+    changelogEn: `- Navy chrome + force-update gate lineage
+- The stale-device floor baseline: every device below this build is force-updated (older builds carried known defects the owner kept reporting)
+- Fixes for the broken back stack, offline white screen and guest-ordering defects of the early era`,
+    changelogBn: `- নেভি ক্রোম + ফোর্স-আপডেট গেট লিনেজ
+- স্টেল-ডিভাইস ফ্লোর বেজলাইন: এই বিল্ডের নিচের প্রতিটি ডিভাইস ফোর্স-আপডেট পায় (পুরনো বিল্ডে মালিক বারবার রিপোর্ট করা পরিচিত ত্রুটি ছিল)
+- আর্লি যুগের ভাঙা ব্যাক স্ট্যাক, অফলাইন সাদা স্ক্রিন ও গেস্ট-অর্ডারিং ত্রুটির ফিক্স`,
+    apkDownloadUrl: '/downloads/zylod-b2b-v2.4.7.apk',
+    apkSizeBytes: BigInt(24232685),
+    releaseNotes: 'Force-update floor baseline (t230).',
+    isPublished: true,
+    releasedAt: new Date('2026-10-29T17:40:00Z'),
+  },
+  {
+    id: 'android-v281',
+    platform: 'android',
+    versionNumber: '2.4.41',
+    versionCode: 281,
+    minSupportedVersion: '2.4.0',
+    isMandatory: false,
+    changelogEn: `- 18 previously-shadowed typed screens now render natively (Help Center, FAQ, Contact, Docs, Feedback, Service Status, mid-checkout Delivery Methods, Coupons, Seller Verification and more)
+- 49 dead-end pages now open the real web pages instead of static bullets (returns, refunds, rewards points, payment options, address editing, seller finance, account settings)
+- Money-path screens polished: payment-verification status pill, order numbers wrap cleanly, honest "No reviews yet" ratings
+- Cart stepper matches the web for kilogram product lines (0.5 kg steps)
+- FAQ and blog sections now carry live content`,
+    changelogBn: `- ১৮টি নতুন টাইপড স্ক্রিন এখন নেটিভভাবে রেন্ডার হয়
+- ৪৯টি ডেড-এন্ড পেজ এখন আসল ওয়েব পেজ খোলে
+- মানি-পাথ স্ক্রিন পলিশড
+- কার্ট স্টেপার ওয়েবের সাথে মিলে যায়
+- FAQ ও ব্লগ সেকশনে এখন লাইভ কনটেন্ট`,
+    apkDownloadUrl: '/downloads/zylod-b2b-v2.4.41.apk',
+    apkSizeBytes: BigInt(26690419),
+    releaseNotes: "Round-5 native sweep (typed-screen re-wires, dead-end removals, FAQ/blog seeds).",
+    isPublished: true,
+    releasedAt: new Date('2026-11-05T11:00:00Z'),
+  },
+  {
+    id: 'android-v282',
+    platform: 'android',
+    versionNumber: '2.4.42',
+    versionCode: 282,
+    minSupportedVersion: '2.4.0',
+    isMandatory: false,
+    changelogEn: `- 18 previously-shadowed typed screens now render natively (Help Center, FAQ, Contact, Docs, Feedback, Service Status, mid-checkout Delivery Methods, Coupons, Seller Verification and more)
+- 49 dead-end pages now open the real web pages instead of static bullets (returns, refunds, rewards points, payment options, address editing, seller finance, account settings)
+- Money-path screens polished: payment-verification status pill, order numbers wrap cleanly, honest "No reviews yet" ratings
+- Cart stepper matches the web for kilogram product lines (0.5 kg steps)
+- FAQ and blog sections now carry live content
+- Notification preferences no longer shows an error wall on fresh accounts`,
+    changelogBn: `- ১৮টি নতুন টাইপড স্ক্রিন এখন নেটিভভাবে রেন্ডার হয়
+- ৪৯টি ডেড-এন্ড পেজ এখন আসল ওয়েব পেজ খোলে
+- মানি-পাথ স্ক্রিন পলিশড
+- কার্ট স্টেপার ওয়েবের সাথে মিলে যায়
+- FAQ ও ব্লগ সেকশনে এখন লাইভ কনটেন্ট`,
+    apkDownloadUrl: '/downloads/zylod-b2b-v2.4.42.apk',
+    apkSizeBytes: BigInt(26690419),
+    releaseNotes: "Round-5 native sweep + fresh-account notification-preferences fix.",
+    isPublished: true,
+    releasedAt: new Date('2026-11-05T23:00:00Z'),
+  },
+  {
+    id: 'android-v283',
+    platform: 'android',
+    versionNumber: '2.4.43',
+    versionCode: 283,
+    minSupportedVersion: '2.4.0',
+    isMandatory: false,
+    changelogEn: `- Account Settings section pills now scroll sideways like the web (the squeezed "Appearance" pill is gone)
+- Notification preferences: Mute All / Unmute All buttons render on one line
+- Backup codes: "Copy to Clipboard" label no longer truncates
+- Two-factor setup: the SMS hint text is readable again on disabled accounts
+- Room database schemas are now exported and versioned for safe migrations`,
+    changelogBn: `- অ্যাকাউন্ট সেটিংসের সেকশন পিলগুলো এখন ওয়েবের মতো পাশে স্ক্রল করে
+- নোটিফিকেশন প্রেফারেন্সের মিউট বাটনগুলো এক লাইনে দেখা যায়
+- ব্যাকআপ কোডের "Copy to Clipboard" লেখা আর কাটা পড়ে না
+- টু-ফ্যাক্টর সেটআপের SMS হিন্ট টেক্সট এখন পঠনযোগ্য
+- রুম ডেটাবেস স্কিমা এখন সংস্করণসহ এক্সপোর্ট হয়`,
+    apkDownloadUrl: '/downloads/zylod-b2b-v2.4.43.apk',
+    apkSizeBytes: BigInt(26690415),
+    releaseNotes: "Round-6 native sweep (settings pills, mute buttons, backup-code labels, 2FA hint legibility, Room schema export).",
+    isPublished: true,
+    releasedAt: new Date('2026-11-05T23:59:00Z'),
+  },
+  {
+    id: 'android-v284',
+    platform: 'android',
+    versionNumber: '2.4.44',
+    versionCode: 284,
+    minSupportedVersion: '2.4.0',
+    isMandatory: false,
+    changelogEn: `- Deal pages (Mega Sale, Top Deals, Week Special, Best Sellers…) now list the REAL live flash + daily deals — they previously showed "No active deals" while deals were running
+- Category pages now show products from THEIR OWN category only — the grid used to be the same unfiltered list under every banner
+- /dl/ deep links (product, store, deal, live, rfq, order) now open the correct page on the web — printed QR codes previously 404'd
+- Deal cards show MOQ with unit and a low-stock warning when under 50 units remain`,
+    changelogBn: `- ডিল পেজগুলো (মেগা সেল, টপ ডিলস, উইক স্পেশাল, বেস্ট সেলারস…) এখন সত্যিকারের লাইভ ফ্ল্যাশ ও ডেইলি ডিল দেখায় — আগে ডিল চলমান থাকলেও "কোনো ডিল নেই" দেখাত
+- ক্যাটাগরি পেজ এখন শুধু নিজের ক্যাটাগরির পণ্য দেখায় — আগে প্রতিটি ব্যানারের নিচে একই আনফিল্টার্ড তালিকা ছিল
+- /dl/ ডিপ-লিংক (প্রোডাক্ট, স্টোর, ডিল, লাইভ, আরএফকিউ, অর্ডার) এখন ওয়েবে সঠিক পেজ খোলে — আগে প্রিন্টেড QR কোড 404 দিত
+- ডিল কার্ডে MOQ সহ ইউনিট এবং ৫০-এর কম স্টক থাকলে লো-স্টক সতর্কতা দেখা যায়`,
+    apkDownloadUrl: '/downloads/zylod-b2b-v2.4.44.apk',
+    apkSizeBytes: BigInt(26690415),
+    releaseNotes: "Round-7 sweep (live deal grids, category-scoped grids, /dl/ deep-link route end-to-end).",
+    isPublished: true,
+    releasedAt: new Date('2026-11-06T03:00:00Z'),
+  },
+  {
+    id: 'android-v285',
+    platform: 'android',
+    versionNumber: '2.4.45',
+    versionCode: 285,
+    minSupportedVersion: '2.4.0',
+    isMandatory: false,
+    changelogEn: `- Every policy screen (Privacy Policy, Terms, Returns, Shipping, Wholesale Terms, Cookies, DMCA, Refunds) now shows the REAL policy document with sections and version — no more placeholder bullets
+- Checkout success page: the Estimated-Delivery note now sits in its own column, cleanly separated from the order number
+- Rewards page no longer slides under the top bar; the balance hero is fully visible
+- Supplier pages show star ratings only when a real rating exists — no more "★ 0.0" rows
+- Admin audit logs read as clean "key: value" lines instead of raw JSON
+- Assorted polish: order "1 shipment" line stays on one line, careers quick-nav labels wrap fully, two-factor SMS icon clearly visible, credit-limit meter no longer shows a false full marker`,
+    changelogBn: `- প্রতিটি পলিসি স্ক্রিন (প্রাইভেসি পলিসি, শর্তাবলী, রিটার্ন, শিপিং, হোলসেল শর্ত, কুকি, DMCA, রিফান্ড) এখন আসল পলিসি ডকুমেন্ট সেকশন ও ভার্সন সহ দেখায় — আর কোনো প্লেসহোল্ডার বুলেট নেই
+- চেকআউট সাকসেস পেজে আনুমানিক ডেলিভারি নোটটি এখন নিজের কলামে, অর্ডার নম্বর থেকে পরিষ্কভাবে আলাদা
+- রিওয়ার্ডস পেজ আর টপ বারের নিচে চাপা পড়ে না; ব্যালেন্স হিরো পুরোপুরি দেখা যায়
+- সাপ্লায়ার পেজে রিয়েল রেটিং থাকলেই তারা চিহ্ন দেখায় — আর "★ 0.0" সারি নেই
+- অ্যাডমিন অডিট লগ এখন পরিষ্কার "কী: ভ্যালু" লাইনে পড়া যায়, কাঁচা JSON নয়
+- আরও পলিশ: অর্ডারের "1 shipment" লাইন এক লাইনে থাকে, ক্যারিয়ার্স কুইক-নেভ লেবেল পুরো দেখা যায়, টু-ফ্যাক্টর SMS আইকন স্পষ্ট, ক্রেডিট-লিমিট মিটারে আর ভুয়া ফুল মার্কার নেই`,
+    apkDownloadUrl: '/downloads/zylod-b2b-v2.4.45.apk',
+    apkSizeBytes: BigInt(26690415),
+    releaseNotes: "Round-8 sweep (real policy documents in-app, checkout/rewards/orders/supplier layout fixes, audit-log readability).",
+    isPublished: true,
+    releasedAt: new Date('2026-11-06T19:52:00Z'),
+  },
+]
+
 // t283: public deep-link routes — the deep-link-handler page lists these
 // rows via /api/app/deep-links and NOTHING seeded the table on any CI path
 // (prisma/seed-app-level.ts owns the data but no workflow runs it — the
@@ -691,6 +977,18 @@ async function main() {
     update: { ...APP_VERSION, id: undefined },
   })
   console.log(`[seed-content] appVersions: ${APP_VERSION.versionNumber}/${APP_VERSION.versionCode}`)
+
+  // t287: upsert the published-release history rows (archive renders the
+  // real lineage on any fresh DB; latest-row selection is untouched — the
+  // updater still picks the highest versionCode, which stays APP_VERSION)
+  for (const row of APP_VERSION_HISTORY) {
+    await db.appVersions.upsert({
+      where: { id: row.id },
+      create: { ...row },
+      update: { ...row, id: undefined },
+    })
+  }
+  console.log(`[seed-content] appVersions history: ${APP_VERSION_HISTORY.length} rows`)
 
   // t283: public deep-link routes (upsert by unique slug — the
   // deep-link-handler page and /api/app/deep-links read this table)

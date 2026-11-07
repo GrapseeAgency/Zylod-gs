@@ -53,7 +53,11 @@ export async function GET(request: NextRequest) {
     const history = await db.appVersions.findMany({
       where: { platform, isPublished: true },
       orderBy: { versionCode: 'desc' },
-      take: 5,
+      // t287: 5 → 20 — the seed now carries the full published-release
+      // history (every APK in public/downloads), and the archive twins
+      // (web version-history + native RELEASES) render whatever arrives.
+      // The cap stays a memory guard, not a content limit.
+      take: 20,
     })
 
     if (!latest) {
