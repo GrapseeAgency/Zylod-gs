@@ -157,17 +157,44 @@ export async function POST(
     })
 
     // 7) ONE transaction: the pending payment + its audit row.
+    //    t294 ATTACH-DON'T-STACK: payments/initiate already creates an
+    //    instruction-only pending row for (order, method) and explicitly
+    //    promises "reuse … instead of stacking rows". Submitting the
+    //    reference used to CREATE a second pending row for the same
+    //    (order, method), so the seller's verify console showed two
+    //    candidates for one order — one empty, one with the reference —
+    //    and verifying the empty one would mark the order paid with no
+    //    reference at all. The reference now ATTACHES to the existing
+    //    reference-less pending row when one exists (initiate's own row);
+    //    a create happens only when none does (first submission path).
     const payment = await db.$transaction(async (tx) => {
-      const created = await tx.payments.create({
-        data: {
+      const orphanInitiate = await tx.payments.findFirst({
+        where: {
           orderId: order.id,
           method,
-          amount,
           status: 'pending',
-          transactionId,
-          gatewayResponse,
+          transactionId: null,
         },
+        orderBy: { id: 'asc' }, // cuids sort by creation time; payments has no createdAt
       })
+      let created
+      if (orphanInitiate) {
+        created = await tx.payments.update({
+          where: { id: orphanInitiate.id },
+          data: { transactionId, gatewayResponse },
+        })
+      } else {
+        created = await tx.payments.create({
+          data: {
+            orderId: order.id,
+            method,
+            amount,
+            status: 'pending',
+            transactionId,
+            gatewayResponse,
+          },
+        })
+      }
       await tx.auditLogs.create({
         data: {
           actorId: auth.user!.id,
