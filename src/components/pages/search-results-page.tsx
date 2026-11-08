@@ -194,6 +194,31 @@ export function SearchResultsPage() {
             const pag = prodData?.pagination
             setHasMore(pag ? pag.page < pag.totalPages : false)
           }
+          // ─── Record the search (t292: the missing writer for the whole
+          // search-history circuit). Fire-and-forget: a guest's POST 401s
+          // and leaves no server row (buyer-scoped by design, same doctrine
+          // as the Task 104 PDP recording); a failure here must never
+          // disturb the results themselves. The server also bumps
+          // popularSearches for text searches, so the trending page finally
+          // reflects real buyer searches.
+          if (activeSearch.trim()) {
+            const { isAuthenticated, token } = useAuthStore.getState()
+            if (isAuthenticated) {
+              // Voice/image flows land here with pageParams.type set (voice-search
+              // navigates with { query, type: 'voice' }) — record the real type,
+              // not 'text', so the ?type=voice history filters stay truthful.
+              const rawType = typeof pageParams?.type === 'string' ? pageParams.type : ''
+              const recordedType = ['voice', 'image', 'qr', 'barcode'].includes(rawType) ? rawType : 'text'
+              fetch('/api/search/history', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                  ...(token ? { Authorization: `Bearer ${token}` } : {}),
+                },
+                body: JSON.stringify({ query: activeSearch.trim(), searchType: recordedType, resultCount: items.length }),
+              }).catch(() => { /* history is optional context, never a blocker */ })
+            }
+          }
         } else {
           if (mounted) {
             setLoadError(`Product search failed (${prodRes.status}). Try again.`)
