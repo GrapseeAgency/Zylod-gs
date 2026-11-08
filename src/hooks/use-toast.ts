@@ -20,11 +20,23 @@
 
 import { toast as sonnerToast } from 'sonner'
 import type { ReactNode } from 'react'
+import type { ToastProps } from '@/components/ui/toast'
 
 interface ToastInput {
   title?: ReactNode
   description?: ReactNode
   variant?: 'default' | 'destructive' | null
+}
+
+/* Shape kept for the (unmounted) radix ui/toaster component's contract —
+ * it destructures { id, title, description, action, ...props } from the
+ * hook. sonner is the app's active toaster, so this list is always empty;
+ * the type is retained so tsc stays green without keeping the old store. */
+export type ToasterToast = ToastProps & {
+  id: string
+  title?: ReactNode
+  description?: ReactNode
+  action?: ReactNode
 }
 
 function toast(input: ToastInput) {
@@ -41,7 +53,8 @@ function toast(input: ToastInput) {
 }
 
 export function useToast() {
-  return { toast }
+  const toasts: ToasterToast[] = []
+  return { toast, toasts }
 }
 
 export { toast }
