@@ -28,6 +28,18 @@ jobs:
       - name: Set up Gradle (with dependency caching)
         uses: gradle/actions/setup-gradle@v4
 
+      # t290 HARDENING: cache the wrapper distribution — the gradle CDN
+      # (services.gradle.org) timed out twice during the same network window
+      # that 504'd GitHub's bun assets (android-screenshots 189 attempts 1-2).
+      # One good window seeds this cache; every later run restores the dist
+      # and never re-downloads it.
+      - name: Cache Gradle wrapper distribution
+        uses: actions/cache@v4
+        with:
+          path: ~/.gradle/wrapper
+          key: gradle-wrapper-${{ hashFiles('gradle/wrapper/gradle-wrapper.properties') }}
+          restore-keys: gradle-wrapper-
+
       - name: Build debug APK
         run: |
           chmod +x android/gradlew
