@@ -557,8 +557,9 @@ export function SellerOrderManagementPage() {
                       </div>
                     </div>
                     <div className="flex flex-wrap items-center gap-1.5 text-[11px]">
-                      <span className="px-2 py-0.5 rounded bg-gray-50 dark:bg-gray-950 border border-gray-200 dark:border-gray-800 capitalize">
-                        {p.method}{p.brand ? ` · ${p.brand}` : ''}
+                      <span className="px-2 py-0.5 rounded bg-gray-50 dark:bg-gray-950 border border-gray-200 dark:border-gray-800">
+                        {/* humanize snake_case ('mobile_banking' → 'Mobile Banking'); CSS capitalize can't split on '_' */}
+                        {p.method.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')}{p.brand ? ` · ${p.brand}` : ''}
                       </span>
                       <span className="px-2 py-0.5 rounded bg-gray-50 dark:bg-gray-950 border border-gray-200 dark:border-gray-800 font-mono">{p.transactionId || '--'}</span>
                       {p.submittedAt && (

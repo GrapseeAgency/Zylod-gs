@@ -73,6 +73,15 @@ export async function GET(request: NextRequest) {
     // its order has a subOrder row with THIS supplierProfiles.id.
     const orderWhere = { subOrders: { some: { supplierId: profile.id } } }
 
+    // t294 INBOX-ONLY-REAL-SUBMISSIONS: payments/initiate persists an
+    // instruction-only pending row (transactionId NULL) when the buyer merely
+    // OPENS the payment dialog — it is a draft, not a request. Listing it in
+    // the verification inbox let a seller Verify an EMPTY reference and mark
+    // the order paid with nothing to reconcile against. Pending rows without
+    // a transaction reference are therefore excluded from the inbox; every
+    // listed pending row carries a real buyer-submitted reference.
+    const PENDING_ONLY_SUBMITTED = { transactionId: { not: null } }
+
     let paymentsList
     if (status === 'all') {
       // Queue order: fetch each real status group (newest-first) and
@@ -80,7 +89,7 @@ export async function GET(request: NextRequest) {
       const groups = await Promise.all(
         STATUS_RANK.map((s) =>
           db.payments.findMany({
-            where: { status: s, order: orderWhere },
+            where: { status: s, order: orderWhere, ...(s === 'pending' ? PENDING_ONLY_SUBMITTED : {}) },
             orderBy: { id: 'desc' },
             take: TAKE,
             include: {
@@ -105,7 +114,7 @@ export async function GET(request: NextRequest) {
       paymentsList = groups.flat().slice(0, TAKE)
     } else {
       paymentsList = await db.payments.findMany({
-        where: { status, order: orderWhere },
+        where: { status, order: orderWhere, ...(status === 'pending' ? PENDING_ONLY_SUBMITTED : {}) },
         orderBy: { id: 'desc' },
         take: TAKE,
         include: {

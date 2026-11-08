@@ -135,6 +135,19 @@ export async function POST(
       )
     }
 
+    // 6b) t294 INTEGRITY GUARD: a pending row WITHOUT a transaction reference
+    //     is an instruction draft (payments/initiate), not a buyer submission.
+    //     Verifying it would mark the order paid with nothing to reconcile
+    //     against. Verifying requires a reference; rejecting a draft is
+    //     equally meaningless (there is nothing the buyer claimed), so both
+    //     actions are refused with the same explicit 409.
+    if (!payment.transactionId) {
+      return NextResponse.json(
+        { error: 'This payment has no transaction reference submitted yet — it is an instruction draft, not a payment request. Wait for the buyer to submit their reference.' },
+        { status: 409 }
+      )
+    }
+
     // 7) ONE transaction: payment flip (+ honest order math on verify) + audit.
     const newPaymentStatus = verifying ? 'success' : 'failed'
     const verificationAnnex = {
