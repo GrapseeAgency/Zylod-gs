@@ -22,6 +22,8 @@ import { ProductQRCodeDialog } from '@/components/shared/product-qr-code'
 import { ProductShareDialog } from '@/components/shared/product-share-dialog'
 import { BackInStockButton } from '@/components/shared/back-in-stock-button'
 import { RelatedProductsRail } from '@/components/shared/related-products-rail'
+import { recordProductView } from '@/hooks/use-recently-viewed'
+import { RecentlyViewedRail } from '@/components/home/recently-viewed-rail'
 import { SizeGuideButton } from '@/components/shared/size-guide-dialog'
 import { SampleRequestDialog } from '@/components/product/sample-request-dialog'
 import { ProductCertifications } from '@/components/product/product-certifications'
@@ -357,6 +359,31 @@ function DesktopProductDetailPage() {
   useEffect(() => {
     setQuantity(moq)
   }, [moq])
+
+  // ─── Recently Viewed (t291): record this product into the visitor's
+  // device-local browsing history once the real product row resolves.
+  // The ref guard prevents re-recording on live-stock re-renders (the
+  // product object identity changes on socket updates; the id does not).
+  // Guests get history too — the store is device-local by design.
+  const recordedViewIdRef = useRef<string | null>(null)
+  useEffect(() => {
+    if (!product || recordedViewIdRef.current === product.id) return
+    recordedViewIdRef.current = product.id
+    recordProductView({
+      id: product.id,
+      name: product.name,
+      price: product.basePrice,
+      moq: product.moq,
+      unit: product.unit,
+      ratingAvg: product.ratingAvg,
+      reviewCount: product.reviewCount,
+      thumbnailUrl: product.thumbnailUrl,
+      supplierName: product.supplier?.companyName ?? null,
+      supplierVerified:
+        product.supplier?.verificationStatus === 'approved' ||
+        product.supplier?.verificationStatus === 'verified',
+    })
+  }, [product])
 
   // ─── Real-time stock (Task 51-a + Task 56-c): PUBLIC product room — no
   // token needed, joined only while this page is mounted (the hook connects
@@ -1661,6 +1688,9 @@ function DesktopProductDetailPage() {
 
       {/* ─── Related Products Rail (Task 129: real endpoint, real source reasons — honest no-op when empty) ─── */}
       <RelatedProductsRail productId={product.id} />
+
+      {/* ─── Recently Viewed (t291: this visitor's own browsing history — renders nothing until a history exists) ─── */}
+      <RecentlyViewedRail excludeId={product.id} />
 
       {/* ─── Trust Signals ─── */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">

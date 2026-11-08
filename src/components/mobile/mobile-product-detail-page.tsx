@@ -16,6 +16,8 @@ import { toast } from 'sonner'
 import { useRealtimeRoom, type RealtimeRoomMessage } from '@/hooks/use-realtime-room'
 import { BackInStockButton } from '@/components/shared/back-in-stock-button'
 import { RelatedProductsRail } from '@/components/shared/related-products-rail'
+import { recordProductView } from '@/hooks/use-recently-viewed'
+import { RecentlyViewedRail } from '@/components/home/recently-viewed-rail'
 import { SizeGuideButton } from '@/components/shared/size-guide-dialog'
 import { SampleRequestDialog } from '@/components/product/sample-request-dialog'
 import { ProductCertifications } from '@/components/product/product-certifications'
@@ -116,6 +118,29 @@ export function MobileProductDetailPage() {
 
   const productId = pageParams?.productId || pageParams?.id || pageParams?.slug || ''
 
+  // ─── Recently Viewed (t291): record the product into the visitor's
+  // device-local browsing history once the real product row resolves
+  // (ref-guarded so live-stock re-renders don't bump the timestamp).
+  const recordedViewIdRef = useRef<string | null>(null)
+  useEffect(() => {
+    if (!product || recordedViewIdRef.current === product.id) return
+    recordedViewIdRef.current = product.id
+    recordProductView({
+      id: product.id,
+      name: product.name,
+      price: product.basePrice,
+      moq: product.moq,
+      unit: product.unit,
+      ratingAvg: product.ratingAvg,
+      reviewCount: product.reviewCount,
+      thumbnailUrl: product.thumbnailUrl,
+      supplierName: product.supplier?.companyName ?? null,
+      supplierVerified:
+        product.supplier?.verificationStatus === 'approved' ||
+        product.supplier?.verificationStatus === 'verified',
+    })
+  }, [product])
+
   useEffect(() => {
     if (!productId) {
       // No id in the URL → nothing to fetch. Clear the loader so the honest
@@ -133,6 +158,17 @@ export function MobileProductDetailPage() {
           setProduct(json.data as ApiProduct)
           setQuantity(json.data.moq || 50)
           setSelectedVariantId(null) // a fresh product load resets the choice
+          // Task 104 parity (t291): record the view server-side too — the
+          // desktop PDP already does this fire-and-forget; the mobile PDP
+          // silently skipped it, so buyers who only shop on their phone had
+          // an EMPTY Recently Viewed page. Guest POSTs 401 and leave no
+          // server history by design; failures never disturb the page.
+          fetch('/api/products/recently-viewed', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify({ productId }),
+          }).catch(() => { /* buyer-scoped history is optional context, never a blocker */ })
           // Fetch specifications
           try {
             const specRes = await fetch(`/api/products/${productId}/specifications`)
@@ -1006,6 +1042,8 @@ export function MobileProductDetailPage() {
       {/* ─── Related Products Rail (Task 129: real endpoint, honest no-op when empty) ─── */}
       <div className="bg-white dark:bg-gray-900 mt-2 px-4 py-4">
         <RelatedProductsRail productId={productId} />
+        {/* ─── Recently Viewed (t291: this visitor's own history — renders nothing until a history exists) ─── */}
+        <RecentlyViewedRail excludeId={productId} className="mt-5" />
       </div>
 
       {/* ─── 5. Supplier Section ─── */}

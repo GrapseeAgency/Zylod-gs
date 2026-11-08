@@ -6,6 +6,7 @@ import { PageLoader } from '@/components/ui/page-loader'
 import { Hero } from '@/components/home/hero'
 import { LeftRail } from '@/components/home/left-rail'
 import { FeaturedSection } from '@/components/home/featured-section'
+import { RecentlyViewedRail } from '@/components/home/recently-viewed-rail'
 import { RightRail } from '@/components/home/right-rail'
 
 /* ════════════════════════════════════════════════════════════════════
@@ -57,6 +58,8 @@ function DesktopHomePage() {
           <div className="min-w-0 space-y-5 lg:space-y-6">
             <Hero />
             <FeaturedSection />
+            {/* t291: the visitor's own browsing history — honest no-op until they open a product */}
+            <RecentlyViewedRail />
             {/* Inline CTAs only on mobile / small-tablet screens (<1024px) */}
             <div className="block lg:hidden pt-2">
               <RightRail variant="inline" />
