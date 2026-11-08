@@ -748,7 +748,7 @@ const DEEP_LINK_ROUTES = [
   { slug: 'deal', pathPattern: '/dl/deal/:id', targetPage: 'exclusive-deal-detail', description: 'Exclusive bulk discount link' },
   { slug: 'live', pathPattern: '/dl/live/:id', targetPage: 'live-shopping-detail', description: 'Live factory broadcast stream' },
   { slug: 'rfq', pathPattern: '/dl/rfq', targetPage: 'rfq-list', description: 'Instant bulk quotation request' },
-  { slug: 'order', pathPattern: '/dl/order/:id', targetPage: 'shipping-tracker', description: 'Real-time courier telemetry tracker' },
+  { slug: 'order', pathPattern: '/dl/order/:id', targetPage: 'order-detail', description: 'The full order view — status, items, payment and tracking (t290 convergence: both surfaces land order deep links on order-detail, the native t206 B5 precedent)' },
 ]
 
 // t281 5-c: public FAQs — the FAQ/help-center surfaces rendered

@@ -24,7 +24,14 @@ import { db } from '@/lib/db'
  * The entity id rides the second path segment as the universal `id` param
  * — every target page reads it as a fallback (product-detail: productId||id,
  * seller-storefront: supplierId||id, live-shopping-detail: id,
- * shipping-tracker: orderId||id). Marketing params (utm_*) forward intact.
+ * order-detail: orderId||id). Marketing params (utm_*) forward intact.
+ *
+ * t290 — the /dl/order target converged on BOTH surfaces: the web sent
+ * order deep links to shipping-tracker (courier telemetry only) while the
+ * native parser sent the same link to order-detail (t206 B5 precedent —
+ * the richer typed order view with status, items, payment and the tracking
+ * leg). A scanned order QR should land on the ORDER, so web now targets
+ * order-detail too; the seed row + TARGET_NORMALIZATION carry stale DBs.
  */
 
 const CANONICAL_DL_TARGETS: Record<string, string> = {
@@ -34,13 +41,16 @@ const CANONICAL_DL_TARGETS: Record<string, string> = {
   deal: 'exclusive-deal-detail',
   live: 'live-shopping-detail',
   rfq: 'rfq-list',
-  order: 'shipping-tracker',
+  order: 'order-detail', // t290 convergence — native precedent (t206 B5)
 }
 
 // Stale seed targets normalize to the live pageIds (the t277 D9 retirement
-// of supplier-storefront in favor of seller-storefront).
+// of supplier-storefront in favor of seller-storefront; the t290 /dl/order
+// convergence retires the shipping-tracker dl target for stale DB rows —
+// table-driven resolution normalizes before redirecting).
 const TARGET_NORMALIZATION: Record<string, string> = {
   'supplier-storefront': 'seller-storefront',
+  'shipping-tracker': 'order-detail',
 }
 
 export default async function DeepLinkRoute({

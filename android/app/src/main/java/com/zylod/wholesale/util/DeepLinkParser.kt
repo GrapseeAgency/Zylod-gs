@@ -70,9 +70,11 @@ object DeepLinkParser {
             //   /dl/live/<id>     → live-shopping-detail (id)
             //   /dl/rfq           → rfq-list
             //   /dl/order/<id>    → order-detail (orderId) — the native
-            //     zylod://orders/<id> precedent (t206 B5), not the web's
-            //     shipping-tracker: the typed order-detail is the richer
-            //     surface and both carry the tracking leg.
+            //     zylod://orders/<id> precedent (t206 B5). t290 CONVERGED:
+            //     the web route now targets order-detail too (the seed row
+            //     + canonical floor + TARGET_NORMALIZATION were flipped),
+            //     so both surfaces land order deep links on the same rich
+            //     typed order view — the old documented divergence is gone.
             // Unknown /dl/ slugs degrade to home (the web route's
             // matched:false → 'home' contract).
             if (pathSegments.isNotEmpty() && pathSegments[0] == "dl") {
