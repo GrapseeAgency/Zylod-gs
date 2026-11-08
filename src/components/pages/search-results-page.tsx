@@ -11,6 +11,7 @@ import { useCurrencyStore } from '@/store/currency-store'
 import { useCartStore, resolveClientUnitPrice, type ClientPriceTier } from '@/store/cart-store'
 import { useWishlistStore } from '@/store/wishlist-store'
 import { useAuthStore } from '@/store/auth-store'
+import { recordSearch } from '@/hooks/use-search-history'
 import {
   Search, ShoppingCart, Heart,
   Package, AlertTriangle, LogIn, RotateCcw, Tag,
@@ -203,12 +204,12 @@ export function SearchResultsPage() {
           // reflects real buyer searches.
           if (activeSearch.trim()) {
             const { isAuthenticated, token } = useAuthStore.getState()
+            // Voice/image flows land here with pageParams.type set (voice-search
+            // navigates with { query, type: 'voice' }) — record the real type,
+            // not 'text', so the ?type=voice history filters stay truthful.
+            const rawType = typeof pageParams?.type === 'string' ? pageParams.type : ''
+            const recordedType = ['voice', 'image', 'qr', 'barcode'].includes(rawType) ? rawType : 'text'
             if (isAuthenticated) {
-              // Voice/image flows land here with pageParams.type set (voice-search
-              // navigates with { query, type: 'voice' }) — record the real type,
-              // not 'text', so the ?type=voice history filters stay truthful.
-              const rawType = typeof pageParams?.type === 'string' ? pageParams.type : ''
-              const recordedType = ['voice', 'image', 'qr', 'barcode'].includes(rawType) ? rawType : 'text'
               fetch('/api/search/history', {
                 method: 'POST',
                 headers: {
@@ -217,6 +218,12 @@ export function SearchResultsPage() {
                 },
                 body: JSON.stringify({ query: activeSearch.trim(), searchType: recordedType, resultCount: items.length }),
               }).catch(() => { /* history is optional context, never a blocker */ })
+            } else {
+              // Guests (t293): the API is buyer-scoped 401-by-design, so their
+              // only honest history is the device-local store (same doctrine as
+              // the Recently Viewed rail) — read back by search-home, the search
+              // history page, recent-searches and the voice history page.
+              recordSearch({ query: activeSearch.trim(), searchType: recordedType, resultCount: items.length })
             }
           }
         } else {

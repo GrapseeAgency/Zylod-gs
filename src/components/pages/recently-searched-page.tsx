@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigationStore } from '@/store/navigation-store';
 import { useAuthStore } from '@/store/auth-store';
+import { useSearchHistory, type SearchHistoryItem } from '@/hooks/use-search-history';
 import { AccountGate } from '@/components/shared/account-gate';
 import { ArrowLeft, Trash2, Search, Clock, TrendingUp, X } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -15,7 +16,13 @@ interface SearchHistory {
 
 export function RecentlySearchedPage() {
   const { goBack, navigate } = useNavigationStore();
+  // Dual-source doctrine (t293): buyers read the real account history;
+  // guests read the device-local store written by search-results. Before
+  // t293 this page hard-gated guests behind a sign-in wall — a dead end
+  // with zero functionality; the local history is the honest guest
+  // equivalent (real searches, really theirs, on their device).
   const { isAuthenticated, token } = useAuthStore();
+  const { items: localHistory, remove: removeLocal, clear: clearLocal } = useSearchHistory();
   const [query, setQuery] = useState('');
   const [history, setHistory] = useState<SearchHistory[]>([]);
   const [loading, setLoading] = useState(true);
@@ -24,6 +31,8 @@ export function RecentlySearchedPage() {
 
   useEffect(() => {
     if (isAuthenticated) return;
+    // Guests: local rows are ready synchronously (hook hydrated in effect);
+    // a short delay keeps the skeleton from flashing.
     const t = setTimeout(() => setLoading(false), 1500);
     return () => clearTimeout(t);
   }, [isAuthenticated]);
@@ -60,6 +69,10 @@ export function RecentlySearchedPage() {
   };
 
   const removeHistoryItem = async (term: string) => {
+    if (!isAuthenticated) {
+      for (const row of localHistory.filter(h => h.query === term)) removeLocal(row.id);
+      return;
+    }
     try {
       const res = await fetch(`/api/search/history?term=${encodeURIComponent(term)}`, { method: 'DELETE' });
       if (!res.ok) {
@@ -74,6 +87,10 @@ export function RecentlySearchedPage() {
   };
 
   const clearAll = async () => {
+    if (!isAuthenticated) {
+      clearLocal();
+      return;
+    }
     try {
       const res = await fetch('/api/search/history', { method: 'DELETE' });
       if (!res.ok) {
@@ -97,9 +114,12 @@ export function RecentlySearchedPage() {
   }
   if (!loading && !isAuthenticated) {
     return (
-      <AccountGate
-        title="Sign in to see your recent searches"
-        message="Recent Searches shows your real account search history. Sign in to continue."
+      <GuestHistoryView
+        onBack={() => goBack()}
+        items={localHistory}
+        onSearch={handleSearch}
+        onRemove={removeHistoryItem}
+        onClear={clearAll}
       />
     );
   }
@@ -206,6 +226,109 @@ export function RecentlySearchedPage() {
             </div>
           </>
         )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ─── Guest view (t293): the honest device-local history. Same anatomy as
+   the buyer view (header + search box + Recent Searches + Trending chips)
+   but sourced from localStorage, with a "Saved on this device" caption so
+   the scope is never overstated. Replaces t292's dead-end AccountGate —
+   a wall with zero functionality was never the honest empty state. ─── */
+interface GuestHistoryViewProps {
+  onBack: () => void;
+  items: SearchHistoryItem[];
+  onSearch: (term: string) => void;
+  onRemove: (term: string) => void;
+  onClear: () => void;
+}
+
+const TRENDING_TERMS = ['Industrial Equipment', 'Bulk Packaging', 'Office Supplies', 'Electronics Wholesale'];
+
+function GuestHistoryView({ onBack, items, onSearch, onRemove, onClear }: GuestHistoryViewProps) {
+  const [query, setQuery] = useState('');
+  return (
+    <div className="flex flex-col min-h-screen bg-gray-50 dark:bg-gray-950">
+      <header className="sticky top-0 z-10 bg-white dark:bg-gray-900 px-4 py-3 border-b space-y-3 md:px-6">
+        <div className="flex items-center justify-between md:max-w-3xl md:mx-auto">
+          <div className="flex items-center gap-3">
+            <button onClick={onBack} className="p-1 -ml-1 text-gray-800 dark:text-gray-200" aria-label="Go back">
+              <ArrowLeft className="w-6 h-6" />
+            </button>
+            <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100">Search</h1>
+          </div>
+          {items.length > 0 && (
+            <button onClick={onClear} className="text-sm font-medium text-primary">
+              Clear all
+            </button>
+          )}
+        </div>
+        <div className="relative md:max-w-3xl md:mx-auto">
+          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <Search className="h-5 w-5 text-gray-400 dark:text-gray-500" />
+          </div>
+          <input
+            autoFocus
+            type="text"
+            className="block w-full pl-10 pr-3 py-2.5 border border-gray-200 dark:border-gray-800 rounded-xl leading-5 bg-gray-50 dark:bg-gray-950 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:bg-white dark:bg-gray-900 focus:ring-1 focus:ring-[#C8102E] focus:border-primary sm:text-sm transition-colors"
+            placeholder="Search products, suppliers, or categories..."
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && onSearch(query)}
+          />
+        </div>
+      </header>
+
+      <div className="flex-1 overflow-y-auto md:px-6">
+        <div className="md:max-w-3xl md:mx-auto">
+          {items.length > 0 && (
+            <div className="p-4 bg-white dark:bg-gray-900 mb-2 shadow-sm">
+              <div className="flex items-center justify-between mb-3">
+                <h2 className="text-sm font-semibold text-gray-800 dark:text-gray-200 flex items-center gap-2">
+                  <Clock className="w-4 h-4 text-gray-500 dark:text-gray-400" /> Recent Searches
+                </h2>
+                <span className="text-[11px] font-medium text-gray-400 dark:text-gray-500">Saved on this device</span>
+              </div>
+              <div className="space-y-1">
+                {items.map((item) => (
+                  <div key={item.id} className="flex items-center justify-between group py-2">
+                    <button
+                      className="flex-1 text-left text-sm text-gray-600 dark:text-gray-400 truncate"
+                      onClick={() => onSearch(item.query)}
+                    >
+                      {item.query}
+                    </button>
+                    <button
+                      aria-label={`Remove ${item.query} from recent searches`}
+                      className="p-2 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:text-gray-400 rounded-full"
+                      onClick={() => onRemove(item.query)}
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          <div className="p-4 bg-white dark:bg-gray-900 shadow-sm mb-2">
+            <h2 className="text-sm font-semibold text-gray-800 dark:text-gray-200 mb-3 flex items-center gap-2">
+              <TrendingUp className="w-4 h-4 text-orange-500" /> Trending Searches
+            </h2>
+            <div className="flex flex-wrap gap-2">
+              {TRENDING_TERMS.map((term) => (
+                <button
+                  key={term}
+                  onClick={() => onSearch(term)}
+                  className="px-3 py-1.5 bg-gray-50 dark:bg-gray-950 hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 border border-gray-100 dark:border-gray-800 text-xs font-medium text-gray-700 dark:text-gray-300 rounded-full transition-colors"
+                >
+                  {term}
+                </button>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
     </div>

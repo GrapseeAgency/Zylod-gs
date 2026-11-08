@@ -3,6 +3,8 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useNavigationStore } from '@/store/navigation-store'
+import { useAuthStore } from '@/store/auth-store'
+import { useSearchHistory } from '@/hooks/use-search-history'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Clock, X, Search, ArrowLeft, Mic, Camera, Smartphone } from 'lucide-react'
 
@@ -48,6 +50,11 @@ const typeIcon = (t: string) => {
 
 export function SearchHistoryPage() {
   const { navigate, goBack } = useNavigationStore()
+  // Dual-source doctrine (t293): buyers → server history; guests → the
+  // device-local store written by search-results (the API is buyer-scoped,
+  // so a guest fetching it would only ever see a silent empty page).
+  const isAuthenticated = useAuthStore(s => s.isAuthenticated)
+  const { items: localItems, remove: removeLocal, clear: clearLocal } = useSearchHistory()
   const [history, setHistory] = useState<HistoryItem[]>([])
   const [loading, setLoading] = useState(true)
   const [filter, setFilter] = useState<'all' | 'text' | 'voice' | 'image' | 'barcode'>('all')
@@ -64,21 +71,44 @@ export function SearchHistoryPage() {
     setLoading(false)
   }
 
-  useEffect(() => { fetchHistory() }, [])
+  useEffect(() => {
+    if (isAuthenticated) fetchHistory()
+    else setLoading(false)
+  }, [isAuthenticated])
 
+  // Unified rows: server shape for buyers, device-local shape for guests
+  // (searchedAt epoch → createdAt ISO so the date grouping stays identical).
+  const rows: HistoryItem[] = isAuthenticated
+    ? history
+    : localItems.map(i => ({
+        id: i.id,
+        query: i.query,
+        searchType: i.searchType,
+        resultCount: i.resultCount,
+        createdAt: new Date(i.searchedAt).toISOString(),
+      }))
 
   async function deleteItem(query: string) {
+    if (!isAuthenticated) {
+      for (const row of localItems.filter(h => h.query === query)) removeLocal(row.id)
+      return
+    }
     setHistory(prev => prev.filter(h => h.query !== query))
     await fetch(`/api/search/history?term=${encodeURIComponent(query)}`, { method: 'DELETE' }).catch(() => {})
   }
 
   async function clearAll() {
+    if (!isAuthenticated) {
+      clearLocal()
+      return
+    }
     setHistory([])
     await fetch('/api/search/history', { method: 'DELETE' }).catch(() => {})
   }
 
-  const filtered = history.filter(h => filter === 'all' || h.searchType === filter)
+  const filtered = rows.filter(h => filter === 'all' || h.searchType === filter)
   const groups = groupByDate(filtered)
+  const isEmpty = rows.length === 0
 
   return (
     <div className="flex flex-col min-h-screen bg-white dark:bg-gray-900">
@@ -86,7 +116,7 @@ export function SearchHistoryPage() {
         <div className="flex items-center gap-3 mb-3">
           <button onClick={goBack} className="md:hidden p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 dark:bg-gray-900"><ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" /></button>
           <span className="font-semibold text-gray-900 dark:text-gray-100 flex-1 md:text-xl">Search History</span>
-          {history.length > 0 && <button onClick={clearAll} className="text-sm text-red-600 font-medium">Clear All</button>}
+          {rows.length > 0 && <button onClick={clearAll} className="text-sm text-red-600 font-medium">Clear All</button>}
         </div>
         <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-1">
           {(['all', 'text', 'voice', 'image', 'barcode'] as const).map(f => (
@@ -109,7 +139,7 @@ export function SearchHistoryPage() {
               </div>
             ))}
           </div>
-        ) : filtered.length === 0 ? (
+        ) : isEmpty ? (
           <div className="flex flex-col items-center justify-center h-64 text-center px-6 gap-3">
             <Clock className="w-12 h-12 text-gray-200" />
             <p className="text-sm font-medium text-gray-500 dark:text-gray-400 dark:text-gray-500">No search history yet</p>

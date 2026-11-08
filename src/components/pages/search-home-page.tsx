@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useNavigationStore } from '@/store/navigation-store'
 import { useAuthStore } from '@/store/auth-store'
+import { useSearchHistory } from '@/hooks/use-search-history'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -36,9 +37,12 @@ interface Category {
 
 export function SearchHomePage() {
   const { navigate, goBack } = useNavigationStore()
-  // Honesty fix: search history is account-scoped — guests never fetch it (and
-  // never see a fabricated history). Popular searches and categories are public.
+  // Dual-source doctrine (t291/t293): buyers read the real account history
+  // from the server; guests read their own device-local store (the API is
+  // buyer-scoped 401-by-design — device-local is the only honest guest
+  // history). Popular searches and categories are public.
   const isAuthenticated = useAuthStore(s => s.isAuthenticated)
+  const { items: localHistory, remove: removeLocal, clear: clearLocal } = useSearchHistory()
   const [query, setQuery] = useState('')
   const [history, setHistory] = useState<SearchHistoryItem[]>([])
   const [popular, setPopular] = useState<PopularSearch[]>([])
@@ -55,6 +59,12 @@ export function SearchHomePage() {
     fetchPopular()
     fetchCategories()
   }, [])
+
+  // Unified rows: server shape {id, query, searchType, createdAt} for buyers,
+  // device-local shape {id, query, searchType, searchedAt} for guests.
+  const historyRows: SearchHistoryItem[] = isAuthenticated
+    ? history
+    : localHistory.map(i => ({ id: i.id, query: i.query, searchType: i.searchType, createdAt: new Date(i.searchedAt).toISOString() }))
 
   async function fetchHistory() {
     setLoadingHistory(true)
@@ -100,6 +110,13 @@ export function SearchHomePage() {
   }
 
   async function deleteHistoryItem(term: string) {
+    if (!isAuthenticated) {
+      // Guest: mutate the device-local store (id = `${type}:${query}` —
+      // remove every row for this query, any type, matching the rail's
+      // per-term remove semantics).
+      for (const row of localHistory.filter(h => h.query === term)) removeLocal(row.id)
+      return
+    }
     setHistory(prev => prev.filter(h => h.query !== term))
     try {
       await fetch(`/api/search/history?term=${encodeURIComponent(term)}`, { method: 'DELETE' })
@@ -107,6 +124,10 @@ export function SearchHomePage() {
   }
 
   async function clearAllHistory() {
+    if (!isAuthenticated) {
+      clearLocal()
+      return
+    }
     setHistory([])
     try {
       await fetch('/api/search/history', { method: 'DELETE' })
@@ -160,11 +181,11 @@ export function SearchHomePage() {
 
       <div className="flex-1 overflow-y-auto pb-20 md:pb-10 md:px-6">
         {/* Recent Searches */}
-        {(loadingHistory || history.length > 0) && (
+        {(loadingHistory || historyRows.length > 0) && (
           <section className="px-4 pt-5">
             <div className="flex items-center justify-between mb-3">
               <h2 className="text-sm font-semibold text-gray-800 dark:text-gray-200">Recent Searches</h2>
-              {!loadingHistory && history.length > 0 && (
+              {!loadingHistory && historyRows.length > 0 && (
                 <button
                   onClick={clearAllHistory}
                   className="text-xs text-red-600 font-medium"
@@ -182,7 +203,7 @@ export function SearchHomePage() {
             ) : (
               <div className="space-y-1">
                 <AnimatePresence>
-                  {history.slice(0, 8).map((item, idx) => (
+                  {historyRows.slice(0, 8).map((item, idx) => (
                     <motion.div
                       key={item.id}
                       initial={{ opacity: 0, x: -10 }}

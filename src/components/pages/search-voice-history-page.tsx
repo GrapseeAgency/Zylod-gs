@@ -3,6 +3,8 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { useNavigationStore } from '@/store/navigation-store'
+import { useAuthStore } from '@/store/auth-store'
+import { useSearchHistory } from '@/hooks/use-search-history'
 import { Skeleton } from '@/components/ui/skeleton'
 import { ArrowLeft, Mic, Search, Trash2, Clock } from 'lucide-react'
 
@@ -14,6 +16,11 @@ interface VoiceHistoryItem {
 
 export function SearchVoiceHistoryPage() {
   const { navigate, goBack } = useNavigationStore()
+  // Dual-source (t293): buyers → server voice history; guests → the
+  // device-local store (search-results records voice searches locally with
+  // their real type, so the ?type=voice filter has honest guest rows too).
+  const isAuthenticated = useAuthStore(s => s.isAuthenticated)
+  const { items: localVoice, remove: removeLocal } = useSearchHistory('voice')
   const [items, setItems] = useState<VoiceHistoryItem[]>([])
   const [loading, setLoading] = useState(true)
 
@@ -30,11 +37,19 @@ export function SearchVoiceHistoryPage() {
   }
 
   useEffect(() => {
-    fetchHistory()
-  }, [])
+    if (isAuthenticated) fetchHistory()
+    else setLoading(false)
+  }, [isAuthenticated])
 
+  const rows: VoiceHistoryItem[] = isAuthenticated
+    ? items
+    : localVoice.map(i => ({ id: i.id, query: i.query, createdAt: new Date(i.searchedAt).toISOString() }))
 
   async function deleteVoiceItem(term: string) {
+    if (!isAuthenticated) {
+      for (const row of localVoice.filter(i => i.query === term)) removeLocal(row.id)
+      return
+    }
     setItems(prev => prev.filter(i => i.query !== term))
     try {
       await fetch(`/api/search/history?term=${encodeURIComponent(term)}`, { method: 'DELETE' })
@@ -65,7 +80,7 @@ export function SearchVoiceHistoryPage() {
           <div className="p-4 space-y-3">
             {[1, 2, 3, 4].map(i => <Skeleton key={i} className="h-16 w-full rounded-xl" />)}
           </div>
-        ) : items.length === 0 ? (
+        ) : rows.length === 0 ? (
           <div className="text-center py-20 px-4">
             <Mic className="w-12 h-12 text-gray-300 mx-auto mb-3" />
             <p className="text-sm font-semibold text-gray-800 dark:text-gray-200">No voice searches recorded</p>
@@ -79,7 +94,7 @@ export function SearchVoiceHistoryPage() {
           </div>
         ) : (
           <div className="divide-y divide-gray-50">
-            {items.map((item, idx) => (
+            {rows.map((item, idx) => (
               <motion.div
                 key={item.id}
                 initial={{ opacity: 0, x: -8 }}
