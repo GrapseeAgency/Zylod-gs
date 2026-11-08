@@ -99,8 +99,10 @@ const nextConfig: NextConfig = {
     // dev server survives long browser-QA windows alongside headless Chrome.
     // 1536 was too tight — Turbopack aborted mid-compile trying to hold it;
     // 2560 collects before the ~2.6GB kernel-OOM zone while leaving ~1.4GB
-    // for headless Chrome and the OS.
-    turbopackMemoryLimit: 2560,
+    // for headless Chrome and the OS. t294: two accidental concurrent dev
+    // instances OOM'd the 4GB container at 2560 — 2048 keeps the aggressive
+    // collection stance plus a wider margin for orphan-instance accidents.
+    turbopackMemoryLimit: 2048,
     optimizePackageImports: [
       'lucide-react',
       'framer-motion',

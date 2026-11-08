@@ -1,6 +1,6 @@
 #!/bin/bash
 export PATH="/home/z/my-project/node_modules/.bin:$PATH"
-export NODE_OPTIONS="--max-old-space-size=2048"
+export NODE_OPTIONS="--max-old-space-size=1536"
 cd /home/z/my-project
 rm -rf .next
 # F1/F5 provenance contract: bake the CURRENT git HEAD into the bundle identity
