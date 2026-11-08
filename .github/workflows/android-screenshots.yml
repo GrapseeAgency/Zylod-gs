@@ -54,13 +54,20 @@ jobs:
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v4
 
+      # t290 HARDENING: GitHub's releases CDN 504'd bun asset downloads for
+      # four consecutive runs (android-screenshots 188 attempts 1-3, web-
+      # screenshots 61 attempt 1). The ubuntu runner ships bun preinstalled,
+      # so a failed setup-bun download degrades to the image toolchain
+      # instead of failing the whole job — the Bun guard below still fails
+      # loudly if NO bun exists at all.
       - name: Set up Bun
         uses: oven-sh/setup-bun@v2
+        continue-on-error: true
         with:
-          # 1.3.14 pinned (t290): matches the dev toolchain exactly and stops the
-          # "latest" drift — the 1.4.4 release asset 504'd on GitHub's CDN for
-          # three consecutive runs (web-ci 105 attempts 1-3).
           bun-version: 1.3.14
+
+      - name: Verify Bun available
+        run: bun --version
 
       - name: Build debug APK
         run: |
