@@ -8,8 +8,14 @@ import com.zylod.wholesale.ui.home.HomePageMeta
 import com.zylod.wholesale.ui.notifications.NotificationsPageMeta
 import com.zylod.wholesale.ui.pages.NativePageMeta
 import com.zylod.wholesale.ui.profile.ProfilePageMeta
+import com.zylod.wholesale.ui.rewards.PointsDetailTypedPageMeta
+import com.zylod.wholesale.ui.rewards.PointsHistoryTypedPageMeta
+import com.zylod.wholesale.ui.rewards.RedeemPointsTypedPageMeta
 import com.zylod.wholesale.ui.search.SearchPageMeta
 import com.zylod.wholesale.ui.screens.*
+import com.zylod.wholesale.ui.wishlist.RecentlyViewedProductsTypedPageMeta
+import com.zylod.wholesale.ui.wishlist.RecentlyViewedTypedPageMeta
+import com.zylod.wholesale.ui.wishlist.SaveForLaterTypedPageMeta
 import com.zylod.wholesale.ui.wishlist.WishlistPageMeta
 
 /**
@@ -166,7 +172,10 @@ object NativePageRegistry {
         "brand-showcase" to entry(BrandShowcasePageMeta) { onBack, openPage, query -> BrandShowcaseScreen(onBack = onBack, openPage = openPage, query = query) },
         "broken-link-report" to entry(BrokenLinkReportPageMeta) { onBack, openPage, query -> BrokenLinkReportScreen(onBack = onBack, openPage = openPage, query = query) },
         "browse" to entry(BrowsePageMeta) { onBack, openPage, query -> BrowseScreen(onBack = onBack, openPage = openPage, query = query) },
-        "browsing-history" to entry(BrowsingHistoryPageMeta) { onBack, openPage, query -> BrowsingHistoryScreen(onBack = onBack, openPage = openPage, query = query) },
+        // t282: browsing-history lands on the typed RecentlyViewedScreen —
+        // the web maps browsing-history onto recently-viewed-page too
+        // (chunk-misc.ts:176); the old row was a curated-bullets stub.
+        "browsing-history" to entry(RecentlyViewedTypedPageMeta) { onBack, openPage, _ -> com.zylod.wholesale.ui.wishlist.RecentlyViewedScreen(onBack = onBack, openPage = openPage) },
         "bulk-add-to-cart" to entry(BulkAddToCartPageMeta) { onBack, openPage, query -> BulkAddToCartScreen(onBack = onBack, openPage = openPage, query = query) },
         "bulk-discounts" to entry(BulkDiscountsPageMeta) { onBack, openPage, query -> BulkDiscountsScreen(onBack = onBack, openPage = openPage, query = query) },
         "bulk-enquiry" to entry(BulkEnquiryPageMeta) { onBack, openPage, query -> BulkEnquiryScreen(onBack = onBack, openPage = openPage, query = query) },
@@ -352,9 +361,11 @@ object NativePageRegistry {
         // t281 5-b: the "earnings-dashboard" row REMOVED — bullet stub;
         // WebScreen → the SPA's real earnings dashboard.
         "eco-friendly-products" to entry(EcoFriendlyProductsPageMeta) { onBack, openPage, query -> EcoFriendlyProductsScreen(onBack = onBack, openPage = openPage, query = query) },
-        // t281 5-b: the "edit-address" row REMOVED — address editing was
-        // impossible (bullets, no data); WebScreen → the SPA's real
-        // edit-address form (typed AddAddress edit-mode noted for later).
+        // t282: the "edit-address" row is BACK on the typed surface — the
+        // AddAddressViewModel edit-mode (PUT/DELETE api/addresses/{id} + the
+        // AddressEditDraft prefill) was fully built but unreachable after
+        // t281 removed this row; deep links now open the typed editor.
+        "edit-address" to entry(EditAddressPageMeta) { onBack, openPage, query -> com.zylod.wholesale.ui.returns.AddAddressScreen(pageId = "edit-address", onBack = onBack, openPage = openPage, query = query) },
         "edit-collection" to entry(EditCollectionPageMeta) { onBack, openPage, query -> EditCollectionScreen(onBack = onBack, openPage = openPage, query = query) },
         "edit-product" to entry(EditProductPageMeta) { onBack, openPage, query -> EditProductScreen(onBack = onBack, openPage = openPage, query = query) },
         "edit-profile" to entry(EditProfilePageMeta) { onBack, openPage, query -> EditProfileScreen(onBack = onBack, openPage = openPage, query = query) },
@@ -425,7 +436,10 @@ object NativePageRegistry {
         "help" to entry(HelpPageMeta) { onBack, openPage, query -> com.zylod.wholesale.ui.support.HelpCenterScreen(pageId = "help", onBack = onBack, openPage = openPage, query = query) },
         "help-center" to entry(HelpCenterPageMeta) { onBack, openPage, query -> com.zylod.wholesale.ui.support.HelpCenterScreen(pageId = "help-center", onBack = onBack, openPage = openPage, query = query) },
         "helpdesk" to entry(HelpdeskPageMeta) { onBack, openPage, query -> HelpdeskScreen(onBack = onBack, openPage = openPage, query = query) },
-        "history-page" to entry(HistoryPagePageMeta) { onBack, openPage, query -> HistoryPageScreen(onBack = onBack, openPage = openPage, query = query) },
+        // t282: history-page lands on the typed RecentlyViewedScreen — the
+        // web maps history-page onto recently-viewed-page too
+        // (chunk-misc.ts:235); the old row was a generic stub.
+        "history-page" to entry(RecentlyViewedTypedPageMeta) { onBack, openPage, _ -> com.zylod.wholesale.ui.wishlist.RecentlyViewedScreen(onBack = onBack, openPage = openPage) },
         "home-garden" to entry(HomeGardenPageMeta) { onBack, openPage, query -> HomeGardenScreen(onBack = onBack, openPage = openPage, query = query) },
         "how-it-works" to entry(HowItWorksPageMeta) { onBack, openPage, query -> HowItWorksScreen(onBack = onBack, openPage = openPage, query = query) },
         "image-cache" to entry(ImageCachePageMeta) { onBack, openPage, query -> ImageCacheScreen(onBack = onBack, openPage = openPage, query = query) },
@@ -575,10 +589,13 @@ object NativePageRegistry {
         "pickup-point" to entry(PickupPointPageMeta) { onBack, openPage, query -> com.zylod.wholesale.ui.logistics.PickupPointsScreen(pageId = "pickup-point", onBack = onBack, openPage = openPage, query = query) },
         "pickup-point-selection" to entry(PickupPointSelectionPageMeta) { onBack, openPage, query -> PickupPointSelectionScreen(onBack = onBack, openPage = openPage, query = query) },
         "pickup-points" to entry(PickupPointsPageMeta) { onBack, openPage, query -> PickupPointsScreen(onBack = onBack, openPage = openPage, query = query) },
-        // t281 5-b: the "points-detail" row REMOVED — bullet stub; WebScreen →
-        // the SPA's real points detail page.
-        // t281 5-b: the "points-history" row REMOVED — the loyalty ledger
-        // landed on bullets; WebScreen → the SPA's real points history.
+        // t282: both points rows are BACK on typed surfaces (the t281
+        // "typed ui/rewards port noted for later"): points-detail is the
+        // web's static rules page (the web fetches NOTHING for it either)
+        // and points-history streams the REAL GET api/rewards/history
+        // ledger with the web's three filter tabs.
+        "points-detail" to entry(PointsDetailTypedPageMeta) { onBack, openPage, _ -> com.zylod.wholesale.ui.rewards.PointsDetailScreen(onBack = onBack, openPage = openPage) },
+        "points-history" to entry(PointsHistoryTypedPageMeta) { onBack, openPage, _ -> com.zylod.wholesale.ui.rewards.PointsHistoryScreen(onBack = onBack, openPage = openPage) },
         "policy" to entry(PolicyPageMeta) { onBack, openPage, query -> PolicyScreen(onBack = onBack, openPage = openPage, query = query) },
         // t280 4-b#2: the "policy-detail" row REMOVED — ChatbotScreen's policy
         // hop (slug=<slug>) landed on bullets. WebScreen → the SPA's real
@@ -649,12 +666,18 @@ object NativePageRegistry {
         "rating-page" to entry(RatingPagePageMeta) { onBack, openPage, query -> RatingPageScreen(onBack = onBack, openPage = openPage, query = query) },
         "react" to entry(ReactPageMeta) { onBack, openPage, query -> ReactScreen(onBack = onBack, openPage = openPage, query = query) },
         "recently-searched" to entry(RecentlySearchedPageMeta) { onBack, openPage, query -> RecentlySearchedScreen(onBack = onBack, openPage = openPage, query = query) },
-        "recently-viewed" to entry(RecentlyViewedPageMeta) { onBack, openPage, query -> RecentlyViewedScreen(onBack = onBack, openPage = openPage, query = query) },
-        "recently-viewed-products" to entry(RecentlyViewedProductsPageMeta) { onBack, openPage, query -> RecentlyViewedProductsScreen(onBack = onBack, openPage = openPage, query = query) },
+        // t282: BOTH ids land on the typed RecentlyViewedScreen — the web
+        // maps recently-viewed AND recently-viewed-products onto the same
+        // recently-viewed-page component (chunk-misc.ts:251); the old rows
+        // rendered curated bullets / the whole catalog as "your history".
+        "recently-viewed" to entry(RecentlyViewedTypedPageMeta) { onBack, openPage, _ -> com.zylod.wholesale.ui.wishlist.RecentlyViewedScreen(onBack = onBack, openPage = openPage) },
+        "recently-viewed-products" to entry(RecentlyViewedProductsTypedPageMeta) { onBack, openPage, _ -> com.zylod.wholesale.ui.wishlist.RecentlyViewedScreen(onBack = onBack, openPage = openPage) },
         "recommended" to entry(RecommendedPageMeta) { onBack, openPage, query -> RecommendedScreen(onBack = onBack, openPage = openPage, query = query) },
-        // t281 5-b: the "redeem-points" row REMOVED — LoyaltyScreen's and the
-        // typed CouponsScreen's redeem CTAs landed on bullets; WebScreen →
-        // the SPA's real redeem page (typed ui/rewards port noted for later).
+        // t282: the "redeem-points" row is BACK on the typed surface (the
+        // t281 note): real balance via GET api/rewards/loyalty, the web's
+        // five fixed options + the custom voucher, POST api/rewards/redeem,
+        // voucher codes land in my-coupons.
+        "redeem-points" to entry(RedeemPointsTypedPageMeta) { onBack, openPage, _ -> com.zylod.wholesale.ui.rewards.RedeemPointsScreen(onBack = onBack, openPage = openPage) },
         "referral-earnings" to entry(ReferralEarningsPageMeta) { onBack, openPage, query -> ReferralEarningsScreen(onBack = onBack, openPage = openPage, query = query) },
         "referral-program" to entry(ReferralProgramPageMeta) { onBack, openPage, query -> ReferralProgramScreen(onBack = onBack, openPage = openPage, query = query) },
         "referral-program-page" to entry(ReferralProgramPagePageMeta) { onBack, openPage, query -> ReferralProgramPageScreen(onBack = onBack, openPage = openPage, query = query) },
@@ -711,7 +734,10 @@ object NativePageRegistry {
         "safety" to entry(SafetyPageMeta) { onBack, openPage, query -> SafetyScreen(onBack = onBack, openPage = openPage, query = query) },
         "safety-center" to entry(SafetyCenterPageMeta) { onBack, openPage, query -> SafetyCenterScreen(onBack = onBack, openPage = openPage, query = query) },
         "sample-orders" to entry(SampleOrdersPageMeta) { onBack, openPage, query -> SampleOrdersScreen(onBack = onBack, openPage = openPage, query = query) },
-        "save-for-later" to entry(SaveForLaterPageMeta) { onBack, openPage, query -> SaveForLaterScreen(onBack = onBack, openPage = openPage, query = query) },
+        // t282: the row feeds the REAL /api/save-for-later rows now (the old
+        // row streamed api/wishlist?limit=50 — wishlist rows under this
+        // title); Move-to-Cart + per-row remove are the web page's actions.
+        "save-for-later" to entry(SaveForLaterTypedPageMeta) { onBack, openPage, _ -> com.zylod.wholesale.ui.wishlist.SaveForLaterScreen(onBack = onBack, openPage = openPage) },
         "save-for-later-detail" to entry(SaveForLaterDetailPageMeta) { onBack, openPage, query -> SaveForLaterDetailScreen(onBack = onBack, openPage = openPage, query = query) },
         "saved-searches" to entry(SavedSearchesPageMeta) { onBack, openPage, query -> SavedSearchesScreen(onBack = onBack, openPage = openPage, query = query) },
         "scan-barcode" to entry(ScanBarcodePageMeta) { onBack, openPage, query -> ScanBarcodeScreen(onBack = onBack, openPage = openPage, query = query) },

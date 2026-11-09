@@ -1,10 +1,15 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
-import { ArrowLeft, Trash2, ShoppingBag, Clock, AlertCircle } from 'lucide-react'
+import { ArrowLeft, Trash2, ShoppingBag, Clock } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useNavigationStore } from '@/store/navigation-store'
 
+// t282: the wire shape is GET /api/save-for-later's REAL payload — raw
+// savedForLater rows + the product select. The page previously read
+// `data.items` (a field the envelope has never carried — the grid rendered
+// empty on EVERY load) and displayed a "Price may change" badge with no
+// data source behind it (both removed with the honesty doctrine).
 interface SavedItem {
   id: string
   productId: string
@@ -14,7 +19,24 @@ interface SavedItem {
   price: number
   imageUrl: string
   dateSaved: string
-  hasPriceChanged: boolean
+}
+
+/** The product select GET /api/save-for-later nests on each row. */
+interface SaveForLaterProduct {
+  id?: string
+  name?: string
+  basePrice?: number
+  moq?: number
+  thumbnailUrl?: string | null
+  supplier?: { companyName?: string } | null
+}
+
+interface SaveForLaterRow {
+  id?: string
+  productId?: string
+  quantity?: number
+  createdAt?: string
+  product?: SaveForLaterProduct | null
 }
 
 export function SaveForLaterPage() {
@@ -32,7 +54,19 @@ export function SaveForLaterPage() {
       const response = await fetch('/api/save-for-later')
       if (!response.ok) throw new Error('Failed to fetch saved items')
       const data = await response.json()
-      setItems(data.items || [])
+      const rows = (data.data || []) as SaveForLaterRow[]
+      setItems(
+        rows.map((row) => ({
+          id: row.id || '',
+          productId: row.productId || row.product?.id || '',
+          productName: row.product?.name || 'Saved item',
+          supplierName: row.product?.supplier?.companyName || '',
+          moq: row.product?.moq ?? 1,
+          price: row.product?.basePrice ?? 0,
+          imageUrl: row.product?.thumbnailUrl || '',
+          dateSaved: row.createdAt || new Date(0).toISOString(),
+        })),
+      )
     } catch (err: any) {
       setError(err.message)
     } finally {
@@ -200,7 +234,7 @@ export function SaveForLaterPage() {
                       
                       <div className="flex items-end justify-between mt-2">
                         <div>
-                          <p className="font-bold text-primary text-sm">${item.price.toFixed(2)}</p>
+                          <p className="font-bold text-primary text-sm">৳{item.price.toFixed(2)}</p>
                           <p className="text-[10px] text-gray-500 dark:text-gray-400 dark:text-gray-500">MOQ: {item.moq}</p>
                         </div>
                       </div>
@@ -213,12 +247,6 @@ export function SaveForLaterPage() {
                       <Clock size={12} />
                       Saved {formatTimeAgo(item.dateSaved)}
                     </div>
-                    {item.hasPriceChanged && (
-                      <div className="flex items-center gap-1 bg-yellow-50 text-yellow-700 px-2 py-1 rounded text-[10px] font-medium">
-                        <AlertCircle size={12} />
-                        Price may change
-                      </div>
-                    )}
                   </div>
 
                   {/* Bottom: Actions */}

@@ -453,4 +453,31 @@ object ApiClient {
     // detail screen needs. Same memoization + Bearer/401-refresh chain.
     fun orderDetailApi(baseUrl: String): OrderDetailApi =
         cachedApi(baseUrl, "order-detail") { it.create(OrderDetailApi::class.java) }
+
+    // t282 — the RECENTLY-VIEWED circuit (GET/POST/DELETE
+    // api/products/recently-viewed) behind ui/wishlist/RecentlyViewedScreen:
+    // the PDP records views fire-and-forget, the typed screen reads the
+    // cursor-paginated history. AUTHENTICATED routes (guests are 401 by
+    // design); same memoization + Bearer/401-refresh chain.
+    fun recentlyViewedApi(baseUrl: String): RecentlyViewedApi =
+        cachedApi(baseUrl, "recently-viewed") { it.create(RecentlyViewedApi::class.java) }
+
+    // t282 — SAVE-FOR-LATER (GET api/save-for-later + DELETE
+    // api/save-for-later/{itemId}) behind ui/wishlist/SaveForLaterScreen —
+    // the routes WishlistApi.kt's t259 note kept undeclared until a pageId
+    // rendered them. AUTHENTICATED; same memoization + Bearer/401 chain
+    // (Move-to-Cart rides the EXISTING cartApi accessor — never redeclared).
+    fun saveForLaterApi(baseUrl: String): SaveForLaterApi =
+        cachedApi(baseUrl, "save-for-later") { it.create(SaveForLaterApi::class.java) }
+
+    // t282 — the POINTS LEDGER + REDEMPTION rail (GET api/rewards/history
+    // with the type filter + page paging, POST api/rewards/redeem with the
+    // free-amount {pointsToRedeem, rewardType} body) behind
+    // ui/rewards/PointsHistoryScreen + RedeemPointsScreen. A SEPARATE
+    // interface from RewardsApi so the t259 rewards-book/catalog-redeem set
+    // stays put. AUTHENTICATED (requireUserType/authenticateRequest); same
+    // memoization + Bearer/401-refresh chain; the redeem screen's balance
+    // rides the EXISTING rewardsApi.loyalty() call.
+    fun pointsLedgerApi(baseUrl: String): PointsLedgerApi =
+        cachedApi(baseUrl, "points-ledger") { it.create(PointsLedgerApi::class.java) }
 }

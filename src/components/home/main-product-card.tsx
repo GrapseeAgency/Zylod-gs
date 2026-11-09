@@ -55,10 +55,21 @@ export function MainProductCard({ product }: { product: MainProduct }) {
     }
     setToggling(true)
     try {
-      const res = await fetch(`/api/favorites/${product.id}`, {
-        method: wished ? 'DELETE' : 'POST',
-        credentials: 'include',
-      })
+      // t282: the heart now hits the REAL wishlist routes — the PDP's exact
+      // calls (POST /api/wishlist {productId} / DELETE /api/wishlist?productId=).
+      // The old `/api/favorites/{id}` route never existed: every buyer heart
+      // from a browse card 404'd and the toggle could never succeed.
+      const res = wished
+        ? await fetch(`/api/wishlist?productId=${encodeURIComponent(product.id)}`, {
+            method: 'DELETE',
+            credentials: 'include',
+          })
+        : await fetch('/api/wishlist', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify({ productId: product.id }),
+          })
       if (res.ok) {
         setWished(w => !w)
         toast({ title: wished ? 'Removed from Wishlist' : 'Added to Wishlist', description: product.name })

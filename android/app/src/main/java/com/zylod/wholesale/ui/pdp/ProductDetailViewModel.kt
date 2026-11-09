@@ -11,6 +11,7 @@ import com.zylod.wholesale.data.api.ProductDetailDto
 import com.zylod.wholesale.data.api.ProductQaAskRequest
 import com.zylod.wholesale.data.api.ProductQaItemDto
 import com.zylod.wholesale.data.api.ProductVariantDto
+import com.zylod.wholesale.data.api.RecentlyViewedRecordBody
 import com.zylod.wholesale.data.api.ServerConfig
 import com.zylod.wholesale.data.api.SpecificationsDto
 import com.zylod.wholesale.data.api.WishlistAddRequest
@@ -163,7 +164,15 @@ class ProductDetailViewModel(private val appContext: Context) : ViewModel() {
                 } catch (_: Exception) {
                     _state.update { s -> s.copy(qaLoading = false) }
                 }
-                if (SessionManager.token() != null) checkWishlist(client, productId)
+                if (SessionManager.token() != null) {
+                    checkWishlist(client, productId)
+                    // t282: the recently-viewed circuit — the web PDP's
+                    // fire-and-forget POST (product-detail-page.tsx:316,
+                    // mobile-product-detail-page.tsx:231). A failure never
+                    // disturbs the product screen (the same best-effort
+                    // policy as the specs/QA sub-fetches above).
+                    recordRecentlyViewed(productId)
+                }
             } catch (ce: CancellationException) {
                 throw ce
             } catch (e: Exception) {
@@ -193,6 +202,29 @@ class ProductDetailViewModel(private val appContext: Context) : ViewModel() {
             _state.update { it.copy(wishlisted = wished) }
         } catch (_: Exception) {
             // membership probe is best-effort
+        }
+    }
+
+    /**
+     * t282 — record this PDP view in the buyer's browsingHistory
+     * (POST api/products/recently-viewed { productId }, 201 upsert on
+     * buyerId+productId; re-visits bump viewedAt server-side). Strictly
+     * fire-and-forget: guests never call it (the route is 401 by design),
+     * and any failure is swallowed — the recently-viewed rail heals itself
+     * on the next successful view, like the web's fetch().catch(() => {}). 
+     */
+    private fun recordRecentlyViewed(productId: String) {
+        viewModelScope.launch {
+            try {
+                val base = baseUrl ?: ServerConfig.resolve(appContext).also { baseUrl = it }
+                ApiClient.recentlyViewedApi(base).record(
+                    RecentlyViewedRecordBody(productId = productId),
+                )
+            } catch (ce: CancellationException) {
+                throw ce
+            } catch (_: Exception) {
+                // view recording is best-effort — never a PDP failure
+            }
         }
     }
 

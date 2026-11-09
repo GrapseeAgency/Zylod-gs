@@ -1,12 +1,17 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
-import { ArrowLeft, Filter, Star, Heart, CheckCircle2 } from 'lucide-react'
+import { ArrowLeft, Star, Heart, CheckCircle2 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useNavigationStore } from '@/store/navigation-store'
 import { useAuthStore } from '@/store/auth-store'
 import { AccountGate } from '@/components/shared/account-gate'
 
+// t282: the wire shape is GET /api/favorites' REAL projection — a wishlists
+// row re-ranked by product rating + the product select the route ships. The
+// old interface (productName/category/hasPriceChanged-style fields) matched
+// a payload the route has never sent, and the page read `data.items` — a
+// field the envelope has never carried — so the grid rendered empty forever.
 interface FavoriteItem {
   id: string
   productId: string
@@ -17,8 +22,26 @@ interface FavoriteItem {
   price: number
   imageUrl: string
   rating: number
-  category: string
   dateAdded: string
+}
+
+/** The product select GET /api/favorites nests on each wishlists row. */
+interface FavoritesProductRow {
+  id?: string
+  name?: string
+  basePrice?: number
+  moq?: number
+  ratingAvg?: number
+  reviewCount?: number
+  thumbnailUrl?: string | null
+  supplier?: { companyName?: string; verificationStatus?: string } | null
+}
+
+interface FavoritesRow {
+  id?: string
+  productId?: string
+  createdAt?: string
+  product?: FavoritesProductRow | null
 }
 
 export function FavoritesPage() {
@@ -28,9 +51,6 @@ export function FavoritesPage() {
   const [loading, setLoading] = useState(true)
   const [sessionExpired, setSessionExpired] = useState(false)
   const [error, setError] = useState<string | null>(null)
-
-  const [activeFilter, setActiveFilter] = useState('All')
-  const filters = ['All', 'Electronics', 'Industrial', 'Textiles', 'Food']
 
   const [sortOption, setSortOption] = useState<'RATING' | 'PRICE_ASC' | 'RECENT'>('RATING')
 
@@ -56,7 +76,23 @@ export function FavoritesPage() {
         if (!response.ok) throw new Error(`Failed to load favorites (HTTP ${response.status}).`)
         const data = await response.json()
         setError(null)
-        setItems(data.items || [])
+        const rows = (data.data || []) as FavoritesRow[]
+        setItems(
+          rows.map((row) => ({
+            id: row.id || row.product?.id || '',
+            productId: row.product?.id || row.productId || '',
+            productName: row.product?.name || 'Saved product',
+            supplierName: row.product?.supplier?.companyName || '',
+            isSupplierVerified:
+              row.product?.supplier?.verificationStatus === 'APPROVED' ||
+              row.product?.supplier?.verificationStatus === 'VERIFIED',
+            moq: row.product?.moq ?? 1,
+            price: row.product?.basePrice ?? 0,
+            imageUrl: row.product?.thumbnailUrl || '',
+            rating: row.product?.ratingAvg ?? 0,
+            dateAdded: row.createdAt || new Date(0).toISOString(),
+          })),
+        )
       } catch (err: any) {
         setError(err?.message || 'Network error while loading favorites.')
       } finally {
@@ -66,24 +102,27 @@ export function FavoritesPage() {
     fetchFavorites()
   }, [isAuthenticated, token])
 
-  const handleRemove = async (itemId: string, e: React.MouseEvent) => {
+  const handleRemove = async (item: FavoriteItem, e: React.MouseEvent) => {
     e.stopPropagation()
     try {
-      await fetch(`/api/favorites/${itemId}`, {
+      // t282: the real remove route — the row IS a wishlist row, so removal
+      // is DELETE /api/wishlist?productId= (the same call the PDP + every
+      // product card make). The old DELETE /api/favorites/{id} hit a route
+      // that does not exist (404) and the optimistic filter lied.
+      const res = await fetch(`/api/wishlist?productId=${encodeURIComponent(item.productId)}`, {
         method: 'DELETE',
         headers: token ? { Authorization: `Bearer ${token}` } : undefined,
       })
-      setItems(items.filter(item => item.id !== itemId))
+      if (res.ok) {
+        setItems(items.filter(i => i.productId !== item.productId))
+      }
     } catch (err) {
       console.error(err)
     }
   }
 
   const getFilteredAndSortedItems = () => {
-    let result = [...items]
-    if (activeFilter !== 'All') {
-      result = result.filter(item => item.category === activeFilter)
-    }
+    const result = [...items]
 
     result.sort((a, b) => {
       if (sortOption === 'RATING') return b.rating - a.rating
@@ -125,34 +164,8 @@ export function FavoritesPage() {
           <h1 className="font-semibold text-lg md:text-2xl">Favorites</h1>
           <p className="text-[10px] text-gray-500 dark:text-gray-400 dark:text-gray-500">Your highest-rated saved products</p>
         </div>
-        <button
-          onClick={() => {
-            const idx = filters.indexOf(activeFilter)
-            setActiveFilter(filters[(idx + 1) % filters.length])
-          }}
-          className="p-2 -mr-2 rounded-full hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800"
-          aria-label={`Filter: ${activeFilter}, tap to change`}
-        >
-          <Filter size={20} />
-        </button>
+        <span className="w-8" aria-hidden />
       </header>
-
-      {/* Filter Chips */}
-      <div className="bg-white dark:bg-gray-900 border-b px-4 py-3 flex space-x-2 overflow-x-auto no-scrollbar">
-        {filters.map((filter) => (
-          <button
-            key={filter}
-            onClick={() => setActiveFilter(filter)}
-            className={`whitespace-nowrap px-4 py-1.5 rounded-full text-xs font-medium transition-colors ${
-              activeFilter === filter 
-                ? 'bg-primary text-white' 
-                : 'bg-gray-100 dark:bg-gray-900 text-gray-600 dark:text-gray-400'
-            }`}
-          >
-            {filter}
-          </button>
-        ))}
-      </div>
 
       {/* Sort */}
       <div className="px-4 py-3 flex items-center justify-between">
@@ -205,13 +218,17 @@ export function FavoritesPage() {
                 >
                   <div className="relative aspect-square bg-gray-100 dark:bg-gray-900">
                     <img src={item.imageUrl} alt={item.productName} className="w-full h-full object-cover" />
-                    <div className="absolute top-2 left-2 bg-white dark:bg-gray-900/90 backdrop-blur-sm px-1.5 py-0.5 rounded text-[10px] font-bold flex items-center gap-1 shadow-sm">
-                      <Star size={10} className="fill-yellow-400 text-yellow-400" />
-                      <span>{item.rating}</span>
-                    </div>
-                    <button 
-                      onClick={(e) => handleRemove(item.id, e)}
+                    {/* t281 gate parity: the star only renders with a REAL rating. */}
+                    {item.rating > 0 && (
+                      <div className="absolute top-2 left-2 bg-white dark:bg-gray-900/90 backdrop-blur-sm px-1.5 py-0.5 rounded text-[10px] font-bold flex items-center gap-1 shadow-sm">
+                        <Star size={10} className="fill-yellow-400 text-yellow-400" />
+                        <span>{item.rating.toFixed(1)}</span>
+                      </div>
+                    )}
+                    <button
+                      onClick={(e) => handleRemove(item, e)}
                       className="absolute top-2 right-2 p-1.5 bg-white dark:bg-gray-900/90 backdrop-blur-sm rounded-full shadow-sm text-primary"
+                      aria-label={`Remove ${item.productName} from favorites`}
                     >
                       <Heart size={14} className="fill-current" />
                     </button>
@@ -228,7 +245,7 @@ export function FavoritesPage() {
                     </div>
 
                     <div className="mt-auto">
-                      <p className="font-bold text-primary text-sm">${item.price.toFixed(2)}</p>
+                      <p className="font-bold text-primary text-sm">৳{item.price.toFixed(2)}</p>
                       <p className="text-[10px] text-gray-500 dark:text-gray-400 dark:text-gray-500 mb-2">Min. Order: {item.moq}</p>
                       <button
                         onClick={(e) => { e.stopPropagation(); navigate('product-detail', { productId: item.productId }) }}

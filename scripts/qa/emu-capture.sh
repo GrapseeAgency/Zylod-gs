@@ -2738,6 +2738,20 @@ guarded_deeplink "79-privacy-policy-legal" 12 "zylod://privacy-policy"
 # "No releases published yet" and audited the native leg from there).
 # 12s settle (typed screen + one API fetch); public surface; non-fatal.
 guarded_deeplink "80-version-history-releases" 12 "zylod://version-history"
+# t282: the six re-wired/typed surfaces, captured in the authed buyer zone —
+# recently-viewed (the REAL browsingHistory rail; the buyer session shows
+# rows or the honest empty state), save-for-later (the real
+# /api/save-for-later rows — the old row streamed wishlist rows under this
+# title), the typed ui/rewards ports (ledger + redeem + the static rules
+# page — all three were WebView-forwards in t281) and edit-address (the
+# typed editor restored from its t281 WebView row). Renumbered 81-86 after
+# the t283-t285 rounds took 77-80.
+guarded_deeplink "81-recently-viewed" 12 "zylod://recently-viewed"
+guarded_deeplink "82-save-for-later" 12 "zylod://save-for-later"
+guarded_deeplink "83-points-history" 12 "zylod://points-history"
+guarded_deeplink "84-redeem-points" 12 "zylod://redeem-points"
+guarded_deeplink "85-points-detail" 12 "zylod://points-detail"
+guarded_deeplink "86-edit-address" 12 "zylod://edit-address"
 # t248: the two typed admin surfaces — moderation + operations queues.
 guarded_deeplink "19-admin-users" 10 "zylod://admin-users"
 guarded_deeplink "20-admin-orders" 10 "zylod://admin-orders"
