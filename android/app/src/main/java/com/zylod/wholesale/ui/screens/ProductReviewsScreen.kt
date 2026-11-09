@@ -1,116 +1,57 @@
 package com.zylod.wholesale.ui.screens
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.ArrowBack
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.sp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.zylod.wholesale.ui.pages.NativePageBody
 import com.zylod.wholesale.ui.pages.NativePageKind
 import com.zylod.wholesale.ui.pages.NativePageLink
 import com.zylod.wholesale.ui.pages.NativePageMeta
-import com.zylod.wholesale.ui.pages.NativePageViewModel
+import com.zylod.wholesale.ui.reviews.ReviewsListScreen as SharedReviewsListScreen
 
 /**
  * t233 — NATIVE Kotlin screen for the SPA pageId "product-reviews"
  * (src/lib/page-loader.ts registry entry, now owned by Compose — the
  * WebView is fallback-only for unregistered ids).
  *
- * Live data: GET api/products?limit=20&page=1 through NativePageRepository, cached on-device for offline.
-"Product Reviews — product discovery and buying on the Zylod marketplace. Content streams live from the Zylod API and renders through the shared native page model."
+ * t282 — the wrong-data generic grid is GONE (this pageId previously
+ * rendered GET api/products — a catalog feed with nothing to do with
+ * reviews). The body is a thin delegation to the typed shared reviews
+ * screen (pageId-keyed so it keeps its own ViewModel), which fetches the
+ * REAL GET api/reviews?productId= feed with the product header resolved
+ * exactly like product-reviews-page.tsx. The meta object below and the
+ * NativePageRegistry composable signature are unchanged.
  */
 data object ProductReviewsPageMeta : NativePageMeta() {
     override val pageId = "product-reviews"
     override val title = "Product Reviews"
     override val category = "Shopping & Products"
     override val kind = NativePageKind.PRODUCTS
-    override val endpoint: String? = "api/products?limit=20&page=1"
-    override val summary = "Product Reviews — product discovery and buying on the Zylod marketplace. Content streams live from the Zylod API and renders through the shared native page model."
+    override val endpoint: String? = "api/reviews" // typed ReviewsViewModel owns the calls
+    override val summary =
+        "The real product reviews feed — GET api/reviews?productId= through the typed " +
+            "reviews screen (the old generic api/products grid that ignored reviews is gone)."
     override val tabHint = ""
     override val bullets = listOf(
-        "Live data renders from the Zylod API when an endpoint feeds this page.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the product-reviews pageId via RouteOwnership.",
+        "Reviews stream from the REAL GET api/reviews?productId= feed (createdAt DESC).",
+        "Header card resolves the product exactly like product-reviews-page.tsx.",
+        "Write-a-review deep-links to the typed review form (rate-products).",
     )
     override val related = listOf(
-        NativePageLink("all-products", "All Products"),
-        NativePageLink("flash-deals", "Flash Deals"),
-        NativePageLink("category-browser", "Category Browser"),
+        NativePageLink("product-reviews-list", "Product Reviews List"),
+        NativePageLink("rate-products", "Write a Review"),
+        NativePageLink("product-detail", "Product Detail"),
     )
 }
 
 /**
- * Real themed Compose screen: native top bar (back arrow pops the back
- * stack toward Home), sections driven by the shared [NativePageData] model
- * through [NativePageBody] — live data when the endpoint feeds it, the
- * device-saved cache offline, curated Kotlin metadata otherwise, with a
- * working retry state. Stable keys inside the shared renderer.
+ * Delegation only — the shared [SharedReviewsListScreen] owns the rendering
+ * and the wire calls; this file keeps the registry-facing signature (the
+ * aliased import is what makes the delegation land on ui/reviews, not on
+ * this file's own same-named composable).
  */
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProductReviewsScreen(
     onBack: (() -> Unit)?,
     openPage: (pageId: String, query: String) -> Unit,
     query: String,
 ) {
-    val context = LocalContext.current
-    val vm: NativePageViewModel = viewModel(key = "native-page-product-reviews") {
-        NativePageViewModel(context.applicationContext, ProductReviewsPageMeta)
-    }
-    val state by vm.state.collectAsStateWithLifecycle()
-    LaunchedEffect(Unit) { vm.refresh(query) }
-
-    Scaffold(
-        containerColor = MaterialTheme.colorScheme.background,
-        topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        "Product Reviews",
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Black,
-                        color = MaterialTheme.colorScheme.primary,
-                    )
-                },
-                navigationIcon = {
-                    if (onBack != null) {
-                        IconButton(onClick = onBack) {
-                            Icon(
-                                Icons.AutoMirrored.Outlined.ArrowBack,
-                                "Go back",
-                                tint = MaterialTheme.colorScheme.onSurface,
-                            )
-                        }
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background),
-            )
-        },
-    ) { padding ->
-        Box(Modifier.fillMaxSize().padding(padding)) {
-            NativePageBody(
-                meta = ProductReviewsPageMeta,
-                state = state,
-                onRetry = { vm.refresh() },
-                openPage = openPage,
-            )
-        }
-    }
+    SharedReviewsListScreen(pageId = "product-reviews", onBack = onBack, openPage = openPage, query = query)
 }

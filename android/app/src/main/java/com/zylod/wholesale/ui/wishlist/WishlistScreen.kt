@@ -3,6 +3,7 @@ package com.zylod.wholesale.ui.wishlist
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,6 +18,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
@@ -26,6 +28,8 @@ import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -37,7 +41,9 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.ColorPainter
@@ -86,6 +92,15 @@ data object WishlistPageMeta : NativePageMeta() {
 /**
  * NATIVE Wishlist (t233). A profile-tab sub-page: back arrow present,
  * tabHint "profile"; needsAuth soft CTA; remove is per-row.
+ *
+ * t282 — the web management UX: stock filter tabs + four-way sort, both
+ * client-side over the SAME server rows exactly like wishlist-page.tsx
+ * (its getFilteredAndSortedItems). Tab semantics are the web's real data:
+ * In stock = stock > moq (its IN_STOCK derivation), Out of stock = stock 0
+ * (its OUT_OF_STOCK state). The web's PRICE_DROP tab is deliberately NOT
+ * mirrored: its oldPrice is never populated (wishlist-page.tsx:66 hardcodes
+ * undefined), so the tab is permanently empty — a dead filter, documented
+ * and skipped (WishlistDetailScreen's not-mirrored-badge precedent).
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -135,12 +150,50 @@ fun WishlistScreen(
     }
 }
 
+/** Stock tabs (t282) — derived from the SAME server data the web derives. */
+private enum class WishlistTab(val label: String) {
+    ALL("All"),
+    IN_STOCK("In stock"),
+    OUT_OF_STOCK("Out of stock"),
+}
+
+/** The web's four-way sort (wishlist-page.tsx:35), client-side like the web. */
+private enum class WishlistSort(val label: String) {
+    RECENT("Recently added"),
+    PRICE_ASC("Price ↑"),
+    PRICE_DESC("Price ↓"),
+    RATING("Top rated"),
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun WishlistList(
     state: WishlistUiState,
     onRemove: (String) -> Unit,
     openPage: (pageId: String, query: String) -> Unit,
 ) {
+    var activeTab by remember { mutableStateOf(WishlistTab.ALL) }
+    var sortOption by remember { mutableStateOf(WishlistSort.RECENT) }
+
+    // wishlist-page.tsx getFilteredAndSortedItems — the exact stock gate
+    // (stock == 0 → out; stock > moq → in stock) and the exact four sorts.
+    val displayed = remember(state.items, activeTab, sortOption) {
+        val filtered = when (activeTab) {
+            WishlistTab.ALL -> state.items
+            WishlistTab.IN_STOCK -> state.items.filter { item ->
+                val stock = item.product?.stockQuantity ?: 0.0
+                stock > 0 && stock > (item.product?.moq ?: 1.0)
+            }
+            WishlistTab.OUT_OF_STOCK -> state.items.filter { (it.product?.stockQuantity ?: 0.0) <= 0.0 }
+        }
+        when (sortOption) {
+            WishlistSort.RECENT -> filtered // the API already answers createdAt desc
+            WishlistSort.PRICE_ASC -> filtered.sortedBy { it.product?.basePrice ?: 0.0 }
+            WishlistSort.PRICE_DESC -> filtered.sortedByDescending { it.product?.basePrice ?: 0.0 }
+            WishlistSort.RATING -> filtered.sortedByDescending { it.product?.ratingAvg ?: 0.0 }
+        }
+    }
+
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 12.dp),
@@ -149,23 +202,71 @@ private fun WishlistList(
         if (state.offline) {
             item(key = "offline-banner", contentType = "banner") { OfflineBanner() }
         }
+        item(key = "tabs", contentType = "filters") {
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .horizontalScroll(rememberScrollState()),
+            ) {
+                WishlistTab.entries.forEach { tab ->
+                    FilterChip(
+                        selected = activeTab == tab,
+                        onClick = { activeTab = tab },
+                        label = { Text(tab.label, fontSize = 12.sp) },
+                        colors = FilterChipDefaults.filterChipColors(
+                            selectedContainerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.12f),
+                            selectedLabelColor = MaterialTheme.colorScheme.primary,
+                        ),
+                    )
+                }
+            }
+        }
+        item(key = "sort", contentType = "filters") {
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .horizontalScroll(rememberScrollState()),
+            ) {
+                WishlistSort.entries.forEach { sort ->
+                    FilterChip(
+                        selected = sortOption == sort,
+                        onClick = { sortOption = sort },
+                        label = { Text(sort.label, fontSize = 11.sp) },
+                        colors = FilterChipDefaults.filterChipColors(
+                            selectedContainerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.12f),
+                            selectedLabelColor = MaterialTheme.colorScheme.primary,
+                        ),
+                    )
+                }
+            }
+        }
         item(key = "meta", contentType = "meta") {
             Text(
-                if (state.items.size == 1) "1 saved product" else "${state.items.size} saved products",
+                when {
+                    displayed.size != state.items.size -> "${displayed.size} of ${state.items.size} saved products"
+                    displayed.size == 1 -> "1 saved product"
+                    else -> "${displayed.size} saved products"
+                },
                 fontSize = 11.sp,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
-        if (state.items.isEmpty()) {
+        if (displayed.isEmpty()) {
             item(key = "empty", contentType = "empty") {
                 Text(
-                    "Nothing saved yet — tap the heart on any product to keep it here.",
+                    if (state.items.isEmpty()) {
+                        "Nothing saved yet — tap the heart on any product to keep it here."
+                    } else {
+                        "No products match this filter."
+                    },
                     fontSize = 12.sp,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
         } else {
-            state.items.forEach { item ->
+            displayed.forEach { item ->
                 val productId = item.productId ?: item.product?.id
                 val key = item.id ?: productId ?: "row"
                 item(key = "wish-$key", contentType = "wishlist-row") {

@@ -153,6 +153,12 @@ class ProductDetailViewModel(private val appContext: Context) : ViewModel() {
                 } catch (_: Exception) {
                     // specs optional
                 }
+                // t282 — THE recently-viewed recording. Web parity:
+                // product-detail-page.tsx:316 fires POST
+                // /api/products/recently-viewed fire-and-forget on every PDP
+                // view; guests 401 by design (the route's documented
+                // no-second-source-of-truth doctrine) and leave no history.
+                if (SessionManager.token() != null) recordView(productId)
                 // t209: the REAL Q&A rail (was a declared native gap —
                 // "Q&A isn't available in the app yet" — while the public
                 // GET existed server-side all along). Failure degrades to the
@@ -177,6 +183,23 @@ class ProductDetailViewModel(private val appContext: Context) : ViewModel() {
                 throw ce
             } catch (e: Exception) {
                 _state.update { it.copy(loading = false, error = if (alreadyLoaded) null else "Can't reach Zylod servers") }
+            }
+        }
+    }
+
+    /** Fire-and-forget view recording — POST api/products/recently-viewed (t282).
+     *  Failure is silent by contract: the web's PDP does the same
+     *  (fetch().catch(() => {})) — a recording miss must never disturb the
+     *  shopping surface. */
+    private fun recordView(productId: String) {
+        viewModelScope.launch {
+            try {
+                val base = baseUrl ?: ServerConfig.resolve(appContext).also { baseUrl = it }
+                ApiClient.recentlyViewedApi(base).record(RecentlyViewedRecordBody(productId = productId))
+            } catch (ce: CancellationException) {
+                throw ce
+            } catch (_: Exception) {
+                // fire-and-forget — web parity
             }
         }
     }

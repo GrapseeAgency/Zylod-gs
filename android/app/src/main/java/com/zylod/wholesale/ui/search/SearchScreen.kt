@@ -3,6 +3,7 @@ package com.zylod.wholesale.ui.search
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -20,14 +21,20 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Close
+import androidx.compose.material.icons.outlined.DeleteOutline
 import androidx.compose.material.icons.outlined.History
+import androidx.compose.material.icons.outlined.LocalFireDepartment
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -69,12 +76,17 @@ data object SearchPageMeta : NativePageMeta() {
     override val kind = NativePageKind.PRODUCTS
     override val endpoint = "api/products?limit=20&page=1" // actual calls append &search=<q>
     override val summary =
-        "Live catalog search: a debounced query box over GET api/products?search=… with " +
-            "keyed-dedup infinite append and on-device recent-search memory."
+        "Live catalog search: a debounced query box over GET api/products?search=… with the " +
+            "endpoint's own sort fields, category chips from api/categories, server history " +
+            "(api/search/history) and trending chips (api/search/popular), keyed-dedup " +
+            "infinite append and on-device recent-search memory."
     override val tabHint = "search"
     override val bullets = listOf(
         "Results stream from the real /api/products search filter (300 ms debounce).",
-        "Recent searches are stored on-device only — no account needed.",
+        "Sort chips map to the endpoint's real ALLOWED_SORT_FIELDS — default Newest (web parity).",
+        "Category chips are the live api/categories tree, applied as the category= filter.",
+        "Signed-in buyers see their server history (per-term delete + clear-all); guests keep device-local recents.",
+        "Trending chips come from GET api/search/popular; every submit records through POST api/search/popular.",
         "Every result opens the native product-detail screen.",
     )
     override val related = listOf(
@@ -85,8 +97,9 @@ data object SearchPageMeta : NativePageMeta() {
 }
 
 /**
- * NATIVE Search (t233). Tab-like destination: no back bar, search tab
- * highlighted; system Back pops to Home via the NavHost's own pop.
+ * NATIVE Search (t233, discovery rails t282). Tab-like destination: no back
+ * bar, search tab highlighted; system Back pops to Home via the NavHost's
+ * own pop.
  */
 @Composable
 fun SearchScreen(
@@ -119,7 +132,15 @@ fun SearchScreen(
             onQueryChange = vm::onQueryChange,
             onSubmit = vm::submit,
         )
-        SearchBody(state = state, onLoadMore = vm::loadMore, onRecentTap = vm::submit, openPage = openPage)
+        SearchChipsRow(state = state, onSort = vm::setSort, onCategory = vm::setCategory)
+        SearchBody(
+            state = state,
+            onLoadMore = vm::loadMore,
+            onRecentTap = vm::submit,
+            onRemoveHistory = vm::removeServerHistory,
+            onClearHistory = vm::clearServerHistory,
+            openPage = openPage,
+        )
     }
 }
 
@@ -157,11 +178,78 @@ private fun SearchField(
     )
 }
 
+/**
+ * t282 — the endpoint's REAL sort fields + the live category tree as chips
+ * (search-results-page contract). Both rows scroll horizontally.
+ */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun SearchChipsRow(
+    state: SearchUiState,
+    onSort: (SearchSort) -> Unit,
+    onCategory: (String?) -> Unit,
+) {
+    Column {
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .horizontalScroll(rememberScrollState())
+                .padding(horizontal = 16.dp),
+        ) {
+            SearchSort.OPTIONS.forEach { option ->
+                FilterChip(
+                    selected = state.sort.field == option.field && state.sort.order == option.order,
+                    onClick = { onSort(option) },
+                    label = { Text(option.label, fontSize = 11.sp) },
+                    colors = FilterChipDefaults.filterChipColors(
+                        selectedContainerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.12f),
+                        selectedLabelColor = MaterialTheme.colorScheme.primary,
+                    ),
+                )
+            }
+        }
+        if (state.categories.isNotEmpty()) {
+            Spacer(Modifier.height(6.dp))
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .horizontalScroll(rememberScrollState())
+                    .padding(horizontal = 16.dp),
+            ) {
+                FilterChip(
+                    selected = state.category == null,
+                    onClick = { onCategory(null) },
+                    label = { Text("All categories", fontSize = 11.sp) },
+                    colors = FilterChipDefaults.filterChipColors(
+                        selectedContainerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.12f),
+                        selectedLabelColor = MaterialTheme.colorScheme.primary,
+                    ),
+                )
+                state.categories.forEach { category ->
+                    FilterChip(
+                        selected = state.category == category.slug,
+                        onClick = { onCategory(category.slug) },
+                        label = { Text(category.name, fontSize = 11.sp, maxLines = 1) },
+                        colors = FilterChipDefaults.filterChipColors(
+                            selectedContainerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.12f),
+                            selectedLabelColor = MaterialTheme.colorScheme.primary,
+                        ),
+                    )
+                }
+            }
+        }
+    }
+}
+
 @Composable
 private fun SearchBody(
     state: SearchUiState,
     onLoadMore: () -> Unit,
     onRecentTap: (String) -> Unit,
+    onRemoveHistory: (String) -> Unit,
+    onClearHistory: () -> Unit,
     openPage: (pageId: String, query: String) -> Unit,
 ) {
     val listState = rememberLazyListState()
@@ -187,9 +275,68 @@ private fun SearchBody(
             item(key = "offline-banner", contentType = "banner") { SearchOfflineBanner() }
         }
         if (state.results.isEmpty()) {
+            // t282 — server history first (signed-in buyers; per-term delete
+            // + clear-all), then the device-local recents, then trending.
+            if (state.serverHistory.isNotEmpty()) {
+                item(key = "history-header", contentType = "header") {
+                    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
+                        Text(
+                            "Your search history",
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.Black,
+                            color = MaterialTheme.colorScheme.onSurface,
+                            modifier = Modifier.weight(1f),
+                        )
+                        Text(
+                            "Clear all",
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier
+                                .clickable(onClick = onClearHistory)
+                                .padding(4.dp),
+                        )
+                    }
+                }
+                items(state.serverHistory, key = { "server-hist-$it" }, contentType = { "history" }) { term ->
+                    val deleting = state.deletingTerm == term
+                    Surface(
+                        shape = RoundedCornerShape(10.dp),
+                        color = MaterialTheme.colorScheme.surfaceContainer,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable(enabled = !deleting) { onRecentTap(term) },
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(10.dp)) {
+                            Icon(Icons.Outlined.History, null, tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(16.dp))
+                            Spacer(Modifier.width(8.dp))
+                            Text(
+                                term,
+                                fontSize = 12.sp,
+                                color = MaterialTheme.colorScheme.onSurface,
+                                modifier = Modifier.weight(1f),
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
+                            )
+                            if (deleting) {
+                                CircularProgressIndicator(modifier = Modifier.size(14.dp), strokeWidth = 2.dp)
+                            } else {
+                                IconButton(onClick = { onRemoveHistory(term) }, modifier = Modifier.size(24.dp)) {
+                                    Icon(
+                                        Icons.Outlined.DeleteOutline,
+                                        "Remove \"$term\" from history",
+                                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                        modifier = Modifier.size(15.dp),
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+            }
             item(key = "recent-header", contentType = "header") {
                 Text(
-                    if (state.recent.isEmpty()) "Search the Zylod wholesale catalog" else "Recent searches",
+                    if (state.recent.isEmpty()) "Search the Zylod wholesale catalog" else "Recent searches on this device",
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Black,
                     color = MaterialTheme.colorScheme.onSurface,
@@ -210,6 +357,50 @@ private fun SearchBody(
                     }
                 }
             }
+            if (state.popular.isNotEmpty()) {
+                item(key = "popular-header", contentType = "header") {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(
+                            Icons.Outlined.LocalFireDepartment,
+                            null,
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(16.dp),
+                        )
+                        Spacer(Modifier.width(6.dp))
+                        Text(
+                            "Trending searches",
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.Black,
+                            color = MaterialTheme.colorScheme.onSurface,
+                        )
+                    }
+                }
+                item(key = "popular-chips", contentType = "chips") {
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .horizontalScroll(rememberScrollState()),
+                    ) {
+                        state.popular.forEach { term ->
+                            Surface(
+                                shape = RoundedCornerShape(50),
+                                color = MaterialTheme.colorScheme.primary.copy(alpha = 0.08f),
+                                border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.25f)),
+                                modifier = Modifier.clickable { onRecentTap(term) },
+                            ) {
+                                Text(
+                                    term,
+                                    fontSize = 12.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.primary,
+                                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
+                                )
+                            }
+                        }
+                    }
+                }
+            }
             item(key = "empty-hint", contentType = "empty") {
                 Text(
                     "Type at least one character — results stream in live from the marketplace.",
@@ -220,7 +411,12 @@ private fun SearchBody(
         } else {
             item(key = "meta", contentType = "meta") {
                 Text(
-                    "Results for \"${state.searchedQuery}\"",
+                    buildString {
+                        append("Results for \"${state.searchedQuery}\"")
+                        val activeCategory = state.categories.firstOrNull { it.slug == state.category }
+                        if (activeCategory != null) append(" · ${activeCategory.name}")
+                        append(" · ${state.sort.label.lowercase()}")
+                    },
                     fontSize = 11.sp,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )

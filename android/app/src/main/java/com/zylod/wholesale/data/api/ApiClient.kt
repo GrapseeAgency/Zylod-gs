@@ -480,4 +480,21 @@ object ApiClient {
     // rides the EXISTING rewardsApi.loyalty() call.
     fun pointsLedgerApi(baseUrl: String): PointsLedgerApi =
         cachedApi(baseUrl, "points-ledger") { it.create(PointsLedgerApi::class.java) }
+
+    // t296 — BUYER DASHBOARD (GET api/buyer/dashboard — stats/recent orders/
+    // 6-month spending/favorite suppliers/wishlist previews/recent searches/
+    // activity) behind the typed ui/screens/BuyerDashboardScreen. Same
+    // memoization + Bearer/401-refresh chain (401 renders the screen's
+    // honest sign-in CTA).
+    fun buyerDashboardApi(baseUrl: String): BuyerDashboardApi =
+        cachedApi(baseUrl, "buyer-dashboard") { it.create(BuyerDashboardApi::class.java) }
+
+    // t296 — SEARCH DISCOVERY (GET/DELETE api/search/history + GET/POST
+    // api/search/popular) behind the typed search screen's server-history
+    // and trending rails. AUTH-notes: history is Bearer-authenticated
+    // (guests 401 — the screen keeps device-local recents), the popular
+    // pair is public and ignores the header when present (SupportPublicApi
+    // convention). Same memoization + 401-refresh chain.
+    fun searchDiscoveryApi(baseUrl: String): SearchDiscoveryApi =
+        cachedApi(baseUrl, "search-discovery") { it.create(SearchDiscoveryApi::class.java) }
 }

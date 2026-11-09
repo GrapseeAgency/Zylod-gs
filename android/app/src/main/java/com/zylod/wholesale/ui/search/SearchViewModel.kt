@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.zylod.wholesale.data.api.ApiClient
+import com.zylod.wholesale.data.api.CategoryDto
 import com.zylod.wholesale.data.api.ProductDto
 import com.zylod.wholesale.data.api.ServerConfig
 import kotlinx.coroutines.CancellationException
@@ -26,11 +27,40 @@ import kotlinx.serialization.Serializable
  *
  * Live results: GET api/products?search=<q>&page=N (the web endpoint's own
  * contract) with a 300 ms debounce, keyed-dedup append and pagination guards.
+ *
+ * t282 — the web search surface's discovery rails are here too:
+ *  - SORT: the endpoint's own sortBy/sortOrder fields (search-results-page
+ *    contract: src/app/api/products/route.ts ALLOWED_SORT_FIELDS). Default
+ *    is Newest (createdAt desc) — the web route's own default; Best
+ *    selling (soldCount desc) keeps its one-tap slot.
+ *  - CATEGORY: real category chips from GET api/categories, passed as the
+ *    endpoint's category= filter (GenericCategoryPage parity).
+ *  - SERVER HISTORY: GET api/search/history for signed-in buyers
+ *    (search-home-page.tsx:62), per-term DELETE ?term= and clear-all —
+ *    guests keep the device-local recents only (the history route 401s
+ *    guests by design; the local list is the honest device-side stand-in).
+ *  - TRENDING: GET api/search/popular?limit=10 (search-home-page.tsx:77) —
+ *    public, rendered as tap-to-search chips; every explicit submit also
+ *    records through POST api/search/popular (web parity, fire-and-forget).
+ *
  * Recent searches persist under prefs "zylod_config"/"native_search_recent"
  * (owned by this VM, capped at 8). Offline: the last successful result page
  * stays mounted and the state flips `offline`; with nothing yet, the honest
  * empty state shows — a search page has nothing to fabricate.
  */
+data class SearchSort(val field: String, val order: String, val label: String) {
+    companion object {
+        /** The five REAL sort fields the endpoint accepts (ALLOWED_SORT_FIELDS). */
+        val OPTIONS = listOf(
+            SearchSort("createdAt", "desc", "Newest"),
+            SearchSort("soldCount", "desc", "Best selling"),
+            SearchSort("basePrice", "asc", "Price ↑"),
+            SearchSort("basePrice", "desc", "Price ↓"),
+            SearchSort("ratingAvg", "desc", "Top rated"),
+        )
+    }
+}
+
 data class SearchUiState(
     val query: String = "",
     val searching: Boolean = false,
@@ -42,6 +72,17 @@ data class SearchUiState(
     val canLoadMore: Boolean = false,
     val offline: Boolean = false,
     val searchedQuery: String = "",
+    // t282 — discovery rails.
+    val sort: SearchSort = SearchSort.OPTIONS.first(),
+    val category: String? = null,
+    val categories: List<CategoryDto> = emptyList(),
+    /** Server history rows (signed-in buyers) — device-local recents stay separate. */
+    val serverHistory: List<String> = emptyList(),
+    val serverHistoryLoading: Boolean = false,
+    /** Popular searches (public) — tap-to-search chips. */
+    val popular: List<String> = emptyList(),
+    /** The term currently being deleted from server history. */
+    val deletingTerm: String? = null,
 )
 
 @Serializable
@@ -53,6 +94,7 @@ class SearchViewModel(private val appContext: Context) : ViewModel() {
     val state: StateFlow<SearchUiState> = _state.asStateFlow()
 
     private var api: com.zylod.wholesale.data.api.ZylodApi? = null
+    private var discoveryApi: com.zylod.wholesale.data.api.SearchDiscoveryApi? = null
     private var debounceJob: Job? = null
     private var appendJob: Job? = null
     // t279 — the page-1 fetch job itself: submit/refresh used to relaunch
@@ -61,6 +103,123 @@ class SearchViewModel(private val appContext: Context) : ViewModel() {
     // the "shoesh" query, then loadMore appended page 2 of the NEW query onto
     // the OLD rows (a mixed list). One tracked job; relaunch cancels it.
     private var searchJob: Job? = null
+    private var discoveryLoaded = false
+
+    init {
+        // Discovery rails load once per VM (public endpoints + optional
+        // history) — never block the first keystroke on them.
+        viewModelScope.launch { loadDiscovery() }
+    }
+
+    private suspend fun loadDiscovery() {
+        if (discoveryLoaded) return
+        discoveryLoaded = true
+        try {
+            val baseUrl = ServerConfig.resolve(appContext)
+            val client = api ?: ApiClient.create(baseUrl, appContext).also { api = it }
+            val categoriesEnvelope = client.categories()
+            val cats = categoriesEnvelope.data.orEmpty()
+            _state.update { it.copy(categories = cats) }
+        } catch (ce: CancellationException) {
+            throw ce
+        } catch (e: Exception) {
+            Log.w(TAG, "search categories failed: ${e.message}")
+        }
+        try {
+            val baseUrl = ServerConfig.resolve(appContext)
+            val discovery = discoveryApi
+                ?: ApiClient.searchDiscoveryApi(baseUrl).also { discoveryApi = it }
+            val popularEnvelope = discovery.popular(limit = 10)
+            val queries = popularEnvelope.takeIf { it.success }?.data
+                .orEmpty()
+                .mapNotNull { it.effectiveQuery }
+                .distinct()
+            _state.update { it.copy(popular = queries) }
+        } catch (ce: CancellationException) {
+            throw ce
+        } catch (e: Exception) {
+            Log.w(TAG, "search popular failed: ${e.message}")
+        }
+        loadServerHistory()
+    }
+
+    /** GET api/search/history — signed-in buyers only (guests 401 by design). */
+    private fun loadServerHistory() {
+        if (com.zylod.wholesale.data.session.SessionManager.token() == null) return
+        _state.update { it.copy(serverHistoryLoading = true) }
+        viewModelScope.launch {
+            try {
+                val baseUrl = ServerConfig.resolve(appContext)
+                val discovery = discoveryApi
+                    ?: ApiClient.searchDiscoveryApi(baseUrl).also { discoveryApi = it }
+                val response = discovery.history()
+                if (response.isSuccessful) {
+                    val rows = response.body()?.takeIf { it.success }?.data.orEmpty()
+                    val queries = rows.mapNotNull { it.effectiveQuery }.distinct().take(12)
+                    _state.update { it.copy(serverHistory = queries, serverHistoryLoading = false) }
+                } else {
+                    _state.update { it.copy(serverHistoryLoading = false) }
+                }
+            } catch (ce: CancellationException) {
+                throw ce
+            } catch (e: Exception) {
+                Log.w(TAG, "search history failed: ${e.message}")
+                _state.update { it.copy(serverHistoryLoading = false) }
+            }
+        }
+    }
+
+    /** DELETE api/search/history?term= — optimistic per-row removal. */
+    fun removeServerHistory(term: String) {
+        // t280 4-a#5: same-frame double-tap guard.
+        if (_state.value.deletingTerm != null) return
+        _state.update { it.copy(deletingTerm = term) }
+        viewModelScope.launch {
+            try {
+                val baseUrl = ServerConfig.resolve(appContext)
+                val discovery = discoveryApi
+                    ?: ApiClient.searchDiscoveryApi(baseUrl).also { discoveryApi = it }
+                val response = discovery.clearHistory(term = term)
+                if (response.isSuccessful) {
+                    _state.update {
+                        it.copy(
+                            deletingTerm = null,
+                            serverHistory = it.serverHistory.filterNot { q -> q.equals(term, ignoreCase = true) },
+                        )
+                    }
+                } else {
+                    _state.update { it.copy(deletingTerm = null) }
+                }
+            } catch (ce: CancellationException) {
+                throw ce
+            } catch (_: Exception) {
+                _state.update { it.copy(deletingTerm = null) }
+            }
+        }
+    }
+
+    /** DELETE api/search/history (no term) — clear the whole server history. */
+    fun clearServerHistory() {
+        if (_state.value.deletingTerm != null) return
+        _state.update { it.copy(deletingTerm = "") }
+        viewModelScope.launch {
+            try {
+                val baseUrl = ServerConfig.resolve(appContext)
+                val discovery = discoveryApi
+                    ?: ApiClient.searchDiscoveryApi(baseUrl).also { discoveryApi = it }
+                val response = discovery.clearHistory(term = null)
+                if (response.isSuccessful) {
+                    _state.update { it.copy(deletingTerm = null, serverHistory = emptyList()) }
+                } else {
+                    _state.update { it.copy(deletingTerm = null) }
+                }
+            } catch (ce: CancellationException) {
+                throw ce
+            } catch (_: Exception) {
+                _state.update { it.copy(deletingTerm = null) }
+            }
+        }
+    }
 
     fun onQueryChange(query: String) {
         _state.update { it.copy(query = query, offline = false) }
@@ -82,8 +241,52 @@ class SearchViewModel(private val appContext: Context) : ViewModel() {
         val trimmed = query.trim()
         if (trimmed.isEmpty()) return
         rememberRecent(trimmed)
+        recordPopular(trimmed)
         searchJob?.cancel()
         searchJob = viewModelScope.launch { searchNow(trimmed) }
+    }
+
+    /**
+     * POST api/search/popular {query} — fire-and-forget trending recording
+     * (the web's public route; failures never disturb the search).
+     */
+    private fun recordPopular(query: String) {
+        viewModelScope.launch {
+            try {
+                val baseUrl = ServerConfig.resolve(appContext)
+                val discovery = discoveryApi
+                    ?: ApiClient.searchDiscoveryApi(baseUrl).also { discoveryApi = it }
+                discovery.recordPopular(
+                    com.zylod.wholesale.data.api.PopularSearchRecordBody(query = query),
+                )
+            } catch (ce: CancellationException) {
+                throw ce
+            } catch (_: Exception) {
+                // fire-and-forget — web parity
+            }
+        }
+    }
+
+    /** Sort chip tap — re-runs the live search under the new sort. */
+    fun setSort(sort: SearchSort) {
+        if (_state.value.sort == sort) return
+        _state.update { it.copy(sort = sort) }
+        val q = _state.value.searchedQuery.ifBlank { _state.value.query }.trim()
+        if (q.isNotEmpty()) {
+            searchJob?.cancel()
+            searchJob = viewModelScope.launch { searchNow(q) }
+        }
+    }
+
+    /** Category chip tap — re-runs the live search under the new filter. */
+    fun setCategory(category: String?) {
+        if (_state.value.category == category) return
+        _state.update { it.copy(category = category) }
+        val q = _state.value.searchedQuery.ifBlank { _state.value.query }.trim()
+        if (q.isNotEmpty()) {
+            searchJob?.cancel()
+            searchJob = viewModelScope.launch { searchNow(q) }
+        }
     }
 
     fun loadMore() {
@@ -98,6 +301,9 @@ class SearchViewModel(private val appContext: Context) : ViewModel() {
         if (q.isNotBlank()) {
             searchJob?.cancel()
             searchJob = viewModelScope.launch { searchNow(q) }
+        } else {
+            discoveryLoaded = false
+            viewModelScope.launch { loadDiscovery() }
         }
     }
 
@@ -110,7 +316,15 @@ class SearchViewModel(private val appContext: Context) : ViewModel() {
         try {
             val baseUrl = ServerConfig.resolve(appContext)
             val client = api ?: ApiClient.create(baseUrl, appContext).also { api = it }
-            val envelope = client.products(search = query, page = pageNumber)
+            val sort = _state.value.sort
+            val category = _state.value.category
+            val envelope = client.products(
+                sortBy = sort.field,
+                sortOrder = sort.order,
+                search = query,
+                page = pageNumber,
+                category = category,
+            )
             envelope.pagination?.let {
                 _state.update { st -> st.copy(page = it.page, totalPages = it.totalPages) }
             }
