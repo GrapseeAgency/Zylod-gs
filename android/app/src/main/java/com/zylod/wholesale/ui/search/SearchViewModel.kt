@@ -130,7 +130,10 @@ class SearchViewModel(private val appContext: Context) : ViewModel() {
             val discovery = discoveryApi
                 ?: ApiClient.searchDiscoveryApi(baseUrl).also { discoveryApi = it }
             val popularEnvelope = discovery.popular(limit = 10)
-            val queries = popularEnvelope.takeIf { it.success }?.data
+            // t297-fix: unwrap the retrofit Response FIRST — .takeIf { it.success }
+            // on the raw Response was an unresolved reference (Response has no
+            // 'success' member); the body's envelope owns the flag.
+            val queries = popularEnvelope.body()?.takeIf { it.success }?.data
                 .orEmpty()
                 .mapNotNull { it.effectiveQuery }
                 .distinct()

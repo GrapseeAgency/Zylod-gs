@@ -481,6 +481,25 @@ private fun QaContent(
     vm: ProductQaViewModel,
     openPage: (pageId: String, query: String) -> Unit,
 ) {
+    // t297-fix: hoisted OUT of the LazyColumn builder lambda — LazyListScope
+    // is not a @Composable context, so remember() there is a hard compile
+    // error ("@Composable invocations are only allowed from a @Composable
+    // function"). Same computation, now in the composable body.
+    val visible = remember(state.qas, state.filter, state.searchText) {
+        val text = state.searchText.trim()
+        state.qas.filter { qa ->
+            val matchesFilter = when (state.filter) {
+                QaFilter.ALL -> true
+                QaFilter.ANSWERED -> !qa.answer.isNullOrBlank()
+                QaFilter.UNANSWERED -> qa.answer.isNullOrBlank()
+            }
+            val matchesText = text.isEmpty() ||
+                qa.question.contains(text, ignoreCase = true) ||
+                qa.answer.orEmpty().contains(text, ignoreCase = true)
+            matchesFilter && matchesText
+        }
+    }
+
     LazyColumn(
         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 12.dp),
         verticalArrangement = Arrangement.spacedBy(10.dp),
@@ -585,21 +604,6 @@ private fun QaContent(
                 ),
                 modifier = Modifier.fillMaxWidth(),
             )
-        }
-
-        val visible = remember(state.qas, state.filter, state.searchText) {
-            val text = state.searchText.trim()
-            state.qas.filter { qa ->
-                val matchesFilter = when (state.filter) {
-                    QaFilter.ALL -> true
-                    QaFilter.ANSWERED -> !qa.answer.isNullOrBlank()
-                    QaFilter.UNANSWERED -> qa.answer.isNullOrBlank()
-                }
-                val matchesText = text.isEmpty() ||
-                    qa.question.contains(text, ignoreCase = true) ||
-                    qa.answer.orEmpty().contains(text, ignoreCase = true)
-                matchesFilter && matchesText
-            }
         }
 
         if (visible.isEmpty()) {

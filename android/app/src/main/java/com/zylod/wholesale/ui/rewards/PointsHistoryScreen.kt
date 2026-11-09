@@ -296,13 +296,18 @@ private fun LedgerRow(row: PointsLedgerRowDto) {
     }
 }
 
-/** The web's en-GB ledger timestamp shape: "12 Nov 2026, 14:05". */
+/** The web's en-GB ledger timestamp shape: "12 Nov 2026, 14:05".
+ *  t297-fix: java.text stack (API-24-safe) — java.time.Instant here was a
+ *  guaranteed NoClassDefFoundError on Android 7.x (minSdk 24, no
+ *  coreLibraryDesugaring); the parser stays on the shared UTC convention. */
 internal fun formatLedgerDate(iso: String): String = runCatching {
-    val instant = java.time.Instant.parse(iso)
-    val formatter = java.time.format.DateTimeFormatter.ofPattern("d MMM yyyy, HH:mm")
-        .withZone(java.time.ZoneOffset.UTC)
-    formatter.format(instant)
-}.getOrDefault("")
+    val cut = iso.substringBefore('.').substringBefore('Z').trim()
+    if (cut.length < 19) return iso
+    val parser = java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", java.util.Locale.US)
+    parser.timeZone = java.util.TimeZone.getTimeZone("UTC")
+    val parsed = parser.parse(cut) ?: return iso
+    java.text.SimpleDateFormat("d MMM yyyy, HH:mm", java.util.Locale.US).format(java.util.Date(parsed.time))
+}.getOrDefault(iso)
 
 @Composable
 private fun NeedsAuthState(openPage: (pageId: String, query: String) -> Unit) {

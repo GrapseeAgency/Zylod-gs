@@ -46,7 +46,27 @@ jobs:
           cd android
           # Embed the short commit SHA into versionName so an installed APK
           # can be traced to its exact commit on-device.
-          ./gradlew :app:assembleDebug "-PcommitSuffix=${GITHUB_SHA::7}" --stacktrace
+          # t297: tee the output — the failure-diagnosis step below turns the
+          # compiler's "e:" lines into ::error:: annotations, which the public
+          # check-runs API exposes (raw logs are auth-gated; the sandbox has
+          # no local Android SDK, so these annotations are how a broken build
+          # gets fixed without a blind hunt).
+          set -o pipefail
+          ./gradlew :app:assembleDebug "-PcommitSuffix=${GITHUB_SHA::7}" --stacktrace 2>&1 | tee debug-build.log
+
+      - name: Surface compile errors as annotations (on failure)
+        if: failure()
+        working-directory: android
+        run: |
+          if [ -f debug-build.log ]; then
+            grep -E "^e: |error: |Caused by: |Unresolved reference|@Composable invocations" debug-build.log | head -50 | while IFS= read -r line; do
+              echo "::error::$line"
+            done
+            echo "### Kotlin compile errors (first 50)" >> "$GITHUB_STEP_SUMMARY"
+            '```' >> "$GITHUB_STEP_SUMMARY" || true
+            grep -E "^e: |error: " debug-build.log | head -50 >> "$GITHUB_STEP_SUMMARY" || true
+            '```' >> "$GITHUB_STEP_SUMMARY" || true
+          fi
 
       # t229h: the RELEASE APK is the package users actually update in place
       # (com.zylod.wholesale — the debug variant installs as a SEPARATE .debug

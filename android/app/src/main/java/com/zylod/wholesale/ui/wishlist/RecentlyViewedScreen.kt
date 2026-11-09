@@ -340,13 +340,24 @@ private fun HistoryRow(
     }
 }
 
-/** The web save-for-later page's loose time-ago vocabulary, applied to views. */
+/** The web save-for-later page's loose time-ago vocabulary, applied to views.
+ *  t297-fix: java.text stack (API-24-safe) — java.time.Instant/ChronoUnit
+ *  here would NoClassDefFoundError on Android 7.x (minSdk 24, no
+ *  coreLibraryDesugaring); days are computed from the UTC-parsed epoch. */
 private fun relativeDays(iso: String): String {
-    val viewed = runCatching { java.time.Instant.parse(iso) }.getOrNull() ?: return "recently"
-    val days = java.time.temporal.ChronoUnit.DAYS.between(viewed, java.time.Instant.now())
+    val days = runCatching {
+        val cut = iso.substringBefore('.').substringBefore('Z').trim()
+        if (cut.length < 19) return "recently"
+        val parser = java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", java.util.Locale.US)
+        parser.timeZone = java.util.TimeZone.getTimeZone("UTC")
+        val parsed = parser.parse(cut) ?: return "recently"
+        val diffMs = System.currentTimeMillis() - parsed.time
+        (diffMs / 86_400_000L).toInt()
+    }.getOrDefault(-1)
     return when {
+        days < 0 -> "recently"
         days <= 0 -> "today"
-        days == 1L -> "yesterday"
+        days == 1 -> "yesterday"
         else -> "$days days ago"
     }
 }
