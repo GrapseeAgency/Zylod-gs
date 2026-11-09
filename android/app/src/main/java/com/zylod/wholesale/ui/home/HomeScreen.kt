@@ -69,8 +69,10 @@ import kotlin.math.roundToInt
 /**
  * t233 page metadata — the Kotlin-side registry entry for the SPA pageId
  * "home" (src/lib/page-loader.ts). The home tab root renders THIS screen:
- * banners + stats + deals + categories + an infinitely appending featured
- * grid, all native Compose.
+ * the t297 front door (search bar with live typeahead + tool chips + the
+ * unread-notification bell + the Quick Access rail), then banners + stats
+ * + deals + categories + an infinitely appending featured grid, all native
+ * Compose.
  */
 data object HomePageMeta : NativePageMeta() {
     override val pageId = "home"
@@ -79,10 +81,19 @@ data object HomePageMeta : NativePageMeta() {
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null // Home composes its own five endpoints in HomeViewModel
     override val summary =
-        "The Zylod wholesale marketplace home: live banners, marketplace stats, hot deals, " +
+        "The Zylod wholesale marketplace home: live typeahead search (GET api/search/suggestions) " +
+            "with the web's six search-tool chips, the real unread-notification bell, the " +
+            "Quick Access rail + All-Services sheet, live banners, marketplace stats, hot deals, " +
             "top categories and an endlessly appending featured-product grid."
     override val tabHint = "home"
     override val bullets = listOf(
+        "Search bar runs the live typeahead (GET api/search/suggestions?q=&limit=8, 300 ms " +
+            "debounce) — the web home's own endpoint; suggestion rows navigate to real pages.",
+        "Tool chips (Photo/QR/Barcode/Advanced/RFQ/Voice) open the native registry pages the " +
+            "web's TOOL_PAGE table maps to.",
+        "The bell shows the signed-in buyer's real unread count from GET api/notifications.",
+        "Quick Access mirrors the web's PRIMARY_LINKS + the All-Services sheet (MORE_LINKS) — " +
+            "every tile a real registry pageId.",
         "Banners come from the real banners table (GET api/banners?position=home_top).",
         "Featured grid appends page by page from GET api/products — smooth, keyed, no jank.",
         "Offline, the last saved home renders from the device cache.",
@@ -152,11 +163,15 @@ private fun HomeContent(
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         item(key = "brand", contentType = "header") {
-            Text(
-                "Zylod",
-                fontSize = 24.sp,
-                fontWeight = FontWeight.Black,
-                color = MaterialTheme.colorScheme.primary,
+            HomeHeaderRow(unread = state.unreadNotifications, openPage = openPage)
+        }
+        item(key = "search", contentType = "search") {
+            HomeSearchSection(
+                query = state.searchQuery,
+                suggestions = state.suggestions,
+                loading = state.suggestionsLoading,
+                onQueryChange = vm::onHomeSearchQueryChange,
+                openPage = openPage,
             )
         }
         if (state.offline) {
@@ -167,6 +182,7 @@ private fun HomeContent(
                 BannerCard(banner, openPage)
             }
         }
+        item(key = "quick-access", contentType = "quick") { HomeQuickAccess(openPage) }
         state.stats?.let { stats ->
             item(key = "stats", contentType = "stats") { StatsStrip(stats) }
         }
@@ -571,7 +587,7 @@ private fun HomeErrorState(message: String, onRetry: () -> Unit) {
     }
 }
 
-private fun resolveUrl(raw: String?): String? {
+internal fun resolveUrl(raw: String?): String? {
     if (raw.isNullOrBlank()) return null
     if (raw.startsWith("http")) return raw
     val base = com.zylod.wholesale.data.api.ServerConfig.cached(com.zylod.wholesale.ZylodApp.instance) ?: return null

@@ -11,13 +11,16 @@ import com.zylod.wholesale.data.api.BannersData
 import com.zylod.wholesale.data.api.CategoryDto
 import com.zylod.wholesale.data.api.DealsData
 import com.zylod.wholesale.data.api.ProductDto
+import com.zylod.wholesale.data.api.SearchSuggestionsApi
 import com.zylod.wholesale.data.api.ServerConfig
 import com.zylod.wholesale.data.api.StatsDto
 import com.zylod.wholesale.data.api.ZylodApi
+import com.zylod.wholesale.ui.notifications.NotificationsApi
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -43,6 +46,16 @@ import kotlinx.serialization.Serializable
  * prefs "zylod_config"/"native_home_cache" — and the state flips `offline`
  * so the screen shows its saved banner. Nothing renderable at all → honest
  * error + Retry. Never a white screen.
+ *
+ * t297 — FRONT-DOOR PARITY additions: the home search bar's LIVE TYPEAHEAD
+ * (GET api/search/suggestions?q=&limit=8, 300 ms debounce — the exact
+ * endpoint + cadence mobile-search-bar.tsx:79-141 runs) mapped into
+ * [HomeSuggestion] rows in the web's own display order (fallback terms →
+ * products → categories → suppliers, capped at 12), and the signed-in
+ * buyer's REAL unread-notification count riding the same first-page
+ * fan-out (GET api/notifications unreadCount; guests skip the call — the
+ * bell renders plain). A stale typeahead answer (one whose query no longer
+ * matches the field text) is discarded, never rendered.
  */
 data class HomeUiState(
     val loading: Boolean = true,
@@ -57,6 +70,11 @@ data class HomeUiState(
     val canLoadMore: Boolean = false,
     /** Visible rows are SAVED data, not a live fetch. */
     val offline: Boolean = false,
+    // t297 — front-door parity state.
+    val searchQuery: String = "",
+    val suggestions: List<HomeSuggestion> = emptyList(),
+    val suggestionsLoading: Boolean = false,
+    val unreadNotifications: Int = 0,
 )
 
 @Serializable
@@ -74,10 +92,12 @@ class HomeViewModel(private val appContext: Context) : ViewModel() {
     val state: StateFlow<HomeUiState> = _state.asStateFlow()
 
     private var api: ZylodApi? = null
+    private var suggestionsApi: SearchSuggestionsApi? = null
     private var page = 0
     private var totalPages = 1
 
     private var refreshJob: kotlinx.coroutines.Job? = null
+    private var suggestionsJob: kotlinx.coroutines.Job? = null
 
     /** Entry pull / retry. Silent refresh when data is already on screen.
      *  t279 — the fetch job is tracked: rotation re-entry (LaunchedEffect
@@ -97,6 +117,69 @@ class HomeViewModel(private val appContext: Context) : ViewModel() {
         if (page == 0 || page >= totalPages) return
         _state.update { it.copy(loadingMore = true) }
         viewModelScope.launch { fetchPage(page + 1, replace = false) }
+    }
+
+    /**
+     * t297 — the home search bar's LIVE TYPEAHEAD. 300 ms debounce (the
+     * web's own cadence), prior job canceled on every keystroke, stale
+     * answers discarded. Blank input clears instantly — no fetch, no
+     * fabricated rows.
+     */
+    fun onHomeSearchQueryChange(query: String) {
+        _state.update { it.copy(searchQuery = query) }
+        suggestionsJob?.cancel()
+        if (query.isBlank()) {
+            _state.update { it.copy(suggestions = emptyList(), suggestionsLoading = false) }
+            return
+        }
+        suggestionsJob = viewModelScope.launch {
+            delay(300)
+            fetchSuggestions(query.trim())
+        }
+    }
+
+    private suspend fun fetchSuggestions(query: String) {
+        _state.update { it.copy(suggestionsLoading = true) }
+        try {
+            val baseUrl = ServerConfig.resolve(appContext)
+            val client = suggestionsApi
+                ?: ApiClient.searchSuggestionsApi(baseUrl).also { suggestionsApi = it }
+            val response = client.suggestions(query, limit = 8)
+            val data = response.body()?.takeIf { it.success }?.data
+            if (data == null) {
+                _state.update { it.copy(suggestionsLoading = false) }
+                return
+            }
+            // The web's display order (mobile-search-bar.tsx:84-121):
+            // fallback terms → products → categories → suppliers, capped.
+            val mapped = buildList {
+                data.fallbackSuggestions.filter { it.isNotBlank() }.forEach { add(HomeSuggestion.Term(it)) }
+                data.products.forEach { p ->
+                    val id = p.effectiveId ?: return@forEach
+                    val name = p.effectiveName ?: return@forEach
+                    add(HomeSuggestion.Product(id, name, p.basePrice, p.thumbnailUrl, p.category?.name))
+                }
+                data.categories.forEach { c ->
+                    val id = c.effectiveId ?: return@forEach
+                    val name = c.effectiveName ?: return@forEach
+                    add(HomeSuggestion.Category(id, name, c.slug))
+                }
+                data.suppliers.forEach { s ->
+                    val id = s.effectiveId ?: return@forEach
+                    val name = s.effectiveName ?: return@forEach
+                    add(HomeSuggestion.Supplier(id, name, s.ratingAvg))
+                }
+            }.take(12)
+            // Stale-answer guard: a slower earlier answer must never paint
+            // over the rows the LATEST field text asked for.
+            if (_state.value.searchQuery.trim() != query) return
+            _state.update { it.copy(suggestions = mapped, suggestionsLoading = false) }
+        } catch (ce: CancellationException) {
+            throw ce
+        } catch (e: Exception) {
+            Log.w(TAG, "home suggestions failed: ${e.message}")
+            _state.update { it.copy(suggestionsLoading = false) }
+        }
     }
 
     private suspend fun <T> safeCall(block: suspend () -> T): T? =
@@ -120,6 +203,7 @@ class HomeViewModel(private val appContext: Context) : ViewModel() {
             var products: ApiEnvelope<List<ProductDto>>? = null
             var productTotal: ApiEnvelope<kotlinx.serialization.json.JsonElement>? = null
             var supplierTotal: ApiEnvelope<kotlinx.serialization.json.JsonElement>? = null
+            var unread: Int = 0
 
             coroutineScope {
                 val b = async { safeCall { client.banners() } }
@@ -128,12 +212,27 @@ class HomeViewModel(private val appContext: Context) : ViewModel() {
                 val p = async { safeCall { client.products(page = 1) } }
                 val pt = async { safeCall { client.productCount() } }
                 val st = async { safeCall { client.supplierCount() } }
+                // t297 — the bell's unread count rides the same fan-out;
+                // guests (no token) skip the call — the badge simply never
+                // renders for them, exactly like the web (401 → count 0).
+                val notif = if (com.zylod.wholesale.data.session.SessionManager.token() != null) {
+                    async {
+                        safeCall {
+                            ApiClient.retrofit(baseUrl)
+                                .create(NotificationsApi::class.java)
+                                .notifications(limit = 1)
+                        }
+                    }
+                } else {
+                    null
+                }
                 banners = b.await()
                 categories = c.await()
                 deals = d.await()
                 products = p.await()
                 productTotal = pt.await()
                 supplierTotal = st.await()
+                unread = notif?.await()?.body()?.unreadCount ?: 0
             }
 
             if (categories == null && products == null) {
@@ -167,6 +266,10 @@ class HomeViewModel(private val appContext: Context) : ViewModel() {
                 stats = freshStats,
                 canLoadMore = page < totalPages,
                 offline = false,
+                searchQuery = _state.value.searchQuery,
+                suggestions = _state.value.suggestions,
+                suggestionsLoading = _state.value.suggestionsLoading,
+                unreadNotifications = unread,
             )
             persistSnapshot(freshBanners, freshCategories, freshDeals, freshProducts, freshStats)
         } catch (ce: CancellationException) {

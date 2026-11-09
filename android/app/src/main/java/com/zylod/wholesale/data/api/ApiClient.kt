@@ -497,4 +497,11 @@ object ApiClient {
     // convention). Same memoization + 401-refresh chain.
     fun searchDiscoveryApi(baseUrl: String): SearchDiscoveryApi =
         cachedApi(baseUrl, "search-discovery") { it.create(SearchDiscoveryApi::class.java) }
+
+    // t297 — LIVE SEARCH TYPEAHEAD (GET api/search/suggestions?q=&limit=)
+    // behind the home screen's search bar dropdown — the route the web home
+    // (mobile-search-bar.tsx:79) debounces on every keystroke. PUBLIC route
+    // (no auth); same memoization + shared Bearer/401-refresh client.
+    fun searchSuggestionsApi(baseUrl: String): SearchSuggestionsApi =
+        cachedApi(baseUrl, "search-suggestions") { it.create(SearchSuggestionsApi::class.java) }
 }
