@@ -132,7 +132,12 @@ fun HomeScreen(
                 CircularProgressIndicator()
             }
             state.error != null -> HomeErrorState(message = state.error.orEmpty(), onRetry = vm::refresh)
-            else -> HomeContent(state = state, onLoadMore = vm::loadMore, openPage = openPage)
+            else -> HomeContent(
+                state = state,
+                onSearchQueryChange = vm::onHomeSearchQueryChange,
+                onLoadMore = vm::loadMore,
+                openPage = openPage,
+            )
         }
     }
 }
@@ -140,6 +145,7 @@ fun HomeScreen(
 @Composable
 private fun HomeContent(
     state: HomeUiState,
+    onSearchQueryChange: (String) -> Unit,
     onLoadMore: () -> Unit,
     openPage: (pageId: String, query: String) -> Unit,
 ) {
@@ -170,7 +176,7 @@ private fun HomeContent(
                 query = state.searchQuery,
                 suggestions = state.suggestions,
                 loading = state.suggestionsLoading,
-                onQueryChange = vm::onHomeSearchQueryChange,
+                onQueryChange = onSearchQueryChange,
                 openPage = openPage,
             )
         }

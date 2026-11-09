@@ -25,7 +25,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.CloudOff
 import androidx.compose.material.icons.outlined.History
-import androidx.compose.material.icons.outlined.Package
+import androidx.compose.material.icons.outlined.Inventory2
 import androidx.compose.material.icons.outlined.AccountBalanceWallet
 import androidx.compose.material.icons.outlined.ReceiptLong
 import androidx.compose.material.icons.outlined.Savings
@@ -328,7 +328,7 @@ private fun BuyerDashboardContent(
                 Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                     StatCard(
                         modifier = Modifier.weight(1f),
-                        icon = Icons.Outlined.Package,
+                        icon = Icons.Outlined.Inventory2,
                         label = "Wishlist items",
                         value = (stats?.wishlistCount ?: 0).toString(),
                     )
@@ -591,7 +591,7 @@ private fun DashboardOrderRow(
                         modifier = Modifier.fillMaxSize(),
                     )
                 } else {
-                    Icon(Icons.Outlined.Package, null, tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(20.dp))
+                    Icon(Icons.Outlined.Inventory2, null, tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(20.dp))
                 }
             }
             Spacer(Modifier.width(10.dp))
@@ -696,7 +696,7 @@ private fun WishlistPreviewTile(
                         modifier = Modifier.fillMaxSize(),
                     )
                 } else {
-                    Icon(Icons.Outlined.Package, null, tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(22.dp))
+                    Icon(Icons.Outlined.Inventory2, null, tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(22.dp))
                 }
             }
             Column(Modifier.padding(8.dp)) {
@@ -728,7 +728,7 @@ private fun WishlistPreviewTile(
 
 @Composable
 private fun ActivityRow(activity: com.zylod.wholesale.data.api.BuyerRecentActivityDto) {
-    val icon = if (activity.type == "wishlist") Icons.Outlined.Package else Icons.Outlined.TrendingUp
+    val icon = if (activity.type == "wishlist") Icons.Outlined.Inventory2 else Icons.Outlined.TrendingUp
     Surface(
         shape = RoundedCornerShape(12.dp),
         color = MaterialTheme.colorScheme.surfaceContainer,

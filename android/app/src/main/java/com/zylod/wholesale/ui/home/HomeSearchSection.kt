@@ -47,7 +47,7 @@ import androidx.compose.material.icons.outlined.LocalOffer
 import androidx.compose.material.icons.outlined.LocalShipping
 import androidx.compose.material.icons.outlined.Mic
 import androidx.compose.material.icons.outlined.Notifications
-import androidx.compose.material.icons.outlined.Package
+import androidx.compose.material.icons.outlined.Inventory2
 import androidx.compose.material.icons.outlined.Public
 import androidx.compose.material.icons.outlined.QrCode2
 import androidx.compose.material.icons.outlined.RequestQuote
@@ -59,6 +59,7 @@ import androidx.compose.material.icons.outlined.TrendingUp
 import androidx.compose.material.icons.outlined.Tune
 import androidx.compose.material.icons.outlined.VerifiedUser
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -468,7 +469,7 @@ private fun SuggestionLeading(suggestion: HomeSuggestion, context: android.conte
                     )
                 } else {
                     Icon(
-                        Icons.Outlined.Package,
+                        Icons.Outlined.Inventory2,
                         null,
                         tint = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.size(16.dp),
@@ -483,6 +484,7 @@ private fun SuggestionLeading(suggestion: HomeSuggestion, context: android.conte
 }
 
 /** The web's Quick Access card: primary rail + "+12 More" All-Services sheet. */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeQuickAccess(openPage: (pageId: String, query: String) -> Unit) {
     var sheetOpen by remember { mutableStateOf(false) }

@@ -17,7 +17,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
-import androidx.compose.material.icons.outlined.Coins
+import androidx.compose.material.icons.outlined.WorkspacePremium
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -125,7 +125,7 @@ fun PointsDetailScreen(
                                 .size(40.dp)
                                 .background(warning.copy(alpha = 0.12f), RoundedCornerShape(14.dp)),
                         ) {
-                            Icon(Icons.Outlined.Coins, null, tint = warning, modifier = Modifier.size(20.dp))
+                            Icon(Icons.Outlined.WorkspacePremium, null, tint = warning, modifier = Modifier.size(20.dp))
                         }
                         Spacer(Modifier.width(10.dp))
                         Column {
