@@ -42,7 +42,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.BorderStroke
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
@@ -138,6 +138,7 @@ private fun BalanceContent(
     offline: Boolean,
     onOpenWallet: () -> Unit,
 ) {
+    val ledger = remember(balance) { ledgerRows(balance) }
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 12.dp),
@@ -182,7 +183,6 @@ private fun BalanceContent(
                 modifier = Modifier.padding(top = 6.dp),
             )
         }
-        val ledger = remember(balance) { ledgerRows(balance) }
         items(count = ledger.size, key = { ledger[it].first }, contentType = { "ledger-row" }) { index ->
             val (label, value) = ledger[index]
             LedgerRow(label = label, value = value)
