@@ -1,6 +1,7 @@
 package com.zylod.wholesale.ui.categories
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -480,10 +481,10 @@ private fun CategoryProductCard(
     val url = remember(product.id) { resolveProductImage(product) }
 
     Card(
-        onClick = onOpen,
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
+        modifier = Modifier.clickable(onClick = onOpen),
     ) {
         Column {
             Box(
