@@ -1,116 +1,56 @@
 package com.zylod.wholesale.ui.screens
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.ArrowBack
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.sp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.zylod.wholesale.ui.pages.NativePageBody
 import com.zylod.wholesale.ui.pages.NativePageKind
 import com.zylod.wholesale.ui.pages.NativePageLink
 import com.zylod.wholesale.ui.pages.NativePageMeta
-import com.zylod.wholesale.ui.pages.NativePageViewModel
+import com.zylod.wholesale.ui.search.SearchHistoryScreen as TypedSearchHistoryScreen
 
 /**
  * t233 — NATIVE Kotlin screen for the SPA pageId "trending-searches"
  * (src/lib/page-loader.ts registry entry, now owned by Compose — the
  * WebView is fallback-only for unregistered ids).
  *
- * Live data: GET api/products?limit=20&page=1 through NativePageRepository, cached on-device for offline.
-"Trending Searches — find anything across the Zylod wholesale marketplace. Content streams live from the Zylod API and renders through the shared native page model."
+ * t301 — the curated-metadata body is GONE: this pageId is now owned by the
+ * NEW typed ui/search implementation. The web serves this id with the
+ * popular-searches-page component (chunk-search.ts), so the native row is a
+ * thin delegation to the shared [TypedSearchHistoryScreen] (pageId-keyed
+ * VM, Popular mode) — the REAL public trending rail: GET
+ * api/search/popular?limit=40 sliced to the page's own 30, category chips
+ * filtered from the rows' real category values, tap → search-results. The
+ * meta object below keeps its registry identity and the NativePageRegistry
+ * composable signature is unchanged.
  */
 data object TrendingSearchesPageMeta : NativePageMeta() {
     override val pageId = "trending-searches"
     override val title = "Trending Searches"
     override val category = "Search & Navigation"
-    override val kind = NativePageKind.PRODUCTS
-    override val endpoint: String? = "api/products?limit=20&page=1"
-    override val summary = "Trending Searches — find anything across the Zylod wholesale marketplace. Content streams live from the Zylod API and renders through the shared native page model."
-    override val tabHint = ""
+    override val kind = NativePageKind.CONTENT
+    override val endpoint: String? = null
+    override val summary = "Trending Searches — the web serves this id with the popular-searches-page component, so the native row renders the same public rail: GET api/search/popular?limit=40 (sliced to 30), category chips from the rows' own categories, tap → search-results."
+    override val tabHint = "search"
     override val bullets = listOf(
-        "Live data renders from the Zylod API when an endpoint feeds this page.",
+        "Real trends — the platform's own popularSearches rows, never fabricated.",
         "Offline-safe: the last-saved payload renders first — never a white screen.",
         "Native ownership: this Kotlin screen owns the trending-searches pageId via RouteOwnership.",
     )
     override val related = listOf(
-        NativePageLink("search-results", "Search Results"),
-        NativePageLink("category-browser", "Category Browser"),
-        NativePageLink("all-products", "All Products"),
+        NativePageLink("search", "Search"),
+        NativePageLink("popular-searches", "Popular Searches"),
+        NativePageLink("search-history", "Search History"),
     )
 }
 
 /**
- * Real themed Compose screen: native top bar (back arrow pops the back
- * stack toward Home), sections driven by the shared [NativePageData] model
- * through [NativePageBody] — live data when the endpoint feeds it, the
- * device-saved cache offline, curated Kotlin metadata otherwise, with a
- * working retry state. Stable keys inside the shared renderer.
+ * Delegation only — the shared [TypedSearchHistoryScreen] owns the
+ * rendering and the wire calls; this file keeps the registry-facing
+ * signature.
  */
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TrendingSearchesScreen(
     onBack: (() -> Unit)?,
     openPage: (pageId: String, query: String) -> Unit,
     query: String,
 ) {
-    val context = LocalContext.current
-    val vm: NativePageViewModel = viewModel(key = "native-page-trending-searches") {
-        NativePageViewModel(context.applicationContext, TrendingSearchesPageMeta)
-    }
-    val state by vm.state.collectAsStateWithLifecycle()
-    LaunchedEffect(Unit) { vm.refresh(query) }
-
-    Scaffold(
-        containerColor = MaterialTheme.colorScheme.background,
-        topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        "Trending Searches",
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Black,
-                        color = MaterialTheme.colorScheme.primary,
-                    )
-                },
-                navigationIcon = {
-                    if (onBack != null) {
-                        IconButton(onClick = onBack) {
-                            Icon(
-                                Icons.AutoMirrored.Outlined.ArrowBack,
-                                "Go back",
-                                tint = MaterialTheme.colorScheme.onSurface,
-                            )
-                        }
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background),
-            )
-        },
-    ) { padding ->
-        Box(Modifier.fillMaxSize().padding(padding)) {
-            NativePageBody(
-                meta = TrendingSearchesPageMeta,
-                state = state,
-                onRetry = { vm.refresh() },
-                openPage = openPage,
-            )
-        }
-    }
+    TypedSearchHistoryScreen(pageId = "trending-searches", onBack = onBack, openPage = openPage, query = query)
 }
