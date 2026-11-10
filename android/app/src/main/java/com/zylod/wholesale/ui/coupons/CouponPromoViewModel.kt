@@ -333,8 +333,16 @@ class CouponPromoViewModel(private val appContext: Context) : ViewModel() {
 /**
  * On-device saved campaigns — the SAME prefs file the rest of the native
  * shell uses (zylod_config), under the key "native_coupon_promo_cache".
- * Payload = the last successful campaign rail.
+ * Payload = the last successful campaign rail (domain rows, not wire DTOs —
+ * CouponsCacheEnvelope doctrine), so the offline render is consistent with
+ * the online one.
  */
+@kotlinx.serialization.Serializable
+data class CouponPromoCacheEnvelope(
+    val savedAt: Long = 0L,
+    val campaigns: List<PlatformCoupon> = emptyList(),
+)
+
 object CouponPromoCacheStore {
     private const val TAG = "ZylodCouponPromo"
     private const val PREFS = "zylod_config"
