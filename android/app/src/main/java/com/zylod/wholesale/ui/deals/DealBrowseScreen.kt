@@ -409,7 +409,7 @@ private fun DealBrowseCard(
                                 .crossfade(200)
                                 .build()
                         },
-                        contentDescription = deal.deal.effectiveName,
+                        contentDescription = deal.deal.productName,
                         placeholder = placeholder,
                         error = placeholder,
                         contentScale = ContentScale.Fit,
@@ -465,7 +465,7 @@ private fun DealBrowseCard(
 
             Column(Modifier.padding(10.dp)) {
                 Text(
-                    deal.deal.effectiveName ?: "Deal product",
+                    deal.deal.productName ?: "Deal product",
                     fontSize = 12.sp,
                     fontWeight = FontWeight.Medium,
                     color = MaterialTheme.colorScheme.onSurface,
@@ -543,7 +543,7 @@ data class DealBrowseDeal(
 )
 
 private fun resolveDealImage(deal: DealItemDto): String? {
-    val raw = deal.effectiveImage ?: return null
+    val raw = deal.productThumbnail ?: return null
     if (raw.startsWith("http")) return raw
     val base = com.zylod.wholesale.data.api.ServerConfig.cached(com.zylod.wholesale.ZylodApp.instance) ?: return null
     return base.trimEnd('/') + raw
