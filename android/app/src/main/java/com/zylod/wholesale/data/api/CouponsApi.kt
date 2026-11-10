@@ -25,6 +25,16 @@ import retrofit2.http.Query
  *    coupon into the vault. Body: { couponId?, code? }. 201 returns the
  *    created userCoupons row as data; 401 signed out; 403 a voucher bound to
  *    another buyer; 409 already collected or usage limit reached.
+ *  - GET  api/coupons/earn  (coupons/earn/route.ts)  the Task 111 reward-tasks
+ *    rail. PUBLIC route: guests get the raw active task rows; a signed-in
+ *    buyer's rows additionally carry `claimed` (this buyer already earned
+ *    the task) and `progress` (the server's REAL proof count vs the target —
+ *    orders / reviews / wishlists / check-ins counted server-side).
+ *  - POST api/coupons/earn  (coupons/earn/route.ts POST) claim a task
+ *    reward. Body: { taskId }. 201 returns the created voucher as data (the
+ *    exact userCoupons shape the vault renders); 403 arrives with the
+ *    server's honest shortfall wording; 409 "already claimed"; 401 signed
+ *    out. One claim per buyer per task — forever (the server enforces it).
  *  - GET  api/rewards        (rewards/route.ts)       loyalty points
  *    balance, tier and next-tier progress. Buyer-only (401 otherwise).
  *
@@ -69,6 +79,22 @@ interface CouponsApi {
     /** GET /api/rewards — loyalty points balance + tier (buyer-only). */
     @GET("api/rewards")
     suspend fun rewards(): Response<ApiEnvelope<RewardsDataDto>>
+
+    /**
+     * GET /api/coupons/earn — the active reward tasks. Public: guests get
+     * bare rows; signed-in callers get `claimed` + `progress` per row.
+     */
+    @GET("api/coupons/earn")
+    suspend fun earnTasks(): Response<ApiEnvelope<List<EarnTaskDto>>>
+
+    /**
+     * POST /api/coupons/earn — claim one task's voucher ({ taskId } only —
+     * the route rejects unknown fields). 201 → the created userCoupons row
+     * as data; 403/409 arrive as plain error bodies with the server's own
+     * wording (the shortfall / already-claimed reason).
+     */
+    @POST("api/coupons/earn")
+    suspend fun claimEarnTask(@Body body: EarnClaimRequest): Response<ApiEnvelope<CouponVaultDto>>
 }
 
 /**
@@ -165,3 +191,40 @@ data class RewardsNextTierDto(
     val pointsNeeded: Int? = null,
     val progressPct: Int? = null,
 )
+
+/**
+ * One row of GET /api/coupons/earn — the route returns RAW
+ * couponEarningTasks rows for guests, enriched with `claimed` + `progress`
+ * for the signed-in caller (coupons/earn/route.ts:36-68). Every field is
+ * optional-with-default so shape drift degrades gracefully instead of
+ * failing the whole rail — same doctrine as [CouponVaultDto].
+ */
+@Immutable
+@Serializable
+data class EarnTaskDto(
+    val id: String? = null,
+    val type: String? = null, // first_order | review | wishlist | bulk | milestone | spin | checkin
+    val title: String? = null,
+    val description: String? = null,
+    val rewardLabel: String? = null,
+    val rewardBDT: Double? = null,
+    val iconColor: String? = null,
+    val targetCount: Int? = null,
+    val isActive: Boolean? = null,
+    /** Signed-in extras — absent (null) on guest rows. */
+    val claimed: Boolean? = null,
+    val progress: EarnProgressDto? = null,
+)
+
+/** progress of a signed-in GET /api/coupons/earn row (route's own shape). */
+@Immutable
+@Serializable
+data class EarnProgressDto(
+    val count: Int? = null,
+    val required: Int? = null,
+    val met: Boolean? = null,
+)
+
+/** POST /api/coupons/earn body — the route rejects everything but taskId. */
+@Serializable
+data class EarnClaimRequest(val taskId: String)

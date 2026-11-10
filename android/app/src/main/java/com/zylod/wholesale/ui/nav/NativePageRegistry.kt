@@ -271,8 +271,13 @@ object NativePageRegistry {
         "cookies" to entry(CookiesPageMeta) { onBack, openPage, query -> CookiesScreen(onBack = onBack, openPage = openPage, query = query) },
         // t281 5-b: the "coupon-detail" row REMOVED — bullet stub; WebScreen →
         // the SPA's real coupon detail page.
-        // t281 5-b: the "coupon-promo" row REMOVED — the checkout coupon hop
-        // landed on bullets; WebScreen → the SPA's real coupon promo page.
+        // t281 5-b removed the "coupon-promo" row (its stub was bullets;
+        // WebScreen → the SPA's real coupon promo page). t300 RESTORES it on
+        // the typed surface — ui/coupons/CouponPromoScreen IS the real
+        // coupon-promo page (typed-code box POST api/coupons/claim { code } +
+        // the GET api/coupons?limit=30 campaign rail), so the WebView hop is
+        // retired again (t246 zero-WebView contract).
+        "coupon-promo" to entry(CouponPromoPageMeta) { onBack, openPage, query -> com.zylod.wholesale.ui.coupons.CouponPromoScreen(onBack = onBack, openPage = openPage, query = query) },
         // t281 5-b: "coupons" — the curated stub shadowed the TYPED ui/coupons
         // CouponsScreen (GET api/coupons, the same screen "my-coupons" serves).
         "coupons" to entry(CouponsPageMeta) { onBack, openPage, query -> com.zylod.wholesale.ui.coupons.CouponsScreen(onBack = onBack, openPage = openPage, query = query) },
@@ -355,8 +360,13 @@ object NativePageRegistry {
         "domestic-shipping" to entry(DomesticShippingPageMeta) { onBack, openPage, query -> DomesticShippingScreen(onBack = onBack, openPage = openPage, query = query) },
         "download-app" to entry(DownloadAppPageMeta) { onBack, openPage, query -> DownloadAppScreen(onBack = onBack, openPage = openPage, query = query) },
         "draft-orders" to entry(DraftOrdersPageMeta) { onBack, openPage, _ -> com.zylod.wholesale.ui.orders.OrdersScreen(onBack = onBack, openPage = openPage, openAuth = { openPage("login", "") }) },
-        // t281 5-b: the "earn-coupons" row REMOVED — bullet stub; WebScreen →
-        // the SPA's real earn-coupons page.
+        // t281 5-b removed the "earn-coupons" row (its stub was bullets;
+        // WebScreen → the SPA's real earn-coupons page). t300 RESTORES it on
+        // the typed surface — ui/coupons/EarnCouponsScreen IS the real Task
+        // 111 reward rail (GET api/coupons/earn with the server's claimed
+        // flag + proof progress, POST { taskId } claims), so the WebView hop
+        // is retired again (t246 zero-WebView contract).
+        "earn-coupons" to entry(EarnCouponsPageMeta) { onBack, openPage, query -> com.zylod.wholesale.ui.coupons.EarnCouponsScreen(onBack = onBack, openPage = openPage, query = query) },
         "earnings" to entry(EarningsPageMeta) { onBack, openPage, query -> EarningsScreen(onBack = onBack, openPage = openPage, query = query) },
         // t281 5-b: the "earnings-dashboard" row REMOVED — bullet stub;
         // WebScreen → the SPA's real earnings dashboard.

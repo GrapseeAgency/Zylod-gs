@@ -1,40 +1,25 @@
 package com.zylod.wholesale.ui.screens
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.ArrowBack
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.sp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.zylod.wholesale.ui.pages.NativePageBody
 import com.zylod.wholesale.ui.pages.NativePageKind
 import com.zylod.wholesale.ui.pages.NativePageLink
 import com.zylod.wholesale.ui.pages.NativePageMeta
-import com.zylod.wholesale.ui.pages.NativePageViewModel
+import com.zylod.wholesale.ui.coupons.CouponsScreen as TypedCouponsScreen
 
 /**
  * t233 — NATIVE Kotlin screen for the SPA pageId "coupons-offers"
  * (src/lib/page-loader.ts registry entry, now owned by Compose — the
  * WebView is fallback-only for unregistered ids).
  *
- * No obvious SPA endpoint feeds this page — it renders its curated Kotlin metadata.
-"Coupons Offers — promotions, rewards and membership programs on Zylod. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+ * t300 — the curated-metadata body is GONE: this pageId is now owned by the
+ * EXISTING typed ui/coupons implementation. The WEB serves this id with the
+ * SAME CouponsPage component as "coupons" (page-chunks/chunk-misc.ts maps
+ * both ids to coupons-page.tsx) — so the native row is a thin delegation to
+ * the same shared [TypedCouponsScreen]: the buyer's voucher vault (GET
+ * api/coupons/my), the public campaign claim rail (GET api/coupons + POST
+ * api/coupons/claim) and the loyalty-points rail (GET api/rewards). The
+ * meta object below keeps its registry identity and the
+ * NativePageRegistry composable signature is unchanged.
  */
 data object CouponsOffersPageMeta : NativePageMeta() {
     override val pageId = "coupons-offers"
@@ -42,75 +27,29 @@ data object CouponsOffersPageMeta : NativePageMeta() {
     override val category = "Marketing & Rewards"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Coupons Offers — promotions, rewards and membership programs on Zylod. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Coupons Offers — the web serves this id with the SAME CouponsPage as \"coupons\" (chunk-misc.ts maps both ids to coupons-page.tsx), so the native row delegates to the same real surface: vault (GET api/coupons/my), claim rail (GET api/coupons + POST api/coupons/claim) and points (GET api/rewards)."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
+        "Real coupons — vault, campaigns and points stream from the Zylod API, never fabricated.",
         "Offline-safe: the last-saved payload renders first — never a white screen.",
         "Native ownership: this Kotlin screen owns the coupons-offers pageId via RouteOwnership.",
     )
     override val related = listOf(
         NativePageLink("coupons", "Coupons"),
-        NativePageLink("vip-club", "VIP Club"),
-        NativePageLink("referral-program", "Referral Program"),
+        NativePageLink("my-coupons", "My Coupons"),
+        NativePageLink("coupon-promo", "Coupons & Promo Codes"),
     )
 }
 
 /**
- * Real themed Compose screen: native top bar (back arrow pops the back
- * stack toward Home), sections driven by the shared [NativePageData] model
- * through [NativePageBody] — live data when the endpoint feeds it, the
- * device-saved cache offline, curated Kotlin metadata otherwise, with a
- * working retry state. Stable keys inside the shared renderer.
+ * Delegation only — the shared [TypedCouponsScreen] owns the rendering and
+ * the wire calls; this file keeps the registry-facing signature.
  */
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CouponsOffersScreen(
     onBack: (() -> Unit)?,
     openPage: (pageId: String, query: String) -> Unit,
     query: String,
 ) {
-    val context = LocalContext.current
-    val vm: NativePageViewModel = viewModel(key = "native-page-coupons-offers") {
-        NativePageViewModel(context.applicationContext, CouponsOffersPageMeta)
-    }
-    val state by vm.state.collectAsStateWithLifecycle()
-    LaunchedEffect(Unit) { vm.refresh(query) }
-
-    Scaffold(
-        containerColor = MaterialTheme.colorScheme.background,
-        topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        "Coupons Offers",
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Black,
-                        color = MaterialTheme.colorScheme.primary,
-                    )
-                },
-                navigationIcon = {
-                    if (onBack != null) {
-                        IconButton(onClick = onBack) {
-                            Icon(
-                                Icons.AutoMirrored.Outlined.ArrowBack,
-                                "Go back",
-                                tint = MaterialTheme.colorScheme.onSurface,
-                            )
-                        }
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background),
-            )
-        },
-    ) { padding ->
-        Box(Modifier.fillMaxSize().padding(padding)) {
-            NativePageBody(
-                meta = CouponsOffersPageMeta,
-                state = state,
-                onRetry = { vm.refresh() },
-                openPage = openPage,
-            )
-        }
-    }
+    TypedCouponsScreen(onBack = onBack, openPage = openPage, query = query)
 }
