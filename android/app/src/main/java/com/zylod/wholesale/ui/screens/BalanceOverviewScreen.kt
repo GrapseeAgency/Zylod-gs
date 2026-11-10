@@ -1,116 +1,58 @@
 package com.zylod.wholesale.ui.screens
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.ArrowBack
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.sp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.zylod.wholesale.ui.pages.NativePageBody
 import com.zylod.wholesale.ui.pages.NativePageKind
 import com.zylod.wholesale.ui.pages.NativePageLink
 import com.zylod.wholesale.ui.pages.NativePageMeta
-import com.zylod.wholesale.ui.pages.NativePageViewModel
+import com.zylod.wholesale.ui.finance.BalanceOverviewScreen as TypedBalanceOverviewScreen
 
 /**
  * t233 — NATIVE Kotlin screen for the SPA pageId "balance-overview"
  * (src/lib/page-loader.ts registry entry, now owned by Compose — the
  * WebView is fallback-only for unregistered ids).
  *
- * No obvious SPA endpoint feeds this page — it renders its curated Kotlin metadata.
-"Balance Overview — a Zylod marketplace surface. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+ * t302 — the curated-metadata body is GONE: this pageId is now owned by the
+ * NEW typed ui/finance implementation. The body is a thin delegation to the
+ * shared [TypedBalanceOverviewScreen] — the REAL balance breakdown the
+ * web's BalanceOverviewPage renders for this id: GET api/wallet/balance
+ * through the EXISTING WalletApi (available liquid hero, escrow, inflow/
+ * outflow cards and the cash-flow ledger), the web page's AccountGate as a
+ * soft sign-in CTA for guests, the offline saved-breakdown banner and the
+ * honest Retry state — never a fabricated ৳0. The meta object below keeps
+ * its registry identity and the NativePageRegistry composable signature is
+ * unchanged.
  */
 data object BalanceOverviewPageMeta : NativePageMeta() {
     override val pageId = "balance-overview"
     override val title = "Balance Overview"
-    override val category = "Zylod Marketplace"
+    override val category = "Account & Profile"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Balance Overview — a Zylod marketplace surface. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
-    override val tabHint = ""
+    override val summary = "Balance Overview — the REAL balance breakdown (GET api/wallet/balance through the existing WalletApi): available liquid, escrow, inflow/outflow and the cash-flow ledger — the same data the web's BalanceOverviewPage renders, with the same guest gate."
+    override val tabHint = "profile"
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
+        "Real money — the server's own wallet aggregate, never a fabricated ৳0.",
         "Offline-safe: the last-saved payload renders first — never a white screen.",
         "Native ownership: this Kotlin screen owns the balance-overview pageId via RouteOwnership.",
     )
     override val related = listOf(
-        NativePageLink("home", "Home"),
-        NativePageLink("category-browser", "Category Browser"),
-        NativePageLink("help-center", "Help Center"),
+        NativePageLink("my-wallet", "My Wallet"),
+        NativePageLink("transaction-history", "Transaction History"),
+        NativePageLink("add-money", "Add Money"),
     )
 }
 
 /**
- * Real themed Compose screen: native top bar (back arrow pops the back
- * stack toward Home), sections driven by the shared [NativePageData] model
- * through [NativePageBody] — live data when the endpoint feeds it, the
- * device-saved cache offline, curated Kotlin metadata otherwise, with a
- * working retry state. Stable keys inside the shared renderer.
+ * Delegation only — the shared [TypedBalanceOverviewScreen] owns the
+ * rendering and the wire calls; this file keeps the registry-facing
+ * signature (the aliased import is what makes the delegation land on
+ * ui/finance, not on this file's own same-named composable).
  */
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BalanceOverviewScreen(
     onBack: (() -> Unit)?,
     openPage: (pageId: String, query: String) -> Unit,
     query: String,
 ) {
-    val context = LocalContext.current
-    val vm: NativePageViewModel = viewModel(key = "native-page-balance-overview") {
-        NativePageViewModel(context.applicationContext, BalanceOverviewPageMeta)
-    }
-    val state by vm.state.collectAsStateWithLifecycle()
-    LaunchedEffect(Unit) { vm.refresh(query) }
-
-    Scaffold(
-        containerColor = MaterialTheme.colorScheme.background,
-        topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        "Balance Overview",
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Black,
-                        color = MaterialTheme.colorScheme.primary,
-                    )
-                },
-                navigationIcon = {
-                    if (onBack != null) {
-                        IconButton(onClick = onBack) {
-                            Icon(
-                                Icons.AutoMirrored.Outlined.ArrowBack,
-                                "Go back",
-                                tint = MaterialTheme.colorScheme.onSurface,
-                            )
-                        }
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background),
-            )
-        },
-    ) { padding ->
-        Box(Modifier.fillMaxSize().padding(padding)) {
-            NativePageBody(
-                meta = BalanceOverviewPageMeta,
-                state = state,
-                onRetry = { vm.refresh() },
-                openPage = openPage,
-            )
-        }
-    }
+    TypedBalanceOverviewScreen(onBack = onBack, openPage = openPage, query = query)
 }
