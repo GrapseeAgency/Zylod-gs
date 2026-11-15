@@ -164,6 +164,16 @@ object RouteOwnership {
                 "register" -> Destination.Auth("register-buyer")
                 else -> Destination.Auth(pageId)
             }
+            // t303 — reset-password joins the native auth suite: the ZylodRoot
+            // route is "reset-password/{token}" (the native ResetPasswordScreen
+            // needs the token from the query, exactly like the web page's
+            // ?token= param). Token-less requests stay on the SPA, whose page
+            // renders the honest invalid-link state.
+            "reset-password" -> {
+                val token = queryParam(query, "token")
+                if (token.isNotBlank()) Destination.Auth("reset-password/$token")
+                else Destination.Web(pageId, query)
+            }
             // t233 native-first: an authenticated profile renders the NATIVE
             // ProfileScreen (guests still get the native login row above).
             "profile" -> if (isAuthenticated) Destination.NativePage(pageId, query) else Destination.Auth("login")

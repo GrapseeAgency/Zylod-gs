@@ -225,6 +225,11 @@ object ApiClient {
     fun profileSettingsApi(baseUrl: String): ProfileSettingsApi =
         cachedApi(baseUrl, "profileSettings") { it.create(ProfileSettingsApi::class.java) }
 
+    /** t303 — account-settings long tail (language/tax/linked-accounts/
+     *  account-delete/push-channel preferences). */
+    fun accountSettingsApi(baseUrl: String): AccountSettingsApi =
+        cachedApi(baseUrl, "accountSettings") { it.create(AccountSettingsApi::class.java) }
+
     fun productDetailApi(baseUrl: String): ProductDetailApi =
         cachedApi(baseUrl, "productDetail") { it.create(ProductDetailApi::class.java) }
 

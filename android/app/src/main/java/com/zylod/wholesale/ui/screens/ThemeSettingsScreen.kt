@@ -1,119 +1,52 @@
 package com.zylod.wholesale.ui.screens
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.ArrowBack
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.sp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.zylod.wholesale.ui.pages.NativePageBody
 import com.zylod.wholesale.ui.pages.NativePageKind
 import com.zylod.wholesale.ui.pages.NativePageLink
 import com.zylod.wholesale.ui.pages.NativePageMeta
-import com.zylod.wholesale.ui.pages.NativePageViewModel
+import com.zylod.wholesale.ui.account.ThemeSettingsScreen as TypedThemeSettingsScreen
 
 /**
  * t233 — NATIVE Kotlin screen for the SPA pageId "theme-settings"
  * (src/lib/page-loader.ts registry entry, now owned by Compose — the
  * WebView is fallback-only for unregistered ids).
  *
- * No obvious SPA endpoint feeds this page — it renders its curated Kotlin metadata.
-"Theme Settings — app-level settings and device-side controls. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+ * t303 — the WebScreen forward is RETIRED: this pageId is now owned by the
+ * typed ui/account implementation. The body is a thin delegation to the
+ * shared [TypedThemeSettingsScreen] — the REAL wire the web page renders, with the
+ * same honesty contract. The meta object keeps its registry identity and the
+ * NativePageRegistry composable signature is unchanged.
  */
-data object ThemeSettingsPageMeta : NativePageMeta() {
+data object ThemeSettingsPageMeta : NativePageMeta() {{
     override val pageId = "theme-settings"
-    override val title = "Theme Settings"
+    override val title = "Theme & Appearance"
     override val category = "Settings & App"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Your choice is saved to your account the moment you tap it."
-    override val tabHint = ""
+    override val summary = "Theme & Appearance — GET/PATCH api/profile/theme (system/light/dark are the only persisted modes); the choice applies app-wide only after the server confirms, through the t280 ThemeController."
+    override val tabHint = "profile"
     override val bullets = listOf(
-        "Theme Appearance",
-        "Theme preferences are stored on your account.",
-        "Display &amp; Appearance",
-        "Not implemented yet — requires backend support",
-        "Sign in to manage your saved theme",
-        "Color Theme",
+        "Real wire — the same endpoints the web page calls, rendered natively.",
+        "Honest states: sign-in gates, verbatim server errors, never fabricated data.",
+        "Native ownership: this Kotlin screen owns the theme-settings pageId via RouteOwnership.",
     )
     override val related = listOf(
-        NativePageLink("app-settings", "App Settings"),
-        NativePageLink("display-settings", "Display Settings"),
-        NativePageLink("profile", "Profile"),
+        NativePageLink("language-settings", "Language & Currency"),
+        NativePageLink("privacy-settings", "Privacy Settings"),
+        NativePageLink("account-settings", "Account Settings"),
     )
-}
+}}
 
 /**
- * Real themed Compose screen: native top bar (back arrow pops the back
- * stack toward Home), sections driven by the shared [NativePageData] model
- * through [NativePageBody] — live data when the endpoint feeds it, the
- * device-saved cache offline, curated Kotlin metadata otherwise, with a
- * working retry state. Stable keys inside the shared renderer.
+ * Delegation only — the shared typed screen owns the rendering and the wire
+ * calls; this file keeps the registry-facing signature (the aliased import
+ * is what makes the delegation land on ui.account.ThemeSettingsScreen, not on this file's own
+ * same-named composable).
  */
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ThemeSettingsScreen(
     onBack: (() -> Unit)?,
     openPage: (pageId: String, query: String) -> Unit,
-    query: String,
-) {
-    val context = LocalContext.current
-    val vm: NativePageViewModel = viewModel(key = "native-page-theme-settings") {
-        NativePageViewModel(context.applicationContext, ThemeSettingsPageMeta)
-    }
-    val state by vm.state.collectAsStateWithLifecycle()
-    LaunchedEffect(Unit) { vm.refresh(query) }
-
-    Scaffold(
-        containerColor = MaterialTheme.colorScheme.background,
-        topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        "Theme Settings",
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Black,
-                        color = MaterialTheme.colorScheme.primary,
-                    )
-                },
-                navigationIcon = {
-                    if (onBack != null) {
-                        IconButton(onClick = onBack) {
-                            Icon(
-                                Icons.AutoMirrored.Outlined.ArrowBack,
-                                "Go back",
-                                tint = MaterialTheme.colorScheme.onSurface,
-                            )
-                        }
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background),
-            )
-        },
-    ) { padding ->
-        Box(Modifier.fillMaxSize().padding(padding)) {
-            NativePageBody(
-                meta = ThemeSettingsPageMeta,
-                state = state,
-                onRetry = { vm.refresh() },
-                openPage = openPage,
-            )
-        }
-    }
-}
+) {{
+    com.zylod.wholesale.ui.account.ThemeSettingsScreen(onBack = onBack, openPage = openPage)
+}}

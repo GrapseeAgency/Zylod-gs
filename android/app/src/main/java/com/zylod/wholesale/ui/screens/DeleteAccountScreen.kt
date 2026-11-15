@@ -1,115 +1,52 @@
 package com.zylod.wholesale.ui.screens
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.ArrowBack
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.sp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.zylod.wholesale.ui.pages.NativePageBody
 import com.zylod.wholesale.ui.pages.NativePageKind
 import com.zylod.wholesale.ui.pages.NativePageLink
 import com.zylod.wholesale.ui.pages.NativePageMeta
-import com.zylod.wholesale.ui.pages.NativePageViewModel
+import com.zylod.wholesale.ui.account.DeleteAccountScreen as TypedDeleteAccountScreen
 
 /**
  * t233 — NATIVE Kotlin screen for the SPA pageId "delete-account"
  * (src/lib/page-loader.ts registry entry, now owned by Compose — the
  * WebView is fallback-only for unregistered ids).
  *
- * No obvious SPA endpoint feeds this page — it renders its curated Kotlin metadata.
-"Delete Account — account, identity and money surfaces for the signed-in user. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+ * t303 — the WebScreen forward is RETIRED: this pageId is now owned by the
+ * typed ui/account implementation. The body is a thin delegation to the
+ * shared [TypedDeleteAccountScreen] — the REAL wire the web page renders, with the
+ * same honesty contract. The meta object keeps its registry identity and the
+ * NativePageRegistry composable signature is unchanged.
  */
-data object DeleteAccountPageMeta : NativePageMeta() {
+data object DeleteAccountPageMeta : NativePageMeta() {{
     override val pageId = "delete-account"
     override val title = "Delete Account"
-    override val category = "Account & Profile"
+    override val category = "Settings & App"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "This action is irreversible. All catalog listings and trade ratings will be permanently erased."
-    override val tabHint = ""
+    override val summary = "Delete Account — GET/DELETE api/profile/account with the typed DELETE confirmation; the real orders/products summary shows honest dashes when unavailable, and success signs the session out."
+    override val tabHint = "profile"
     override val bullets = listOf(
-        "Permanent Account Termination",
-        "Account Impact Summary",
+        "Real wire — the same endpoints the web page calls, rendered natively.",
+        "Honest states: sign-in gates, verbatim server errors, never fabricated data.",
+        "Native ownership: this Kotlin screen owns the delete-account pageId via RouteOwnership.",
     )
     override val related = listOf(
-        NativePageLink("profile", "Profile"),
-        NativePageLink("buyer-orders", "Buyer Orders"),
         NativePageLink("account-settings", "Account Settings"),
+        NativePageLink("privacy-settings", "Privacy Settings"),
+        NativePageLink("support-center", "Support Center"),
     )
-}
+}}
 
 /**
- * Real themed Compose screen: native top bar (back arrow pops the back
- * stack toward Home), sections driven by the shared [NativePageData] model
- * through [NativePageBody] — live data when the endpoint feeds it, the
- * device-saved cache offline, curated Kotlin metadata otherwise, with a
- * working retry state. Stable keys inside the shared renderer.
+ * Delegation only — the shared typed screen owns the rendering and the wire
+ * calls; this file keeps the registry-facing signature (the aliased import
+ * is what makes the delegation land on ui.account.DeleteAccountScreen, not on this file's own
+ * same-named composable).
  */
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DeleteAccountScreen(
     onBack: (() -> Unit)?,
     openPage: (pageId: String, query: String) -> Unit,
-    query: String,
-) {
-    val context = LocalContext.current
-    val vm: NativePageViewModel = viewModel(key = "native-page-delete-account") {
-        NativePageViewModel(context.applicationContext, DeleteAccountPageMeta)
-    }
-    val state by vm.state.collectAsStateWithLifecycle()
-    LaunchedEffect(Unit) { vm.refresh(query) }
-
-    Scaffold(
-        containerColor = MaterialTheme.colorScheme.background,
-        topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        "Delete Account",
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Black,
-                        color = MaterialTheme.colorScheme.primary,
-                    )
-                },
-                navigationIcon = {
-                    if (onBack != null) {
-                        IconButton(onClick = onBack) {
-                            Icon(
-                                Icons.AutoMirrored.Outlined.ArrowBack,
-                                "Go back",
-                                tint = MaterialTheme.colorScheme.onSurface,
-                            )
-                        }
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background),
-            )
-        },
-    ) { padding ->
-        Box(Modifier.fillMaxSize().padding(padding)) {
-            NativePageBody(
-                meta = DeleteAccountPageMeta,
-                state = state,
-                onRetry = { vm.refresh() },
-                openPage = openPage,
-            )
-        }
-    }
-}
+) {{
+    com.zylod.wholesale.ui.account.DeleteAccountScreen(onBack = onBack, openPage = openPage, onDeleted = { com.zylod.wholesale.data.session.SessionManager.clear(); openPage("login", "") })
+}}

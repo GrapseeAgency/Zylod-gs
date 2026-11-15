@@ -320,9 +320,10 @@ object NativePageRegistry {
         "data-rights" to entry(DataRightsPageMeta) { onBack, openPage, query -> DataRightsScreen(onBack = onBack, openPage = openPage, query = query) },
         "data-sync" to entry(DataSyncPageMeta) { onBack, openPage, query -> DataSyncScreen(onBack = onBack, openPage = openPage, query = query) },
         "deep-link-handler" to entry(DeepLinkHandlerPageMeta) { onBack, openPage, query -> DeepLinkHandlerScreen(onBack = onBack, openPage = openPage, query = query) },
-        // t281 5-b: the "delete-account" row REMOVED — bullet stub (the
-        // honest account deletion flow is the SPA's confirm page);
-        // WebScreen → the SPA's real delete-account page.
+        // t303 RESTORES the t281-removed row on the typed surface —
+        // ui/account/DeleteAccountScreen (GET/DELETE api/profile/account +
+        // SessionManager.clear on success), WebView hop retired.
+        "delete-account" to entry(DeleteAccountPageMeta) { onBack, openPage, query -> DeleteAccountScreen(onBack = onBack, openPage = openPage) },
         "delivery-chat" to entry(DeliveryChatPageMeta) { onBack, openPage, query -> DeliveryChatScreen(onBack = onBack, openPage = openPage, query = query) },
         // t281 5-b: the "delivery-confirmation" row REMOVED — bullet stub;
         // WebScreen → the SPA's real delivery confirmation page.
@@ -495,15 +496,19 @@ object NativePageRegistry {
         "job-listings" to entry(JobListingsPageMeta) { onBack, openPage, query -> JobListingsScreen(onBack = onBack, openPage = openPage, query = query) },
         "join-seller" to entry(JoinSellerPageMeta) { onBack, openPage, query -> JoinSellerScreen(onBack = onBack, openPage = openPage, query = query) },
         "kyc-guide" to entry(KycGuidePageMeta) { onBack, openPage, query -> KycGuideScreen(onBack = onBack, openPage = openPage, query = query) },
-        // t281 5-b: the "language-settings" row REMOVED — bullet stub;
-        // WebScreen → the SPA's real language settings page.
+        // t303 RESTORES the t281-removed row on the typed surface —
+        // ui/account/LanguageSettingsScreen (GET/PATCH api/profile/language +
+        // device-local currency), WebView hop retired.
+        "language-settings" to entry(LanguageSettingsPageMeta) { onBack, openPage, query -> LanguageSettingsScreen(onBack = onBack, openPage = openPage) },
         "leadership-team" to entry(LeadershipTeamPageMeta) { onBack, openPage, query -> LeadershipTeamScreen(onBack = onBack, openPage = openPage, query = query) },
         "led-lighting" to entry(LedLightingPageMeta) { onBack, openPage, query -> LedLightingScreen(onBack = onBack, openPage = openPage, query = query) },
         "link-analytics" to entry(LinkAnalyticsPageMeta) { onBack, openPage, query -> LinkAnalyticsScreen(onBack = onBack, openPage = openPage, query = query) },
         "link-configuration" to entry(LinkConfigurationPageMeta) { onBack, openPage, query -> LinkConfigurationScreen(onBack = onBack, openPage = openPage, query = query) },
         "link-generator" to entry(LinkGeneratorPageMeta) { onBack, openPage, query -> LinkGeneratorScreen(onBack = onBack, openPage = openPage, query = query) },
-        // t281 5-b: the "linked-accounts" row REMOVED — bullet stub;
-        // WebScreen → the SPA's real linked accounts page.
+        // t303 RESTORES the t281-removed row on the typed surface —
+        // ui/account/LinkedAccountsScreen (GET/POST/DELETE
+        // api/profile/linked-accounts), WebView hop retired.
+        "linked-accounts" to entry(LinkedAccountsPageMeta) { onBack, openPage, query -> LinkedAccountsScreen(onBack = onBack, openPage = openPage) },
         "live-chat" to entry(LiveChatPageMeta) { onBack, openPage, query -> LiveChatScreen(onBack = onBack, openPage = openPage, query = query) },
         "live-shopping" to entry(LiveShoppingPageMeta) { onBack, openPage, query -> LiveShoppingScreen(onBack = onBack, openPage = openPage, query = query) },
         "live-shopping-detail" to entry(LiveShoppingDetailPageMeta) { onBack, openPage, query -> LiveShoppingDetailScreen(onBack = onBack, openPage = openPage, query = query) },
@@ -643,9 +648,10 @@ object NativePageRegistry {
         "privacy" to entry(PrivacyPageMeta) { onBack, openPage, query -> PrivacyScreen(onBack = onBack, openPage = openPage, query = query) },
         "privacy-faq" to entry(PrivacyFaqPageMeta) { onBack, openPage, query -> PrivacyFaqScreen(onBack = onBack, openPage = openPage, query = query) },
         "privacy-policy" to entry(PrivacyPolicyPageMeta) { onBack, openPage, query -> PrivacyPolicyScreen(onBack = onBack, openPage = openPage, query = query) },
-        // t281 5-b: the "privacy-settings" row REMOVED — bullet stub; the
-        // REAL privacy toggles live in the typed account-settings Privacy
-        // section; WebScreen → the SPA's page.
+        // t303 RESTORES the t281-removed row on a DEDICATED typed surface —
+        // ui/account/PrivacySettingsScreen (GET/PATCH api/profile/privacy,
+        // server-confirmed state), WebView hop retired.
+        "privacy-settings" to entry(PrivacySettingsPageMeta) { onBack, openPage, query -> PrivacySettingsScreen(onBack = onBack, openPage = openPage) },
         "product-catalog" to entry(ProductCatalogPageMeta) { onBack, openPage, query -> ProductCatalogScreen(onBack = onBack, openPage = openPage, query = query) },
         "product-comparison" to entry(ProductComparisonPageMeta) { onBack, openPage, query -> ProductComparisonScreen(onBack = onBack, openPage = openPage, query = query) },
         "product-conversion-rate" to entry(ProductConversionRatePageMeta) { onBack, openPage, query -> ProductConversionRateScreen(onBack = onBack, openPage = openPage, query = query) },
@@ -676,9 +682,10 @@ object NativePageRegistry {
         "purchase-history" to entry(PurchaseHistoryPageMeta) { onBack, openPage, _ -> com.zylod.wholesale.ui.orders.OrdersScreen(onBack = onBack, openPage = openPage, openAuth = { openPage("login", "") }) },
         "purge-cache" to entry(PurgeCachePageMeta) { onBack, openPage, query -> PurgeCacheScreen(onBack = onBack, openPage = openPage, query = query) },
         "push-notification-per-channel" to entry(PushNotificationPerChannelPageMeta) { onBack, openPage, query -> PushNotificationPerChannelScreen(onBack = onBack, openPage = openPage, query = query) },
-        // t281 5-b: the "push-notification-settings" row REMOVED — bullet
-        // stub; the REAL notification preferences live in the typed
-        // notification-preferences screen; WebScreen → the SPA's page.
+        // t303 RESTORES the t281-removed row on the typed surface —
+        // ui/account/PushNotificationSettingsScreen (GET/PATCH
+        // api/notifications/preferences), WebView hop retired.
+        "push-notification-settings" to entry(PushNotificationSettingsPageMeta) { onBack, openPage, query -> PushNotificationSettingsScreen(onBack = onBack, openPage = openPage) },
         "qr-deeplink" to entry(QrDeeplinkPageMeta) { onBack, openPage, query -> QrDeeplinkScreen(onBack = onBack, openPage = openPage, query = query) },
         "qr-scanner" to entry(QrScannerPageMeta) { onBack, openPage, query -> QrScannerScreen(onBack = onBack, openPage = openPage, query = query) },
         "quality-check" to entry(QualityCheckPageMeta) { onBack, openPage, query -> QualityCheckScreen(onBack = onBack, openPage = openPage, query = query) },
@@ -968,8 +975,10 @@ object NativePageRegistry {
         "system-status" to entry(SystemStatusPageMeta) { onBack, openPage, query -> SystemStatusScreen(onBack = onBack, openPage = openPage, query = query) },
         "tax-compliance-guide" to entry(TaxComplianceGuidePageMeta) { onBack, openPage, query -> TaxComplianceGuideScreen(onBack = onBack, openPage = openPage, query = query) },
         "tax-guide" to entry(TaxGuidePageMeta) { onBack, openPage, query -> TaxGuideScreen(onBack = onBack, openPage = openPage, query = query) },
-        // t281 5-b: the "tax-information" row REMOVED — bullet stub;
-        // WebScreen → the SPA's real tax information page.
+        // t303 RESTORES the t281-removed row on the typed surface —
+        // ui/account/TaxInformationScreen (GET/PATCH api/profile/tax with the
+        // buyer-501 honesty contract), WebView hop retired.
+        "tax-information" to entry(TaxInformationPageMeta) { onBack, openPage, query -> TaxInformationScreen(onBack = onBack, openPage = openPage) },
         "team-management" to entry(TeamManagementPageMeta) { onBack, openPage, query -> TeamManagementScreen(onBack = onBack, openPage = openPage, query = query) },
         "terms" to entry(TermsPageMeta) { onBack, openPage, query -> TermsScreen(onBack = onBack, openPage = openPage, query = query) },
         "terms-and-conditions" to entry(TermsAndConditionsPageMeta) { onBack, openPage, query -> TermsAndConditionsScreen(onBack = onBack, openPage = openPage, query = query) },
@@ -977,9 +986,10 @@ object NativePageRegistry {
         "terms-history" to entry(TermsHistoryPageMeta) { onBack, openPage, query -> TermsHistoryScreen(onBack = onBack, openPage = openPage, query = query) },
         "terms-of-service" to entry(TermsOfServicePageMeta) { onBack, openPage, query -> TermsOfServiceScreen(onBack = onBack, openPage = openPage, query = query) },
         "textiles-fabrics" to entry(TextilesFabricsPageMeta) { onBack, openPage, query -> TextilesFabricsScreen(onBack = onBack, openPage = openPage, query = query) },
-        // t281 5-b: the "theme-settings" row REMOVED — bullet stub; the REAL
-        // in-app theme override lives in the typed account-settings Appearance
-        // section (t280 ThemeController); WebScreen → the SPA's page.
+        // t303 RESTORES the t281-removed row on a DEDICATED typed surface —
+        // ui/account/ThemeSettingsScreen (GET/PATCH api/profile/theme,
+        // server-confirmed application through the t280 ThemeController).
+        "theme-settings" to entry(ThemeSettingsPageMeta) { onBack, openPage, query -> ThemeSettingsScreen(onBack = onBack, openPage = openPage) },
         "ticket" to entry(TicketPageMeta) { onBack, openPage, query -> TicketScreen(onBack = onBack, openPage = openPage, query = query) },
         // t280 4-b#2: the "ticket-detail" row REMOVED — notification "system"
         // taps (id=<ticketId>) landed on bullets. WebScreen → the SPA's real
