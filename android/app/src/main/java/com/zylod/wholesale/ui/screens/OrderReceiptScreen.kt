@@ -14,7 +14,7 @@ import com.zylod.wholesale.ui.orderdetail.OrderReceiptScreen as TypedOrderReceip
  * the web page renders, with the same honesty contract. The meta keeps its
  * registry identity; the NativePageRegistry composable signature is unchanged.
  */
-data object OrderReceiptPageMeta : NativePageMeta() {{
+data object OrderReceiptPageMeta : NativePageMeta() {
     override val pageId = "order-receipt"
     override val title = "Order Receipt"
     override val category = "Orders & Logistics"
@@ -32,7 +32,7 @@ data object OrderReceiptPageMeta : NativePageMeta() {{
         NativePageLink("buyer-orders", "My Orders"),
         NativePageLink("order-timeline", "Order Timeline"),
     )
-}}
+}
 
 /** Delegation only — the shared typed screen owns the rendering and the wire. */
 @Composable
@@ -40,6 +40,6 @@ fun OrderReceiptScreen(
     onBack: (() -> Unit)?,
     openPage: (pageId: String, query: String) -> Unit,
     query: String,
-) {{
+) {
     com.zylod.wholesale.ui.orderdetail.OrderReceiptScreen(onBack = onBack, openPage = openPage, query = query)
-}}
+}

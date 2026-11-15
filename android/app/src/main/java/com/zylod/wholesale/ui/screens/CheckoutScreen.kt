@@ -20,22 +20,14 @@ data object CheckoutPageMeta : NativePageMeta() {
     override val category = "Shopping & Products"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "” saved you . )} saved you . )} + Shipping = )} . The order is NOT confirmed until payment is verified — submit your payment reference from My Orders. )}"
+    override val summary = "Checkout — the typed rail: cart, shipping address, delivery options and payment methods."
     override val tabHint = ""
     override val bullets = listOf(
-        "Order Created",
-        "You need a buyer account to check out — your cart, addresses and payment methods live in your account.",
-        "Sign in required",
-        "Nothing to check out. Browse the catalog and add products first.",
-        "Your cart is empty",
-        "A product in this shipment has no weight on file — shipping settles directly with the supplier.",
-    )} saved you . )} + Shipping = )} . The order is NOT confirmed until payment is verified — submit your payment reference from My Orders. )}",
-        "Sign in required",
-        "You need a buyer account to check out — your cart, addresses and payment methods live in your account.",
-        "Your cart is empty",
-        "Nothing to check out. Browse the catalog and add products first.",
+        "POST api/orders re-prices everything server-side; the client never invents totals.",
+        "Guests get the honest sign-in wall — cart, addresses and payment methods live in the account.",
     )
-    override val related = listOf(
+
+        override val related = listOf(
         NativePageLink("orders", "Orders"),
         NativePageLink("shipping-address", "Shipping Address"),
         NativePageLink("add-address", "Add Address"),

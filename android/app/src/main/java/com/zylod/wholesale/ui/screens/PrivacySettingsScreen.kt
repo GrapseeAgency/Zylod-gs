@@ -17,7 +17,7 @@ import com.zylod.wholesale.ui.account.PrivacySettingsScreen as TypedPrivacySetti
  * same honesty contract. The meta object keeps its registry identity and the
  * NativePageRegistry composable signature is unchanged.
  */
-data object PrivacySettingsPageMeta : NativePageMeta() {{
+data object PrivacySettingsPageMeta : NativePageMeta() {
     override val pageId = "privacy-settings"
     override val title = "Privacy Settings"
     override val category = "Settings & App"
@@ -35,7 +35,7 @@ data object PrivacySettingsPageMeta : NativePageMeta() {{
         NativePageLink("theme-settings", "Theme Settings"),
         NativePageLink("push-notification-settings", "Push Notifications"),
     )
-}}
+}
 
 /**
  * Delegation only — the shared typed screen owns the rendering and the wire
@@ -47,6 +47,6 @@ data object PrivacySettingsPageMeta : NativePageMeta() {{
 fun PrivacySettingsScreen(
     onBack: (() -> Unit)?,
     openPage: (pageId: String, query: String) -> Unit,
-) {{
+) {
     com.zylod.wholesale.ui.account.PrivacySettingsScreen(onBack = onBack, openPage = openPage)
-}}
+}

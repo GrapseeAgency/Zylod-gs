@@ -17,7 +17,7 @@ import com.zylod.wholesale.ui.account.PushNotificationSettingsScreen as TypedPus
  * same honesty contract. The meta object keeps its registry identity and the
  * NativePageRegistry composable signature is unchanged.
  */
-data object PushNotificationSettingsPageMeta : NativePageMeta() {{
+data object PushNotificationSettingsPageMeta : NativePageMeta() {
     override val pageId = "push-notification-settings"
     override val title = "Push & Channel Notifications"
     override val category = "Settings & App"
@@ -35,7 +35,7 @@ data object PushNotificationSettingsPageMeta : NativePageMeta() {{
         NativePageLink("account-settings", "Account Settings"),
         NativePageLink("privacy-settings", "Privacy Settings"),
     )
-}}
+}
 
 /**
  * Delegation only — the shared typed screen owns the rendering and the wire
@@ -47,6 +47,6 @@ data object PushNotificationSettingsPageMeta : NativePageMeta() {{
 fun PushNotificationSettingsScreen(
     onBack: (() -> Unit)?,
     openPage: (pageId: String, query: String) -> Unit,
-) {{
+) {
     com.zylod.wholesale.ui.account.PushNotificationSettingsScreen(onBack = onBack, openPage = openPage)
-}}
+}

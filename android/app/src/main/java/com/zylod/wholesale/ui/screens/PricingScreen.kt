@@ -42,18 +42,13 @@ data object PricingPageMeta : NativePageMeta() {
     override val category = "Zylod Marketplace"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Select a product to see its bulk pricing — every calculator is tied to one real listing and its live tier ladder."
+    override val summary = "Bulk pricing — select a product to see its live tier ladder."
     override val tabHint = ""
     override val bullets = listOf(
-        "No product selected",
-        "This listing may have been removed or is no longer available, so there is no bulk pricing to calculate.",
-        "Product not found",
-        "Adjust quantity to see real-time volume discounts for ) : ’’}.",
-        "Couldn&apos;t load bulk pricing",
-        "This product has no volume tiers configured — the base price applies at every quantity.",
-    ) : ’’}.",
+        "Every calculator is tied to one real listing and its live pricing tiers.",
     )
-    override val related = listOf(
+
+        override val related = listOf(
         NativePageLink("cart", "Cart"),
         NativePageLink("product-catalog", "Product Catalog"),
         NativePageLink("notifications", "Notifications"),

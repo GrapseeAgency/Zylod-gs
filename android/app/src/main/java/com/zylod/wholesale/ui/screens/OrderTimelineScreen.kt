@@ -14,7 +14,7 @@ import com.zylod.wholesale.ui.orderdetail.OrderTimelineScreen as TypedOrderTimel
  * the web page renders, with the same honesty contract. The meta keeps its
  * registry identity; the NativePageRegistry composable signature is unchanged.
  */
-data object OrderTimelinePageMeta : NativePageMeta() {{
+data object OrderTimelinePageMeta : NativePageMeta() {
     override val pageId = "order-timeline"
     override val title = "Order Timeline"
     override val category = "Orders & Logistics"
@@ -32,7 +32,7 @@ data object OrderTimelinePageMeta : NativePageMeta() {{
         NativePageLink("track-order", "Track Order"),
         NativePageLink("buyer-orders", "My Orders"),
     )
-}}
+}
 
 /** Delegation only — the shared typed screen owns the rendering and the wire. */
 @Composable
@@ -40,6 +40,6 @@ fun OrderTimelineScreen(
     onBack: (() -> Unit)?,
     openPage: (pageId: String, query: String) -> Unit,
     query: String,
-) {{
+) {
     com.zylod.wholesale.ui.orderdetail.OrderTimelineScreen(onBack = onBack, openPage = openPage, query = query)
-}}
+}

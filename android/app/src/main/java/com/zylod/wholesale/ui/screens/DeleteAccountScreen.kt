@@ -17,7 +17,7 @@ import com.zylod.wholesale.ui.account.DeleteAccountScreen as TypedDeleteAccountS
  * same honesty contract. The meta object keeps its registry identity and the
  * NativePageRegistry composable signature is unchanged.
  */
-data object DeleteAccountPageMeta : NativePageMeta() {{
+data object DeleteAccountPageMeta : NativePageMeta() {
     override val pageId = "delete-account"
     override val title = "Delete Account"
     override val category = "Settings & App"
@@ -35,7 +35,7 @@ data object DeleteAccountPageMeta : NativePageMeta() {{
         NativePageLink("privacy-settings", "Privacy Settings"),
         NativePageLink("support-center", "Support Center"),
     )
-}}
+}
 
 /**
  * Delegation only — the shared typed screen owns the rendering and the wire
@@ -47,6 +47,6 @@ data object DeleteAccountPageMeta : NativePageMeta() {{
 fun DeleteAccountScreen(
     onBack: (() -> Unit)?,
     openPage: (pageId: String, query: String) -> Unit,
-) {{
+) {
     com.zylod.wholesale.ui.account.DeleteAccountScreen(onBack = onBack, openPage = openPage, onDeleted = { com.zylod.wholesale.data.session.SessionManager.clear(); openPage("login", "") })
-}}
+}

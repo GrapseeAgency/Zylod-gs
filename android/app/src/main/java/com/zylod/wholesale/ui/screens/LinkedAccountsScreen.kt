@@ -17,7 +17,7 @@ import com.zylod.wholesale.ui.account.LinkedAccountsScreen as TypedLinkedAccount
  * same honesty contract. The meta object keeps its registry identity and the
  * NativePageRegistry composable signature is unchanged.
  */
-data object LinkedAccountsPageMeta : NativePageMeta() {{
+data object LinkedAccountsPageMeta : NativePageMeta() {
     override val pageId = "linked-accounts"
     override val title = "Linked Accounts"
     override val category = "Settings & App"
@@ -35,7 +35,7 @@ data object LinkedAccountsPageMeta : NativePageMeta() {{
         NativePageLink("account-settings", "Account Settings"),
         NativePageLink("edit-profile", "Edit Profile"),
     )
-}}
+}
 
 /**
  * Delegation only — the shared typed screen owns the rendering and the wire
@@ -47,6 +47,6 @@ data object LinkedAccountsPageMeta : NativePageMeta() {{
 fun LinkedAccountsScreen(
     onBack: (() -> Unit)?,
     openPage: (pageId: String, query: String) -> Unit,
-) {{
+) {
     com.zylod.wholesale.ui.account.LinkedAccountsScreen(onBack = onBack, openPage = openPage)
-}}
+}

@@ -42,21 +42,14 @@ data object SizeChartPageMeta : NativePageMeta() {
     override val category = "Shopping & Products"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = ") : ’’}. For exact fit, contact the supplier before placing a bulk order. : ’Reference measurements for woven garments (shirts, kameez, workwear). For knitwear, denim, or outerwear, ask the supplier for their category-specific chart.’}"
+    override val summary = "Size chart — the chest/length/sleeve measurement table with an inches/cm switch."
     override val tabHint = ""
     override val bullets = listOf(
-        "Size Guide",
-        "A A B B C setUnit(’inches’)} aria-pressed= className= } > Inches setUnit(’cm’)} aria-pressed= className= } > CM Size A. Chest B. Length C. Sleeve ))} How to measure , , , ].map(m => ( :",
-        ": ’General garment size chart’}",
-        "These are reference body measurements, not garment dimensions. Suppliers may cut to their own blocks; always request a sample for bulk orders where fit is critical.",
-        "How to measure",
-    ) : ’’}. For exact fit, contact the supplier before placing a bulk order. : ’Reference measurements for woven garments (shirts, kameez, workwear). For knitwear, denim, or outerwear, ask the…",
-        "Size Guide",
-        "A A B B C setUnit(’inches’)} aria-pressed= className= } > Inches setUnit(’cm’)} aria-pressed= className= } > CM Size A. Chest B. Length C. Sleeve ))} How to measure , , , ].map(m => ( :",
-        ": ’General garment size chart’}",
-        "These are reference body measurements, not garment dimensions. Suppliers may cut to their own blocks; always request a sample for bulk orders where fit is critical.",
+        "How-to-measure guidance renders beside the chart, exactly like the web page.",
+        "Reference body measurements, not garment dimensions — request a sample for bulk orders where fit matters.",
     )
-    override val related = listOf(
+
+        override val related = listOf(
         NativePageLink("all-products", "All Products"),
         NativePageLink("flash-deals", "Flash Deals"),
         NativePageLink("category-browser", "Category Browser"),

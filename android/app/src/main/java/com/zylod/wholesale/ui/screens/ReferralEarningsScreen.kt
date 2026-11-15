@@ -12,18 +12,13 @@ data object ReferralEarningsPageMeta : NativePageMeta() {
     override val category = "Marketing & Rewards"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Earned from verified business onboarding events."
+    override val summary = "Referral earnings ledger — the real referral bonus rows."
     override val tabHint = ""
     override val bullets = listOf(
-        "Could not load referral earnings",
-        ")(.*)(@.*)/, ’1*3’) : ’Verified Merchant’}",
-        "Referral Earnings Ledger",
-        "Invited Merchants ( )",
-    )(.*)(@.*)/, ’1***3’) : ’Verified Merchant’}",
-        "Referral Earnings Ledger",
-        "Invited Merchants ( )",
+        "Invited merchants render with their role and status from the referral API; load failures show the verbatim error.",
     )
-    override val related = listOf(
+
+        override val related = listOf(
         NativePageLink("referral-program", "Referral Program"),
     )
 }

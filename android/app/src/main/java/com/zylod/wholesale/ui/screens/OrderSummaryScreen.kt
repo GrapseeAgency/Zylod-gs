@@ -14,7 +14,7 @@ import com.zylod.wholesale.ui.checkout.CheckoutScreen as TypedOrderSummaryScreen
  * the web page renders, with the same honesty contract. The meta keeps its
  * registry identity; the NativePageRegistry composable signature is unchanged.
  */
-data object OrderSummaryPageMeta : NativePageMeta() {{
+data object OrderSummaryPageMeta : NativePageMeta() {
     override val pageId = "order-summary"
     override val title = "Order Summary"
     override val category = "Orders & Logistics"
@@ -32,7 +32,7 @@ data object OrderSummaryPageMeta : NativePageMeta() {{
         NativePageLink("cart", "Cart"),
         NativePageLink("delivery-method", "Delivery Methods"),
     )
-}}
+}
 
 /** Delegation only — the shared typed screen owns the rendering and the wire. */
 @Composable
@@ -40,6 +40,6 @@ fun OrderSummaryScreen(
     onBack: (() -> Unit)?,
     openPage: (pageId: String, query: String) -> Unit,
     query: String,
-) {{
+) {
     com.zylod.wholesale.ui.checkout.CheckoutScreen(pageId = "order-summary", onBack = onBack, openPage = openPage, query = query)
-}}
+}

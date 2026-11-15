@@ -42,16 +42,14 @@ data object BulkUploadTemplatePageMeta : NativePageMeta() {
     override val category = "Shopping & Products"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "The server expects the header — exactly these columns, one product per row, max 100 rows per upload. The template below carries your LIVE category ids, so the categoryId column is valid on the first try."
+    override val summary = "Download the live bulk-upload CSV template."
     override val tabHint = ""
     override val bullets = listOf(
-        "Bulk Upload Template",
-        "Download template CSV navigate(’bulk-upload-products’)} className=”flex-1 h-11 rounded-2xl text-xs font-bold border-gray-200 dark:border-gray-800”> Go to upload {loading && ( Loading your…",
-    )        "Bulk Upload Template",
-        "The server expects the header — exactly these columns, one product per row, max 100 rows per upload. The template below carries your LIVE category ids, so the categoryId column is valid on…",
-        "Download template CSV navigate(’bulk-upload-products’)} className=”flex-1 h-11 rounded-2xl text-xs font-bold border-gray-200 dark:border-gray-800”> Go to upload loading && ( Loading your…",
+        "The header carries exactly the columns the server expects — one product per row, max 100 rows per upload.",
+        "The categoryId column carries your LIVE category ids, so the template is valid on upload.",
     )
-    override val related = listOf(
+
+        override val related = listOf(
         NativePageLink("bulk-upload-products", "Bulk Upload Products"),
     )
 }

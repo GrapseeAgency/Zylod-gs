@@ -14,7 +14,7 @@ import com.zylod.wholesale.ui.checkout.CheckoutSuccessScreen as TypedOrderConfir
  * the web page renders, with the same honesty contract. The meta keeps its
  * registry identity; the NativePageRegistry composable signature is unchanged.
  */
-data object OrderConfirmationPageMeta : NativePageMeta() {{
+data object OrderConfirmationPageMeta : NativePageMeta() {
     override val pageId = "order-confirmation"
     override val title = "Order Confirmation"
     override val category = "Orders & Logistics"
@@ -32,7 +32,7 @@ data object OrderConfirmationPageMeta : NativePageMeta() {{
         NativePageLink("buyer-orders", "My Orders"),
         NativePageLink("order-detail", "Order Detail"),
     )
-}}
+}
 
 /** Delegation only — the shared typed screen owns the rendering and the wire. */
 @Composable
@@ -40,6 +40,6 @@ fun OrderConfirmationScreen(
     onBack: (() -> Unit)?,
     openPage: (pageId: String, query: String) -> Unit,
     query: String,
-) {{
+) {
     com.zylod.wholesale.ui.checkout.CheckoutSuccessScreen(pageId = "order-confirmation", onBack = onBack, openPage = openPage, query = query)
-}}
+}

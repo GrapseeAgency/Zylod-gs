@@ -17,7 +17,7 @@ import com.zylod.wholesale.ui.account.ThemeSettingsScreen as TypedThemeSettingsS
  * same honesty contract. The meta object keeps its registry identity and the
  * NativePageRegistry composable signature is unchanged.
  */
-data object ThemeSettingsPageMeta : NativePageMeta() {{
+data object ThemeSettingsPageMeta : NativePageMeta() {
     override val pageId = "theme-settings"
     override val title = "Theme & Appearance"
     override val category = "Settings & App"
@@ -35,7 +35,7 @@ data object ThemeSettingsPageMeta : NativePageMeta() {{
         NativePageLink("privacy-settings", "Privacy Settings"),
         NativePageLink("account-settings", "Account Settings"),
     )
-}}
+}
 
 /**
  * Delegation only — the shared typed screen owns the rendering and the wire
@@ -47,6 +47,6 @@ data object ThemeSettingsPageMeta : NativePageMeta() {{
 fun ThemeSettingsScreen(
     onBack: (() -> Unit)?,
     openPage: (pageId: String, query: String) -> Unit,
-) {{
+) {
     com.zylod.wholesale.ui.account.ThemeSettingsScreen(onBack = onBack, openPage = openPage)
-}}
+}

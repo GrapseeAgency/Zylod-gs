@@ -42,14 +42,13 @@ data object AdminSupportTicketsPageMeta : NativePageMeta() {
     override val category = "Support & Help"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Reply as the platform. Every reply notifies the filer; status changes are yours to drive."
+    override val summary = "Platform support threads — reply as the platform and drive the status changes yourself."
     override val tabHint = ""
     override val bullets = listOf(
-        "Support Threads",
-        "· : ’Buyer’) : (t.supplier ? · : ’Seller’)} : ’’}",
-    ) : (t.supplier ? · : ’Seller’)} : ’’}",
+        "Every reply notifies the filer; buyer and supplier tickets share one queue with their roles intact.",
     )
-    override val related = listOf(
+
+        override val related = listOf(
         NativePageLink("help-center", "Help Center"),
         NativePageLink("support-tickets", "Support Tickets"),
         NativePageLink("contact-us", "Contact Us"),

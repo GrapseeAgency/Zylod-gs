@@ -42,17 +42,13 @@ data object SellerSalesReportPageMeta : NativePageMeta() {
     override val category = "Seller & Supplier"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "No active restock watches right now — buyers watching your sold-out products will appear here."
+    override val summary = "Seller sales report — real sold rows and revenue from the seller API."
     override val tabHint = ""
     override val bullets = listOf(
-        "% : Not available yet }",
-        "Seller Analytics",
-        "Traffic-source tracking is not available yet.",
-        "No sales yet — your top products will appear here once paid orders come in.",
-        "Restock Demand buyer waiting )}",
-    )}",
+        "Honest zero-states for fresh accounts — revenue sums only real order items.",
     )
-    override val related = listOf(
+
+        override val related = listOf(
         NativePageLink("edit-product", "Edit Product"),
         NativePageLink("product-performance", "Product Performance"),
     )

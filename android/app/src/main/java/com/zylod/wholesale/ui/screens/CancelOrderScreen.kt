@@ -14,7 +14,7 @@ import com.zylod.wholesale.ui.orderdetail.CancelOrderScreen as TypedCancelOrderS
  * the web page renders, with the same honesty contract. The meta keeps its
  * registry identity; the NativePageRegistry composable signature is unchanged.
  */
-data object CancelOrderPageMeta : NativePageMeta() {{
+data object CancelOrderPageMeta : NativePageMeta() {
     override val pageId = "cancel-order"
     override val title = "Cancel Order"
     override val category = "Orders & Logistics"
@@ -32,7 +32,7 @@ data object CancelOrderPageMeta : NativePageMeta() {{
         NativePageLink("buyer-orders", "My Orders"),
         NativePageLink("return-request", "Return Request"),
     )
-}}
+}
 
 /** Delegation only — the shared typed screen owns the rendering and the wire. */
 @Composable
@@ -40,6 +40,6 @@ fun CancelOrderScreen(
     onBack: (() -> Unit)?,
     openPage: (pageId: String, query: String) -> Unit,
     query: String,
-) {{
+) {
     com.zylod.wholesale.ui.orderdetail.CancelOrderScreen(onBack = onBack, openPage = openPage, query = query)
-}}
+}

@@ -25,23 +25,15 @@ data object AdminPaymentsPageMeta : NativePageMeta() {
     override val category = "Dashboards & Analytics"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Every buyer payment submission across the platform — verify after confirming money arrived. Every action is audit-logged."
+    override val summary = "Payment verification console — the real payments table with paginated status counts and the admin verify decision."
     override val tabHint = ""
     override val bullets = listOf(
-        "Admin access required",
-        "&page&limit * (+ whole-table stats: the 4 real statuses + total) * POST /api/admin/payments/[id]/verify — * the admin-override decision on a pending * submission (honest partial math…",
-        "Payment Verification",
-        "Buyer submissions appear here the moment POST /api/orders/[id]/payment-submit records them. Nothing is marked paid until a seller, an admin, or the verified webhook confirms it.",
-        "Could not load the queue",
-        "This tab reflects the real payments table — counts in the strip above are platform-wide.",
-    )        "Admin access required",
-        "&page&limit * (+ whole-table stats: the 4 real statuses + total) * POST /api/admin/payments/[id]/verify — * the admin-override decision on a pending * submission (honest partial math…",
-        "Payment Verification",
-        "Every buyer payment submission across the platform — verify after confirming money arrived. Every action is audit-logged.",
-        "Could not load the queue",
-        "Buyer submissions appear here the moment POST /api/orders/[id]/payment-submit records them. Nothing is marked paid until a seller, an admin, or the verified webhook confirms it.",
+        "GET api/admin/payments renders the four real statuses plus the platform-wide total in the strip.",
+        "POST api/admin/payments/[id]/verify records the admin-override decision on a pending submission — every action is audit-logged.",
+        "Buyer submissions appear the moment payment-submit records them; nothing is marked paid until someone verifies the money.",
     )
-    override val related = listOf(
+
+        override val related = listOf(
         NativePageLink("dashboard", "Dashboard"),
         NativePageLink("analytics-dashboard", "Analytics Dashboard"),
         NativePageLink("store-analytics", "Store Analytics"),

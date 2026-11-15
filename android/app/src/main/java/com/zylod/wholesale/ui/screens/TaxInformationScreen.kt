@@ -17,7 +17,7 @@ import com.zylod.wholesale.ui.account.TaxInformationScreen as TypedTaxInformatio
  * same honesty contract. The meta object keeps its registry identity and the
  * NativePageRegistry composable signature is unchanged.
  */
-data object TaxInformationPageMeta : NativePageMeta() {{
+data object TaxInformationPageMeta : NativePageMeta() {
     override val pageId = "tax-information"
     override val title = "Tax Information"
     override val category = "Settings & App"
@@ -35,7 +35,7 @@ data object TaxInformationPageMeta : NativePageMeta() {{
         NativePageLink("account-settings", "Account Settings"),
         NativePageLink("seller-verification", "Seller Verification"),
     )
-}}
+}
 
 /**
  * Delegation only — the shared typed screen owns the rendering and the wire
@@ -47,6 +47,6 @@ data object TaxInformationPageMeta : NativePageMeta() {{
 fun TaxInformationScreen(
     onBack: (() -> Unit)?,
     openPage: (pageId: String, query: String) -> Unit,
-) {{
+) {
     com.zylod.wholesale.ui.account.TaxInformationScreen(onBack = onBack, openPage = openPage)
-}}
+}

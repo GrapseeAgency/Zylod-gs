@@ -17,7 +17,7 @@ import com.zylod.wholesale.ui.account.LanguageSettingsScreen as TypedLanguageSet
  * same honesty contract. The meta object keeps its registry identity and the
  * NativePageRegistry composable signature is unchanged.
  */
-data object LanguageSettingsPageMeta : NativePageMeta() {{
+data object LanguageSettingsPageMeta : NativePageMeta() {
     override val pageId = "language-settings"
     override val title = "Language & Currency"
     override val category = "Settings & App"
@@ -35,7 +35,7 @@ data object LanguageSettingsPageMeta : NativePageMeta() {{
         NativePageLink("theme-settings", "Theme Settings"),
         NativePageLink("account-settings", "Account Settings"),
     )
-}}
+}
 
 /**
  * Delegation only — the shared typed screen owns the rendering and the wire
@@ -47,6 +47,6 @@ data object LanguageSettingsPageMeta : NativePageMeta() {{
 fun LanguageSettingsScreen(
     onBack: (() -> Unit)?,
     openPage: (pageId: String, query: String) -> Unit,
-) {{
+) {
     com.zylod.wholesale.ui.account.LanguageSettingsScreen(onBack = onBack, openPage = openPage)
-}}
+}

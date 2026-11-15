@@ -15,7 +15,7 @@ import com.zylod.wholesale.ui.returns.RefundStatusScreen as TypedRefundDetailScr
  * contract. The meta keeps its registry identity; the registry signature is
  * unchanged.
  */
-data object RefundDetailPageMeta : NativePageMeta() {{
+data object RefundDetailPageMeta : NativePageMeta() {
     override val pageId = "refund-detail"
     override val title = "Refund Detail"
     override val category = "Orders & Logistics"
@@ -33,7 +33,7 @@ data object RefundDetailPageMeta : NativePageMeta() {{
         NativePageLink("buyer-orders", "My Orders"),
         NativePageLink("return-detail", "Return Details"),
     )
-}}
+}
 
 /** Delegation only — the shared typed screen owns the rendering and the wire. */
 @Composable
@@ -41,6 +41,6 @@ fun RefundDetailScreen(
     onBack: (() -> Unit)?,
     openPage: (pageId: String, query: String) -> Unit,
     query: String,
-) {{
+) {
     com.zylod.wholesale.ui.returns.RefundStatusScreen(onBack = onBack, openPage = openPage, query = query)
-}}
+}
