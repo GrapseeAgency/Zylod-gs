@@ -14,7 +14,7 @@ import com.zylod.wholesale.ui.notifications.NotificationDetailScreen as TypedNot
  * REAL wire the web page renders. The meta keeps its registry identity; the
  * registry signature is unchanged.
  */
-data object NotificationDetailPageMeta : NativePageMeta() {{
+data object NotificationDetailPageMeta : NativePageMeta() {
     override val pageId = "notification-detail"
     override val title = "Notification Detail"
     override val category = "Notifications & Alerts"
@@ -32,7 +32,7 @@ data object NotificationDetailPageMeta : NativePageMeta() {{
         NativePageLink("order-detail", "Order Detail"),
         NativePageLink("track-order", "Track Order"),
     )
-}}
+}
 
 /** Delegation only — the shared typed screen owns the rendering and the wire. */
 @Composable
@@ -40,6 +40,6 @@ fun NotificationDetailScreen(
     onBack: (() -> Unit)?,
     openPage: (pageId: String, query: String) -> Unit,
     query: String,
-) {{
+) {
     com.zylod.wholesale.ui.notifications.NotificationDetailScreen(onBack = onBack, openPage = openPage, query = query)
-}}
+}

@@ -14,7 +14,7 @@ import com.zylod.wholesale.ui.careers.JobDetailScreen as TypedJobDetailScreen
  * REAL wire the web page renders. The meta keeps its registry identity; the
  * registry signature is unchanged.
  */
-data object JobDetailPageMeta : NativePageMeta() {{
+data object JobDetailPageMeta : NativePageMeta() {
     override val pageId = "job-detail"
     override val title = "Job Opening"
     override val category = "Company & Content"
@@ -32,7 +32,7 @@ data object JobDetailPageMeta : NativePageMeta() {{
         NativePageLink("about-us", "About Us"),
         NativePageLink("contact-us", "Contact Us"),
     )
-}}
+}
 
 /** Delegation only — the shared typed screen owns the rendering and the wire. */
 @Composable
@@ -40,6 +40,6 @@ fun JobDetailScreen(
     onBack: (() -> Unit)?,
     openPage: (pageId: String, query: String) -> Unit,
     query: String,
-) {{
+) {
     com.zylod.wholesale.ui.careers.JobDetailScreen(onBack = onBack, openPage = openPage, query = query)
-}}
+}
