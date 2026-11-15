@@ -42,8 +42,6 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.zylod.wholesale.data.api.ApiClient
-import com.zylod.wholesale.data.api.MarkReadResponse
-import com.zylod.wholesale.data.api.NativeNotificationDto
 import com.zylod.wholesale.data.api.ServerConfig
 import com.zylod.wholesale.ui.nav.RouteOwnership.queryParam
 import kotlinx.coroutines.CancellationException
