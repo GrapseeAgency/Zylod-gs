@@ -42,17 +42,19 @@ data object TeamManagementPageMeta : NativePageMeta() {
     override val category = "Settings & App"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Team Management — app-level settings and device-side controls. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "No previous shift records found. Clock in to log current shift."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the team-management pageId via RouteOwnership.",
+        "Recent Shift Attendance",
+        "No vehicles currently assigned to this dock.",
+        "Scan Activity History",
+        "Active Dispatch Vehicles",
+        "Log Quality Control Rejection",
+        "Report Warehouse Incident",
     )
     override val related = listOf(
-        NativePageLink("app-settings", "App Settings"),
-        NativePageLink("display-settings", "Display Settings"),
-        NativePageLink("profile", "Profile"),
+        NativePageLink("account-settings", "Account Settings"),
+        NativePageLink("qr-scanner", "Qr Scanner"),
     )
 }
 

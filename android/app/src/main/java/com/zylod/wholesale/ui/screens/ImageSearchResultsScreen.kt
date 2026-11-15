@@ -42,12 +42,10 @@ data object ImageSearchResultsPageMeta : NativePageMeta() {
     override val category = "Search & Navigation"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Image Search Results — find anything across the Zylod wholesale marketplace. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Upload or paste an image to find similar wholesale products"
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the image-search-results pageId via RouteOwnership.",
+        "Upload or paste an image to find similar wholesale products",
     )
     override val related = listOf(
         NativePageLink("search-results", "Search Results"),

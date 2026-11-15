@@ -42,12 +42,11 @@ data object SubmitTicketPageMeta : NativePageMeta() {
     override val category = "Support & Help"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Submit Ticket — help, policies and buyer/seller protection on Zylod. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Submit an official claim or inquiry to the Zylod Support & Dispute Resolution team."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the submit-ticket pageId via RouteOwnership.",
+        "Open Support Ticket",
+        "Ticket Information",
     )
     override val related = listOf(
         NativePageLink("help-center", "Help Center"),

@@ -26,17 +26,18 @@ data object PaymentTermsPageMeta : NativePageMeta() {
     override val category = "Support & Help"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Payment Terms — help, policies and buyer/seller protection on Zylod. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Pay via bank transfer or mobile banking (bKash/Nagad) using the details shown on your order. Orders stay UNPAID until Zylod verifies the payment."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the payment-terms pageId via RouteOwnership.",
+        "Payment Terms",
+        "Payment Resources",
+        "Accepted Payment Methods",
+        "Key Payment Rules",
+        "Full Payment Terms",
+        "Payment FAQs",
     )
     override val related = listOf(
-        NativePageLink("help-center", "Help Center"),
-        NativePageLink("support-tickets", "Support Tickets"),
-        NativePageLink("contact-us", "Contact Us"),
+        NativePageLink("payment-method", "Payment Method"),
     )
 }
 

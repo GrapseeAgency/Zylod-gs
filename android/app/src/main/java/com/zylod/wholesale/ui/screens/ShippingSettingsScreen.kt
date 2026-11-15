@@ -42,12 +42,12 @@ data object ShippingSettingsPageMeta : NativePageMeta() {
     override val category = "Orders & Logistics"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Shipping Settings — order, shipping and delivery operations for Zylod buyers. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Save a rate for at least one zone to enable shipping."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the shipping-settings pageId via RouteOwnership.",
+        "Shipping Settings",
+        "No shipping rates configured yet",
+        "Divisional Shipping Rates",
     )
     override val related = listOf(
         NativePageLink("buyer-orders", "Buyer Orders"),

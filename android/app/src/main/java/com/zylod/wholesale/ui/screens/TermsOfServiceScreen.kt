@@ -45,9 +45,9 @@ data object TermsOfServicePageMeta : NativePageMeta() {
     override val summary = "Terms Of Service — help, policies and buyer/seller protection on Zylod. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the terms-of-service pageId via RouteOwnership.",
+        "Live product grid fetched from api/legal/terms_of_service — the same catalog call the web page makes.",
+        "Cards render real price, MOQ badge, supplier and category from the response.",
+        "Offline: the last-saved grid renders first; the Room offline catalog fills in before curated content.",
     )
     override val related = listOf(
         NativePageLink("help-center", "Help Center"),

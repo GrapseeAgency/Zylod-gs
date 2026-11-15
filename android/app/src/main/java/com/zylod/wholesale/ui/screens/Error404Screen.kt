@@ -42,17 +42,15 @@ data object Error404PageMeta : NativePageMeta() {
     override val category = "Zylod Marketplace"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Error 404 — a Zylod marketplace surface. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "The requested wholesale listing, supplier storefront, or document route may have been moved, expired, or archived."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the error-404 pageId via RouteOwnership.",
+        "Wholesale Page or Product Not Found",
+        "Popular Destinations",
     )
     override val related = listOf(
-        NativePageLink("home", "Home"),
-        NativePageLink("category-browser", "Category Browser"),
-        NativePageLink("help-center", "Help Center"),
+        NativePageLink("search-home", "Search Home"),
+        NativePageLink("broken-link-report", "Broken Link Report"),
     )
 }
 

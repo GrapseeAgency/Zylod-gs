@@ -42,17 +42,20 @@ data object RefundStatusPageMeta : NativePageMeta() {
     override val category = "Orders & Logistics"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Refund Status — order, shipping and delivery operations for Zylod buyers. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Open a return request from your order history to see its live refund status."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the refund-status pageId via RouteOwnership.",
+        "No refund selected",
+        "Refund status is visible only to the buyer who raised the request.",
+        "Sign in required",
+        "It may have been removed, or the link may belong to another account.",
+        "Return request not found",
+        "Original order: navigate(’order-detail’, )} className=”font-semibold text-primary hover:underline” >",
     )
     override val related = listOf(
-        NativePageLink("buyer-orders", "Buyer Orders"),
-        NativePageLink("order-tracking", "Order Tracking"),
-        NativePageLink("shipping-info", "Shipping Info"),
+        NativePageLink("orders-history", "Orders History"),
+        NativePageLink("dispute-center", "Dispute Center"),
+        NativePageLink("order-detail", "Order Detail"),
     )
 }
 

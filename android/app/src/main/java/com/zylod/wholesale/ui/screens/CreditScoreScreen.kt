@@ -25,17 +25,17 @@ data object CreditScorePageMeta : NativePageMeta() {
     override val category = "Dashboards & Analytics"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Credit Score — operational dashboards and analytics surfaces. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Credit Rating Evaluation Factors"
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the credit-score pageId via RouteOwnership.",
+        "No trade credit score is available for your account yet.",
+        "Could not load your trade credit score (HTTP ).",
+        "Network error while loading your trade credit score. Check your connection and retry.",
+        "Your session has ended. Sign in again to view your trade credit score.",
+        "Your credit score is computed from your real repayment and order history. Sign in to continue.",
     )
     override val related = listOf(
-        NativePageLink("dashboard", "Dashboard"),
-        NativePageLink("analytics-dashboard", "Analytics Dashboard"),
-        NativePageLink("store-analytics", "Store Analytics"),
+        NativePageLink("credit-limit", "Credit Limit"),
     )
 }
 

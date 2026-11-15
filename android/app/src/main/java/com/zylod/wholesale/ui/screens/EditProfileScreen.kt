@@ -26,17 +26,18 @@ data object EditProfilePageMeta : NativePageMeta() {
     override val category = "Account & Profile"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Edit Profile — your identity, contact and business details, saved to your account."
+    override val summary = "Primary executive contact for procurement &amp; RFQs."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the edit-profile pageId via RouteOwnership.",
+        "Edit Wholesale Profile",
+        "Commercial registration and tax credentials.",
+        "Personal &amp; Contact Details",
+        "Showcase production footprint to global buyers.",
+        "Company &amp; Legal Entity",
+        "Manufacturing &amp; Facilities",
     )
     override val related = listOf(
         NativePageLink("profile", "Profile"),
-        NativePageLink("address-book", "Address Book"),
-        NativePageLink("account-settings", "Account Settings"),
     )
 }
 

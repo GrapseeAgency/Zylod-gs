@@ -45,9 +45,9 @@ data object PromoNotificationsPageMeta : NativePageMeta() {
     override val summary = "Promo Notifications — promotions, rewards and membership programs on Zylod. Content streams live from the Zylod API and renders through the shared native page model."
     override val tabHint = ""
     override val bullets = listOf(
-        "Live data renders from the Zylod API when an endpoint feeds this page.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the promo-notifications pageId via RouteOwnership.",
+        "Live notification feed fetched from api/notifications?limit=20&types=promotion — the same call the web page makes.",
+        "Rows render real title, message, type badge and unread state.",
+        "Offline: the last-saved feed renders first — never a white screen.",
     )
     override val related = listOf(
         NativePageLink("coupons", "Coupons"),

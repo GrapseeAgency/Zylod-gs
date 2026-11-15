@@ -29,9 +29,9 @@ data object FeedbackPagePageMeta : NativePageMeta() {
     override val summary = "Feedback Page — the live community suggestions wall and the real Share Idea form, streaming from the Zylod support API through the shared native feedback screen."
     override val tabHint = ""
     override val bullets = listOf(
-        "Live data renders from the Zylod API when an endpoint feeds this page.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the feedback-page pageId via RouteOwnership.",
+        "Live product grid fetched from api/support/feedback — the same catalog call the web page makes.",
+        "Cards render real price, MOQ badge, supplier and category from the response.",
+        "Offline: the last-saved grid renders first; the Room offline catalog fills in before curated content.",
     )
     override val related = listOf(
         NativePageLink("helpdesk", "Help & Support Center"),

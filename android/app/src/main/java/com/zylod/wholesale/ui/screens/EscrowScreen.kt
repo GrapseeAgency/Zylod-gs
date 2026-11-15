@@ -42,12 +42,11 @@ data object EscrowPageMeta : NativePageMeta() {
     override val category = "Support & Help"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Escrow — help, policies and buyer/seller protection on Zylod. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Renders the typed wallet hub — escrow states ride the real order and payment APIs."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the escrow pageId via RouteOwnership.",
+        "Curated metadata for a page owned by a typed native screen — the screen itself renders live data.",
+        "Renders the typed wallet hub — escrow states ride the real order and payment APIs.",
     )
     override val related = listOf(
         NativePageLink("help-center", "Help Center"),

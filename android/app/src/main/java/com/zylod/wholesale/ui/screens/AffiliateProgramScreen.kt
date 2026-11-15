@@ -12,17 +12,18 @@ data object AffiliateProgramPageMeta : NativePageMeta() {
     override val category = "Marketing & Rewards"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Affiliate Program — promotions, rewards and membership programs on Zylod. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Earn continuous 5% cash commissions on every completed purchase order placed by manufacturers and retailers you introduce."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the affiliate-program pageId via RouteOwnership.",
+        "Affiliate Partner Program",
+        "Earn 5% commission on every wholesale order you refer",
+        "Monetize Your B2B Industry Network",
+        "Get instant access to tracked wholesale referral links, real-time commission analytics, and monthly bKash/bank account settlements.",
+        "Become a Certified Wholesale Affiliate",
+        "Earn % of every completed wholesale order placed through your link.",
     )
     override val related = listOf(
-        NativePageLink("coupons", "Coupons"),
-        NativePageLink("vip-club", "VIP Club"),
-        NativePageLink("referral-program", "Referral Program"),
+        NativePageLink("affiliate-dashboard", "Affiliate Dashboard"),
     )
 }
 

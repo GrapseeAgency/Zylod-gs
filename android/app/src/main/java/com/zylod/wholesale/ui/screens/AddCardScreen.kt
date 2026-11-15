@@ -27,17 +27,15 @@ data object AddCardPageMeta : NativePageMeta() {
     override val category = "Zylod Marketplace"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Add Card — a Zylod marketplace surface. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Saved card references belong to your Zylod account — sign in or create one to continue."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the add-card pageId via RouteOwnership.",
+        "Sign in to add a card",
+        "Card references only. Zylod saves the brand, last 4 digits, holder and expiry — never the full number or CVV. Cards on file are for reconciliation display; they cannot be charged . Checkout…",
+        "No card can be charged on Zylod. Orders are paid from your wallet balance (debited in real time) or by a bank / mobile transfer that a finance admin verifies against the real receipt.",
     )
     override val related = listOf(
-        NativePageLink("home", "Home"),
-        NativePageLink("category-browser", "Category Browser"),
-        NativePageLink("help-center", "Help Center"),
+        NativePageLink("credit-debit-cards", "Credit Debit Cards"),
     )
 }
 

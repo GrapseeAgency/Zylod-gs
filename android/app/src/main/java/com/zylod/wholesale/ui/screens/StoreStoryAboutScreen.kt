@@ -42,17 +42,18 @@ data object StoreStoryAboutPageMeta : NativePageMeta() {
     override val category = "Seller & Supplier"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Store Story About — the seller and supplier toolchain on the Zylod marketplace. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Establish trust with verified overseas wholesale buyers"
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the store-story-about pageId via RouteOwnership.",
+        "Company Story & Factory Profile",
+        "Verified product certifications — live on your public storefront",
+        "Factory Specifications & Capacity",
+        "Primary Export Markets",
+        "Industrial Certifications & Compliance",
+        "Key Production Machinery & Equipment",
     )
     override val related = listOf(
-        NativePageLink("seller-dashboard", "Seller Dashboard"),
-        NativePageLink("supplier-center", "Supplier Center"),
-        NativePageLink("product-upload", "Product Upload"),
+        NativePageLink("store-customization", "Store Customization"),
     )
 }
 

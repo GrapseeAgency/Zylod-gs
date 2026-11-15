@@ -32,9 +32,9 @@ data object FavoriteCategoriesPageMeta : NativePageMeta() {
     override val summary = "Favorite Categories — product discovery and buying on the Zylod marketplace. Content streams live from the Zylod API and renders through the shared native page model."
     override val tabHint = ""
     override val bullets = listOf(
-        "Live data renders from the Zylod API when an endpoint feeds this page.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the favorite-categories pageId via RouteOwnership.",
+        "Live category tree fetched from api/categories — the same call the web page makes.",
+        "Chips render real category names and product counts.",
+        "Offline: the last-saved tree renders first — never a white screen.",
     )
     override val related = listOf(
         NativePageLink("all-products", "All Products"),

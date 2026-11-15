@@ -42,17 +42,15 @@ data object CropImagePageMeta : NativePageMeta() {
     override val category = "Zylod Marketplace"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Crop Image — a Zylod marketplace surface. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "A clear profile photo helps build trust with buyers and suppliers on Zylod."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the crop-image pageId via RouteOwnership.",
+        "Profile Photo Management",
+        "Max file size: 10MB. Formats: JPG, PNG, WebP.",
     )
     override val related = listOf(
-        NativePageLink("home", "Home"),
-        NativePageLink("category-browser", "Category Browser"),
-        NativePageLink("help-center", "Help Center"),
+        NativePageLink("profile", "Profile"),
+        NativePageLink("account-settings", "Account Settings"),
     )
 }
 

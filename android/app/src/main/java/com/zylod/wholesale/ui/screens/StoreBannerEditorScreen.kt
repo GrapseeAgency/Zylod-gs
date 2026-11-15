@@ -42,17 +42,16 @@ data object StoreBannerEditorPageMeta : NativePageMeta() {
     override val category = "Seller & Supplier"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Store Banner Editor — the seller and supplier toolchain on the Zylod marketplace. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Add a slide and enter your own image URL, title and promo copy. Nothing is created until you publish."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the store-banner-editor pageId via RouteOwnership.",
+        "Storefront Hero Banner Manager",
+        "Configure promotional carousel sliders for your store",
+        "Configured Slide Banners ( )",
+        "No banners configured yet",
     )
     override val related = listOf(
-        NativePageLink("seller-dashboard", "Seller Dashboard"),
-        NativePageLink("supplier-center", "Supplier Center"),
-        NativePageLink("product-upload", "Product Upload"),
+        NativePageLink("store-customization", "Store Customization"),
     )
 }
 

@@ -42,12 +42,12 @@ data object AdminSupportTicketsPageMeta : NativePageMeta() {
     override val category = "Support & Help"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Admin Support Tickets — help, policies and buyer/seller protection on Zylod. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Reply as the platform. Every reply notifies the filer; status changes are yours to drive."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the admin-support-tickets pageId via RouteOwnership.",
+        "Support Threads",
+        "· : ’Buyer’) : (t.supplier ? · : ’Seller’)} : ’’}",
+    ) : (t.supplier ? · : ’Seller’)} : ’’}",
     )
     override val related = listOf(
         NativePageLink("help-center", "Help Center"),

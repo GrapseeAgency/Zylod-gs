@@ -42,17 +42,16 @@ data object SellerPromotionsPageMeta : NativePageMeta() {
     override val category = "Seller & Supplier"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Seller Promotions — the seller and supplier toolchain on the Zylod marketplace. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Create a campaign to discount your products automatically at checkout — the discount comes off your subOrder subtotal, and buyers see it on your store page."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the seller-promotions pageId via RouteOwnership.",
+        "Campaigns",
+        "Pinned products stay as they are — create a new campaign if you need a different product set.",
+        "No campaigns yet",
     )
     override val related = listOf(
-        NativePageLink("seller-dashboard", "Seller Dashboard"),
-        NativePageLink("supplier-center", "Supplier Center"),
-        NativePageLink("product-upload", "Product Upload"),
+        NativePageLink("create-promotion", "Create Promotion"),
+        NativePageLink("promotion-analytics", "Promotion Analytics"),
     )
 }
 

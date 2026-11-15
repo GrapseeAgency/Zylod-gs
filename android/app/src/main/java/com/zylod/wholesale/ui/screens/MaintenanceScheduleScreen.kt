@@ -42,17 +42,16 @@ data object MaintenanceSchedulePageMeta : NativePageMeta() {
     override val category = "Settings & App"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Maintenance Schedule — app-level settings and device-side controls. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Active and upcoming windows — read live from the maintenanceSchedules table"
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the maintenance-schedule pageId via RouteOwnership.",
+        "Maintenance Calendar &amp; Window Log",
+        "There are no active or upcoming maintenance windows right now. The full historical log is admin-only — when a window is scheduled, it will appear here in real time, and the platform-wide…",
+        "No maintenance windows scheduled",
+        "The full historical archive of past windows is admin-only. Admins can read every window that has ever been scheduled via the admin maintenance console.",
     )
     override val related = listOf(
-        NativePageLink("app-settings", "App Settings"),
-        NativePageLink("display-settings", "Display Settings"),
-        NativePageLink("profile", "Profile"),
+        NativePageLink("maintenance-mode", "Maintenance Mode"),
     )
 }
 

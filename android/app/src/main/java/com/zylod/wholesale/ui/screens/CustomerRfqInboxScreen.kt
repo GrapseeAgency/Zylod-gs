@@ -42,12 +42,15 @@ data object CustomerRfqInboxPageMeta : NativePageMeta() {
     override val category = "Seller & Supplier"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Customer RFQ Inbox — the seller and supplier toolchain on the Zylod marketplace. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Sign in with a seller account to see buyers&apos; quote requests and respond with quotes. Admin accounts can review all requests too."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the customer-rfq-inbox pageId via RouteOwnership.",
+        "Seller sign-in required",
+        "Buyer sourcing requests are marketplace-open: every seller sees the same open requests. Respond with your per-unit price — buyers see quotes in real time.",
+        "Seller access required",
+        "Search matches the request title. Try a different term or clear the search.",
+        "Quote Requests — RFQ Inbox",
+        "” state. Move between the tabs to see the real distribution.}",
     )
     override val related = listOf(
         NativePageLink("seller-dashboard", "Seller Dashboard"),

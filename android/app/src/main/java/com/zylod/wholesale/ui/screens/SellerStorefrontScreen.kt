@@ -42,17 +42,19 @@ data object SellerStorefrontPageMeta : NativePageMeta() {
     override val category = "Seller & Supplier"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Seller Storefront — the seller and supplier toolchain on the Zylod marketplace. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "This store has not published any approved products."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the seller-storefront pageId via RouteOwnership.",
+        "Store profile not available",
+        "This store has not set up featured products yet.",
+        "No products listed yet",
+        "Product questions belong on the product page’s Q&amp;A.",
+        "No featured collection published",
     )
     override val related = listOf(
-        NativePageLink("seller-dashboard", "Seller Dashboard"),
-        NativePageLink("supplier-center", "Supplier Center"),
-        NativePageLink("product-upload", "Product Upload"),
+        NativePageLink("store-banner-editor", "Store Banner Editor"),
+        NativePageLink("store-story-about", "Store Story About"),
+        NativePageLink("store-featured-products", "Store Featured Products"),
     )
 }
 

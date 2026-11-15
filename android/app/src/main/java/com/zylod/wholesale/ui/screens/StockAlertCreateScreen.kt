@@ -42,17 +42,16 @@ data object StockAlertCreatePageMeta : NativePageMeta() {
     override val category = "Account & Profile"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Stock Alert Create — account, identity and money surfaces for the signed-in user. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "We will notify you immediately once is back in stock at supplier factories."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the stock-alert-create pageId via RouteOwnership.",
+        "Back in Stock Notification",
+        "Restock Alert Enabled!",
+        "Select Out of Stock Product",
+        "Selected Product",
     )
     override val related = listOf(
-        NativePageLink("profile", "Profile"),
-        NativePageLink("buyer-orders", "Buyer Orders"),
-        NativePageLink("account-settings", "Account Settings"),
+        NativePageLink("back-in-stock-alerts", "Back In Stock Alerts"),
     )
 }
 

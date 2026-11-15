@@ -42,12 +42,11 @@ data object BuyerPageMeta : NativePageMeta() {
     override val category = "Shopping & Products"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Buyer — product discovery and buying on the Zylod marketplace. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Alias row for the buyer area — renders the typed buyer dashboard with live account data."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the buyer pageId via RouteOwnership.",
+        "Curated metadata for a page owned by a typed native screen — the screen itself renders live data.",
+        "Alias row for the buyer area — renders the typed buyer dashboard with live account data.",
     )
     override val related = listOf(
         NativePageLink("all-products", "All Products"),

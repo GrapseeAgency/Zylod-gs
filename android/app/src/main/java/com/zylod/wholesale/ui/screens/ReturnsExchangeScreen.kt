@@ -26,17 +26,17 @@ data object ReturnsExchangePageMeta : NativePageMeta() {
     override val category = "Orders & Logistics"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Returns Exchange — order, shipping and delivery operations for Zylod buyers. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Returns are started from a specific order. Open one of your delivered orders and choose “Return”."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the returns-exchange pageId via RouteOwnership.",
+        "No order selected",
+        "This order doesn&apos;t contain any line items, so there is nothing to return.",
+        "Return Request",
+        "Select Items",
+        "Nothing to return",
     )
     override val related = listOf(
-        NativePageLink("buyer-orders", "Buyer Orders"),
-        NativePageLink("order-tracking", "Order Tracking"),
-        NativePageLink("shipping-info", "Shipping Info"),
+        NativePageLink("orders", "Orders"),
     )
 }
 

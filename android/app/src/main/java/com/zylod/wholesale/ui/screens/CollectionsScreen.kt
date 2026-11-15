@@ -42,17 +42,17 @@ data object CollectionsPageMeta : NativePageMeta() {
     override val category = "Shopping & Products"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Collections — product discovery and buying on the Zylod marketplace. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Create your first collection to organize products."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the collections pageId via RouteOwnership.",
+        "My Collections",
+        "Could not load collections",
+        "No collections yet",
     )
     override val related = listOf(
-        NativePageLink("all-products", "All Products"),
-        NativePageLink("flash-deals", "Flash Deals"),
-        NativePageLink("category-browser", "Category Browser"),
+        NativePageLink("create-collection", "Create Collection"),
+        NativePageLink("collection-detail", "Collection Detail"),
+        NativePageLink("edit-collection", "Edit Collection"),
     )
 }
 

@@ -97,8 +97,8 @@ object NativePageRegistry {
         "add-to-cart-confirm" to entry(AddToCartConfirmPageMeta) { onBack, openPage, query -> AddToCartConfirmScreen(onBack = onBack, openPage = openPage, query = query) },
         "add-to-cart-confirmation" to entry(AddToCartConfirmationPageMeta) { onBack, openPage, query -> AddToCartConfirmationScreen(onBack = onBack, openPage = openPage, query = query) },
         "address-book" to entry(AddressBookPageMeta) { onBack, openPage, query -> AddressBookScreen(onBack = onBack, openPage = openPage, query = query) },
-        "admin" to entry(AdminPageMeta) { onBack, openPage, query -> AdminScreen(onBack = onBack, openPage = openPage, query = query) },
-        "admin-" to entry(AdminPageMeta2) { onBack, openPage, query -> AdminScreen2(onBack = onBack, openPage = openPage, query = query) },
+        "admin" to entry(AdminPageMeta) { onBack, openPage, query -> com.zylod.wholesale.ui.admin.AdminDashboardScreen(onBack = onBack, openPage = openPage, query = query) },
+        "admin-" to entry(AdminPageMeta2) { onBack, openPage, query -> com.zylod.wholesale.ui.admin.AdminDashboardScreen(onBack = onBack, openPage = openPage, query = query) },
         "admin-analytics" to entry(AdminAnalyticsPageMeta) { onBack, openPage, query -> AdminAnalyticsScreen(onBack = onBack, openPage = openPage, query = query) },
         "admin-audit-logs" to entry(AdminAuditLogsPageMeta) { onBack, openPage, query -> AdminAuditLogsScreen(onBack = onBack, openPage = openPage, query = query) },
         "admin-categories" to entry(AdminCategoriesPageMeta) { onBack, openPage, query -> AdminCategoriesScreen(onBack = onBack, openPage = openPage, query = query) },
@@ -153,10 +153,10 @@ object NativePageRegistry {
         "back-in-stock-alerts" to entry(BackInStockAlertsPageMeta) { onBack, openPage, query -> BackInStockAlertsScreen(onBack = onBack, openPage = openPage, query = query) },
         "back-in-stock-detail" to entry(BackInStockDetailPageMeta) { onBack, openPage, query -> BackInStockDetailScreen(onBack = onBack, openPage = openPage, query = query) },
         "backup-codes" to entry(BackupCodesPageMeta) { onBack, openPage, query -> BackupCodesScreen(onBack = onBack, openPage = openPage, query = query) },
-        "balance" to entry(BalancePageMeta) { onBack, openPage, query -> BalanceScreen(onBack = onBack, openPage = openPage, query = query) },
+        "balance" to entry(BalancePageMeta) { onBack, openPage, query -> com.zylod.wholesale.ui.wallet.WalletScreen(onBack = onBack, openPage = openPage, query = query) },
         // t281 5-b: the "balance-overview" row REMOVED — bullet stub;
         // WebScreen → the SPA's real balance overview page.
-        "bank" to entry(BankPageMeta) { onBack, openPage, query -> BankScreen(onBack = onBack, openPage = openPage, query = query) },
+        "bank" to entry(BankPageMeta) { onBack, openPage, query -> com.zylod.wholesale.ui.wallet.WalletScreen(onBack = onBack, openPage = openPage, query = query) },
         "bank-accounts" to entry(BankAccountsPageMeta) { onBack, openPage, query -> BankAccountsScreen(onBack = onBack, openPage = openPage, query = query) },
         "barcode-result" to entry(BarcodeResultPageMeta) { onBack, openPage, query -> BarcodeResultScreen(onBack = onBack, openPage = openPage, query = query) },
         "barcode-scanner" to entry(BarcodeScannerPageMeta) { onBack, openPage, query -> BarcodeScannerScreen(onBack = onBack, openPage = openPage, query = query) },
@@ -165,13 +165,16 @@ object NativePageRegistry {
         // t281 5-b: the "best-sellers" row REMOVED — bullet stub; WebScreen →
         // the SPA's generic deals page (DEAL_IDS parity).
         "bid-history" to entry(BidHistoryPageMeta) { onBack, openPage, query -> BidHistoryScreen(onBack = onBack, openPage = openPage, query = query) },
-        "billing" to entry(BillingPageMeta) { onBack, openPage, query -> BillingScreen(onBack = onBack, openPage = openPage, query = query) },
+        "billing" to entry(BillingPageMeta) { onBack, openPage, query -> com.zylod.wholesale.ui.wallet.WalletScreen(onBack = onBack, openPage = openPage, query = query) },
         "blog" to entry(BlogPageMeta) { onBack, openPage, query -> BlogScreen(onBack = onBack, openPage = openPage, query = query) },
         "blog-post" to entry(BlogPostPageMeta) { onBack, openPage, query -> BlogPostScreen(onBack = onBack, openPage = openPage, query = query) },
         "books-stationery" to entry(BooksStationeryPageMeta) { onBack, openPage, query -> BooksStationeryScreen(onBack = onBack, openPage = openPage, query = query) },
         "brand-showcase" to entry(BrandShowcasePageMeta) { onBack, openPage, query -> BrandShowcaseScreen(onBack = onBack, openPage = openPage, query = query) },
         "broken-link-report" to entry(BrokenLinkReportPageMeta) { onBack, openPage, query -> BrokenLinkReportScreen(onBack = onBack, openPage = openPage, query = query) },
-        "browse" to entry(BrowsePageMeta) { onBack, openPage, query -> BrowseScreen(onBack = onBack, openPage = openPage, query = query) },
+        // t292: the browse alias renders the live AllProductsScreen catalog grid
+        // (the web's browse page is a product-grid page; the stub rendered
+        // curated bullets).
+        "browse" to entry(BrowsePageMeta) { onBack, openPage, query -> AllProductsScreen(onBack = onBack, openPage = openPage, query = query) },
         // t282: browsing-history lands on the typed RecentlyViewedScreen —
         // the web maps browsing-history onto recently-viewed-page too
         // (chunk-misc.ts:176); the old row was a curated-bullets stub.
@@ -188,14 +191,15 @@ object NativePageRegistry {
         "bulk-upload-products" to entry(BulkUploadProductsPageMeta) { onBack, openPage, query -> BulkUploadProductsScreen(onBack = onBack, openPage = openPage, query = query) },
         "bulk-upload-template" to entry(BulkUploadTemplatePageMeta) { onBack, openPage, query -> BulkUploadTemplateScreen(onBack = onBack, openPage = openPage, query = query) },
         "business-directory" to entry(BusinessDirectoryPageMeta) { onBack, openPage, query -> BusinessDirectoryScreen(onBack = onBack, openPage = openPage, query = query) },
-        "business-profile" to entry(BusinessProfilePageMeta) { onBack, openPage, query -> BusinessProfileScreen(onBack = onBack, openPage = openPage, query = query) },
         // t277-1c P0: the "buy-now" row REMOVED — it rendered a curated marketing
         // stub that dropped productId/quantity entirely (the PDP Buy Now button
         // landed on marketing bullets). The id now falls through to WebScreen →
         // the SPA's REAL buy-now flow (chunk-cart.ts:34, reads productId +
         // quantity from the page params).
-        "buyer" to entry(BuyerPageMeta) { onBack, openPage, query -> BuyerScreen(onBack = onBack, openPage = openPage, query = query) },
-        "buyer-" to entry(BuyerPageMeta2) { onBack, openPage, query -> BuyerScreen2(onBack = onBack, openPage = openPage, query = query) },
+        "buyer" to entry(BuyerPageMeta) { onBack, openPage, query -> BuyerDashboardScreen(onBack = onBack, openPage = openPage, query = query) },
+        // t292: the buyer-/seller- alias rows render the typed dashboards like
+        // their canonical ids (the web's getGenericType prefix branches do the same).
+        "buyer-" to entry(BuyerPageMeta2) { onBack, openPage, query -> BuyerDashboardScreen(onBack = onBack, openPage = openPage, query = query) },
         "buyer-complaints" to entry(BuyerComplaintsPageMeta) { onBack, openPage, query -> BuyerComplaintsScreen(onBack = onBack, openPage = openPage, query = query) },
         "buyer-credit" to entry(BuyerCreditPageMeta) { onBack, openPage, query -> BuyerCreditScreen(onBack = onBack, openPage = openPage, query = query) },
         "buyer-dashboard" to entry(BuyerDashboardPageMeta) { onBack, openPage, query -> BuyerDashboardScreen(onBack = onBack, openPage = openPage, query = query) },
@@ -216,7 +220,7 @@ object NativePageRegistry {
         // t281 5-b: the "cancel-order" row REMOVED — the generic-live ORDERS
         // renderer dropped the orderId query (self-service cancel lives in the
         // typed OrderDetailScreen); WebScreen forwards it to the SPA's page.
-        "card" to entry(CardPageMeta) { onBack, openPage, query -> CardScreen(onBack = onBack, openPage = openPage, query = query) },
+        "card" to entry(CardPageMeta) { onBack, openPage, query -> com.zylod.wholesale.ui.wallet.WalletScreen(onBack = onBack, openPage = openPage, query = query) },
         "career-benefits" to entry(CareerBenefitsPageMeta) { onBack, openPage, query -> CareerBenefitsScreen(onBack = onBack, openPage = openPage, query = query) },
         "career-culture" to entry(CareerCulturePageMeta) { onBack, openPage, query -> CareerCultureScreen(onBack = onBack, openPage = openPage, query = query) },
         "career-internships" to entry(CareerInternshipsPageMeta) { onBack, openPage, query -> CareerInternshipsScreen(onBack = onBack, openPage = openPage, query = query) },
@@ -247,7 +251,7 @@ object NativePageRegistry {
         "collection-detail" to entry(CollectionDetailPageMeta) { onBack, openPage, query -> CollectionDetailScreen(onBack = onBack, openPage = openPage, query = query) },
         "collection-shared" to entry(CollectionSharedPageMeta) { onBack, openPage, query -> CollectionSharedScreen(onBack = onBack, openPage = openPage, query = query) },
         "collections" to entry(CollectionsPageMeta) { onBack, openPage, query -> CollectionsScreen(onBack = onBack, openPage = openPage, query = query) },
-        "commission" to entry(CommissionPageMeta) { onBack, openPage, query -> CommissionScreen(onBack = onBack, openPage = openPage, query = query) },
+        "commission" to entry(CommissionPageMeta) { onBack, openPage, query -> com.zylod.wholesale.ui.wallet.WalletScreen(onBack = onBack, openPage = openPage, query = query) },
         // t281 5-b: the "commission-history" row REMOVED — bullet stub;
         // WebScreen → the SPA's real commission history.
         "community-guidelines" to entry(CommunityGuidelinesPageMeta) { onBack, openPage, query -> CommunityGuidelinesScreen(onBack = onBack, openPage = openPage, query = query) },
@@ -290,7 +294,7 @@ object NativePageRegistry {
         // SupportCenterScreen (the submit-ticket precedent — its dialog IS the
         // real POST api/support/tickets form).
         "create-ticket" to entry(CreateTicketPageMeta) { onBack, openPage, query -> com.zylod.wholesale.ui.support.SupportCenterScreen(onBack = onBack, openPage = openPage, query = query) },
-        "credit" to entry(CreditPageMeta) { onBack, openPage, query -> CreditScreen(onBack = onBack, openPage = openPage, query = query) },
+        "credit" to entry(CreditPageMeta) { onBack, openPage, query -> com.zylod.wholesale.ui.wallet.WalletScreen(onBack = onBack, openPage = openPage, query = query) },
         "credit-debit-cards" to entry(CreditDebitCardsPageMeta) { onBack, openPage, query -> CreditDebitCardsScreen(onBack = onBack, openPage = openPage, query = query) },
         "credit-limit" to entry(CreditLimitPageMeta) { onBack, openPage, query -> CreditLimitScreen(onBack = onBack, openPage = openPage, query = query) },
         "credit-score" to entry(CreditScorePageMeta) { onBack, openPage, query -> CreditScoreScreen(onBack = onBack, openPage = openPage, query = query) },
@@ -300,7 +304,9 @@ object NativePageRegistry {
         "crystal-clear" to entry(CrystalClearPageMeta) { onBack, openPage, query -> CrystalClearScreen(onBack = onBack, openPage = openPage, query = query) },
         "currency-settings" to entry(CurrencySettingsPageMeta) { onBack, openPage, query -> CurrencySettingsScreen(onBack = onBack, openPage = openPage, query = query) },
         "custom-orders" to entry(CustomOrdersPageMeta) { onBack, openPage, query -> CustomOrdersScreen(onBack = onBack, openPage = openPage, query = query) },
-        "customer-queries" to entry(CustomerQueriesPageMeta) { onBack, openPage, query -> CustomerQueriesScreen(onBack = onBack, openPage = openPage, query = query) },
+        // t292: the curated stub shadowed the TYPED CustomerQueriesScreen (ui/complaints,
+        // live GET api/queries) — fully-qualified call, t281 row pattern.
+        "customer-queries" to entry(CustomerQueriesPageMeta) { onBack, openPage, query -> com.zylod.wholesale.ui.complaints.CustomerQueriesScreen(pageId = "customer-queries", onBack = onBack, openPage = openPage, query = query) },
         "customer-query-detail" to entry(CustomerQueryDetailPageMeta) { onBack, openPage, query -> CustomerQueryDetailScreen(onBack = onBack, openPage = openPage, query = query) },
         // t281 5-b: the "customer-rfq-inbox" row REMOVED — bullet stub;
         // WebScreen → the SPA's real RFQ inbox.
@@ -367,7 +373,9 @@ object NativePageRegistry {
         // flag + proof progress, POST { taskId } claims), so the WebView hop
         // is retired again (t246 zero-WebView contract).
         "earn-coupons" to entry(EarnCouponsPageMeta) { onBack, openPage, query -> com.zylod.wholesale.ui.coupons.EarnCouponsScreen(onBack = onBack, openPage = openPage, query = query) },
-        "earnings" to entry(EarningsPageMeta) { onBack, openPage, query -> EarningsScreen(onBack = onBack, openPage = openPage, query = query) },
+        // t292: the earnings fragment renders the typed wallet hub (the web's
+        // generic finance page serves this id with the real wallet experience).
+        "earnings" to entry(EarningsPageMeta) { onBack, openPage, query -> com.zylod.wholesale.ui.wallet.WalletScreen(onBack = onBack, openPage = openPage, query = query) },
         // t281 5-b: the "earnings-dashboard" row REMOVED — bullet stub;
         // WebScreen → the SPA's real earnings dashboard.
         "eco-friendly-products" to entry(EcoFriendlyProductsPageMeta) { onBack, openPage, query -> EcoFriendlyProductsScreen(onBack = onBack, openPage = openPage, query = query) },
@@ -378,7 +386,11 @@ object NativePageRegistry {
         "edit-address" to entry(EditAddressPageMeta) { onBack, openPage, query -> com.zylod.wholesale.ui.returns.AddAddressScreen(pageId = "edit-address", onBack = onBack, openPage = openPage, query = query) },
         "edit-collection" to entry(EditCollectionPageMeta) { onBack, openPage, query -> EditCollectionScreen(onBack = onBack, openPage = openPage, query = query) },
         "edit-product" to entry(EditProductPageMeta) { onBack, openPage, query -> EditProductScreen(onBack = onBack, openPage = openPage, query = query) },
-        "edit-profile" to entry(EditProfilePageMeta) { onBack, openPage, query -> EditProfileScreen(onBack = onBack, openPage = openPage, query = query) },
+        // t292: edit-profile now renders the TYPED EditProfileScreen (ui/profile,
+        // real PATCH api/profile/me) in its GENERAL focus; business-profile uses
+        // the same screen's BUSINESS focus (the web's two pages, one Kotlin rail).
+        "edit-profile" to entry(EditProfilePageMeta) { onBack, openPage, _ -> com.zylod.wholesale.ui.profile.EditProfileScreen(focus = com.zylod.wholesale.ui.profile.EditProfileFocus.GENERAL, onBack = onBack, openPage = openPage) },
+        "business-profile" to entry(BusinessProfilePageMeta) { onBack, openPage, _ -> com.zylod.wholesale.ui.profile.EditProfileScreen(focus = com.zylod.wholesale.ui.profile.EditProfileFocus.BUSINESS, onBack = onBack, openPage = openPage) },
         "electronics" to entry(ElectronicsPageMeta) { onBack, openPage, query -> ElectronicsScreen(onBack = onBack, openPage = openPage, query = query) },
         "email-preferences" to entry(EmailPreferencesPageMeta) { onBack, openPage, query -> EmailPreferencesScreen(onBack = onBack, openPage = openPage, query = query) },
         "email-verification" to entry(EmailVerificationPageMeta) { onBack, openPage, query -> EmailVerificationScreen(onBack = onBack, openPage = openPage, query = query) },
@@ -387,7 +399,7 @@ object NativePageRegistry {
         "error-404" to entry(Error404PageMeta) { onBack, openPage, query -> Error404Screen(onBack = onBack, openPage = openPage, query = query) },
         "error-500" to entry(Error500PageMeta) { onBack, openPage, query -> Error500Screen(onBack = onBack, openPage = openPage, query = query) },
         "error-boundary" to entry(ErrorBoundaryPageMeta) { onBack, openPage, query -> ErrorBoundaryScreen(onBack = onBack, openPage = openPage, query = query) },
-        "escrow" to entry(EscrowPageMeta) { onBack, openPage, query -> EscrowScreen(onBack = onBack, openPage = openPage, query = query) },
+        "escrow" to entry(EscrowPageMeta) { onBack, openPage, query -> com.zylod.wholesale.ui.wallet.WalletScreen(onBack = onBack, openPage = openPage, query = query) },
         "escrow-guide" to entry(EscrowGuidePageMeta) { onBack, openPage, query -> EscrowGuideScreen(onBack = onBack, openPage = openPage, query = query) },
         "escrow-protection-guide" to entry(EscrowProtectionGuidePageMeta) { onBack, openPage, query -> EscrowProtectionGuideScreen(onBack = onBack, openPage = openPage, query = query) },
         "events" to entry(EventsPageMeta) { onBack, openPage, query -> EventsScreen(onBack = onBack, openPage = openPage, query = query) },
@@ -522,7 +534,9 @@ object NativePageRegistry {
         "mobile-app" to entry(MobileAppPageMeta) { onBack, openPage, query -> MobileAppScreen(onBack = onBack, openPage = openPage, query = query) },
         "my-coupons" to entry(MyCouponsPageMeta) { onBack, openPage, query -> com.zylod.wholesale.ui.coupons.CouponsScreen(onBack = onBack, openPage = openPage, query = query) },
         "my-orders" to entry(MyOrdersPageMeta, tabLike = true) { onBack, openPage, _ -> com.zylod.wholesale.ui.orders.OrdersScreen(onBack = onBack, openPage = openPage, openAuth = { openPage("login", "") }) },
-        "my-profile" to entry(MyProfilePageMeta) { onBack, openPage, query -> MyProfileScreen(onBack = onBack, openPage = openPage, query = query) },
+        // t292: my-profile joins the typed profile row — the web's my-profile
+        // page IS the profile page; the curated stub rendered bullets instead.
+        "my-profile" to entry(MyProfilePageMeta) { onBack, openPage, _ -> com.zylod.wholesale.ui.profile.ProfileScreen(onBack = onBack, openPage = openPage) },
         "my-queries" to entry(MyQueriesPageMeta) { onBack, openPage, query -> MyQueriesScreen(onBack = onBack, openPage = openPage, query = query) },
         "my-samples" to entry(MySamplesPageMeta) { onBack, openPage, query -> MySamplesScreen(onBack = onBack, openPage = openPage, query = query) },
         "my-wallet" to entry(MyWalletPageMeta) { onBack, openPage, query -> MyWalletScreen(onBack = onBack, openPage = openPage, query = query) },
@@ -558,7 +572,13 @@ object NativePageRegistry {
         // t281 5-b: the "order-confirmation" row REMOVED — the generic-live
         // ORDERS renderer dropped the orderId query; WebScreen forwards it and
         // the SPA renders the real per-order confirmation.
-        "order-detail" to entry(OrderDetailPageMeta) { onBack, openPage, query -> OrderDetailScreen(onBack = onBack, openPage = openPage, query = query) },
+        // t292: the registry row rendered the ui.screens ORDER-DETAIL STUB for
+        // direct navigation (web-bridge taps, deep links) while the TYPED
+        // OrderDetailScreen (ui/orderdetail, real GET api/orders/[id] + the
+        // orderId-from-query contract) was reachable only through the Orders
+        // rail. The typed screen IS the one the t280/t281 money-path walks
+        // verified — the stub could render bullets with a live order id.
+        "order-detail" to entry(OrderDetailPageMeta) { onBack, openPage, query -> com.zylod.wholesale.ui.orderdetail.OrderDetailScreen(onBack = onBack, openPage = openPage, query = query) },
         "order-feedback" to entry(OrderFeedbackPageMeta) { onBack, openPage, query -> OrderFeedbackScreen(onBack = onBack, openPage = openPage, query = query) },
         "order-invoice" to entry(OrderInvoicePageMeta) { onBack, openPage, query -> OrderInvoiceScreen(onBack = onBack, openPage = openPage, query = query) },
         "order-invoice-download" to entry(OrderInvoiceDownloadPageMeta) { onBack, openPage, query -> OrderInvoiceDownloadScreen(onBack = onBack, openPage = openPage, query = query) },
@@ -589,7 +609,7 @@ object NativePageRegistry {
         "payment-methods-detail" to entry(PaymentMethodsDetailPageMeta) { onBack, openPage, query -> PaymentMethodsDetailScreen(onBack = onBack, openPage = openPage, query = query) },
         "payment-pending" to entry(PaymentPendingPageMeta) { onBack, openPage, query -> PaymentPendingScreen(onBack = onBack, openPage = openPage, query = query) },
         "payment-terms" to entry(PaymentTermsPageMeta) { onBack, openPage, query -> PaymentTermsScreen(onBack = onBack, openPage = openPage, query = query) },
-        "payout" to entry(PayoutPageMeta) { onBack, openPage, query -> PayoutScreen(onBack = onBack, openPage = openPage, query = query) },
+        "payout" to entry(PayoutPageMeta) { onBack, openPage, query -> com.zylod.wholesale.ui.wallet.WalletScreen(onBack = onBack, openPage = openPage, query = query) },
         "payouts" to entry(PayoutsPageMeta) { onBack, openPage, query -> PayoutsScreen(onBack = onBack, openPage = openPage, query = query) },
         "pdf-viewer" to entry(PdfViewerPageMeta) { onBack, openPage, query -> PdfViewerScreen(onBack = onBack, openPage = openPage, query = query) },
         "pending-orders" to entry(PendingOrdersPageMeta) { onBack, openPage, _ -> com.zylod.wholesale.ui.orders.OrdersScreen(onBack = onBack, openPage = openPage, openAuth = { openPage("login", "") }) },
@@ -691,7 +711,7 @@ object NativePageRegistry {
         "referral-earnings" to entry(ReferralEarningsPageMeta) { onBack, openPage, query -> ReferralEarningsScreen(onBack = onBack, openPage = openPage, query = query) },
         "referral-program" to entry(ReferralProgramPageMeta) { onBack, openPage, query -> ReferralProgramScreen(onBack = onBack, openPage = openPage, query = query) },
         "referral-program-page" to entry(ReferralProgramPagePageMeta) { onBack, openPage, query -> ReferralProgramPageScreen(onBack = onBack, openPage = openPage, query = query) },
-        "refund" to entry(RefundPageMeta) { onBack, openPage, query -> RefundScreen(onBack = onBack, openPage = openPage, query = query) },
+        "refund" to entry(RefundPageMeta) { onBack, openPage, query -> com.zylod.wholesale.ui.wallet.WalletScreen(onBack = onBack, openPage = openPage, query = query) },
         // t281 5-b: the "refund-detail" row REMOVED — refund tracking landed
         // on bullets; WebScreen → the SPA's real refund detail page.
         "refund-policy" to entry(RefundPolicyPageMeta) { onBack, openPage, query -> RefundPolicyScreen(onBack = onBack, openPage = openPage, query = query) },
@@ -726,9 +746,11 @@ object NativePageRegistry {
         "return-policy" to entry(ReturnPolicyPageMeta) { onBack, openPage, query -> ReturnPolicyScreen(onBack = onBack, openPage = openPage, query = query) },
         "return-policy-settings" to entry(ReturnPolicySettingsPageMeta) { onBack, openPage, query -> ReturnPolicySettingsScreen(onBack = onBack, openPage = openPage, query = query) },
         "return-process" to entry(ReturnProcessPageMeta) { onBack, openPage, query -> ReturnProcessScreen(onBack = onBack, openPage = openPage, query = query) },
-        "return-request" to entry(ReturnRequestPageMeta) { onBack, openPage, query -> ReturnRequestScreen(onBack = onBack, openPage = openPage, query = query) },
+        // t292: the curated stub shadowed the TYPED ReturnRequestScreen (ui/returns,
+        // real POST api/returns) — fully-qualified call, t281 row pattern.
+        "return-request" to entry(ReturnRequestPageMeta) { onBack, openPage, query -> com.zylod.wholesale.ui.returns.ReturnRequestScreen(pageId = "return-request", onBack = onBack, openPage = openPage, query = query) },
         "returns-exchange" to entry(ReturnsExchangePageMeta) { onBack, openPage, query -> ReturnsExchangeScreen(onBack = onBack, openPage = openPage, query = query) },
-        "revenue" to entry(RevenuePageMeta) { onBack, openPage, query -> RevenueScreen(onBack = onBack, openPage = openPage, query = query) },
+        "revenue" to entry(RevenuePageMeta) { onBack, openPage, query -> com.zylod.wholesale.ui.wallet.WalletScreen(onBack = onBack, openPage = openPage, query = query) },
         // t281 5-b: the "revenue-breakdown" row REMOVED — bullet stub;
         // WebScreen → the SPA's real revenue breakdown page.
         "revenue-reports" to entry(RevenueReportsPageMeta) { onBack, openPage, query -> RevenueReportsScreen(onBack = onBack, openPage = openPage, query = query) },
@@ -749,7 +771,9 @@ object NativePageRegistry {
         // title); Move-to-Cart + per-row remove are the web page's actions.
         "save-for-later" to entry(SaveForLaterTypedPageMeta) { onBack, openPage, _ -> com.zylod.wholesale.ui.wishlist.SaveForLaterScreen(onBack = onBack, openPage = openPage) },
         "save-for-later-detail" to entry(SaveForLaterDetailPageMeta) { onBack, openPage, query -> SaveForLaterDetailScreen(onBack = onBack, openPage = openPage, query = query) },
-        "saved-searches" to entry(SavedSearchesPageMeta) { onBack, openPage, query -> SavedSearchesScreen(onBack = onBack, openPage = openPage, query = query) },
+        // t292: the curated stub shadowed the TYPED SavedSearchesScreen (ui/wishlist,
+        // real saved-search rails) — fully-qualified call, t281 row pattern.
+        "saved-searches" to entry(SavedSearchesPageMeta) { onBack, openPage, query -> com.zylod.wholesale.ui.wishlist.SavedSearchesScreen(pageId = "saved-searches", onBack = onBack, openPage = openPage, query = query) },
         "scan-barcode" to entry(ScanBarcodePageMeta) { onBack, openPage, query -> ScanBarcodeScreen(onBack = onBack, openPage = openPage, query = query) },
         "search-autocomplete" to entry(SearchAutocompletePageMeta) { onBack, openPage, query -> SearchAutocompleteScreen(onBack = onBack, openPage = openPage, query = query) },
         // t281 5-b: the "search-filters" row REMOVED — bullet stub;
@@ -765,8 +789,8 @@ object NativePageRegistry {
         "security-settings" to entry(SecuritySettingsPageMeta) { onBack, openPage, query -> SecuritySettingsScreen(onBack = onBack, openPage = openPage, query = query) },
         "self-pickup-settings" to entry(SelfPickupSettingsPageMeta) { onBack, openPage, query -> SelfPickupSettingsScreen(onBack = onBack, openPage = openPage, query = query) },
         "sell-with-us" to entry(SellWithUsPageMeta) { onBack, openPage, query -> SellWithUsScreen(onBack = onBack, openPage = openPage, query = query) },
-        "seller" to entry(SellerPageMeta) { onBack, openPage, query -> SellerScreen(onBack = onBack, openPage = openPage, query = query) },
-        "seller-" to entry(SellerPageMeta2) { onBack, openPage, query -> SellerScreen2(onBack = onBack, openPage = openPage, query = query) },
+        "seller" to entry(SellerPageMeta) { onBack, openPage, query -> com.zylod.wholesale.ui.suppliercore.SupplierDashboardScreen(pageId = "seller", onBack = onBack, openPage = openPage, query = query) },
+        "seller-" to entry(SellerPageMeta2) { onBack, openPage, query -> com.zylod.wholesale.ui.suppliercore.SupplierDashboardScreen(pageId = "seller-", onBack = onBack, openPage = openPage, query = query) },
         "seller-add-product" to entry(SellerAddProductPageMeta) { onBack, openPage, query -> SellerAddProductScreen(onBack = onBack, openPage = openPage, query = query) },
         "seller-analytics" to entry(SellerAnalyticsPageMeta) { onBack, openPage, query -> SellerAnalyticsScreen(onBack = onBack, openPage = openPage, query = query) },
         "seller-analytics-page" to entry(SellerAnalyticsPagePageMeta) { onBack, openPage, query -> SellerAnalyticsPageScreen(onBack = onBack, openPage = openPage, query = query) },
@@ -967,7 +991,7 @@ object NativePageRegistry {
         "track-order" to entry(TrackOrderPageMeta) { onBack, openPage, query -> TrackOrderScreen(onBack = onBack, openPage = openPage, query = query) },
         "track-package" to entry(TrackPackagePageMeta) { onBack, openPage, query -> TrackPackageScreen(onBack = onBack, openPage = openPage, query = query) },
         "trade-assurance" to entry(TradeAssurancePageMeta) { onBack, openPage, query -> TradeAssuranceScreen(onBack = onBack, openPage = openPage, query = query) },
-        "transaction" to entry(TransactionPageMeta) { onBack, openPage, query -> TransactionScreen(onBack = onBack, openPage = openPage, query = query) },
+        "transaction" to entry(TransactionPageMeta) { onBack, openPage, query -> com.zylod.wholesale.ui.wallet.WalletScreen(onBack = onBack, openPage = openPage, query = query) },
         "transaction-detail" to entry(TransactionDetailPageMeta) { onBack, openPage, query -> TransactionDetailScreen(onBack = onBack, openPage = openPage, query = query) },
         "transaction-history" to entry(TransactionHistoryPageMeta) { onBack, openPage, query -> TransactionHistoryScreen(onBack = onBack, openPage = openPage, query = query) },
         "trending" to entry(TrendingPageMeta) { onBack, openPage, query -> TrendingScreen(onBack = onBack, openPage = openPage, query = query) },
@@ -1016,14 +1040,20 @@ object NativePageRegistry {
         "wholesale-faq" to entry(WholesaleFaqPageMeta) { onBack, openPage, query -> WholesaleFaqScreen(onBack = onBack, openPage = openPage, query = query) },
         "wholesale-pricing" to entry(WholesalePricingPageMeta) { onBack, openPage, query -> WholesalePricingScreen(onBack = onBack, openPage = openPage, query = query) },
         "wholesale-terms" to entry(WholesaleTermsPageMeta) { onBack, openPage, query -> WholesaleTermsScreen(onBack = onBack, openPage = openPage, query = query) },
-        "wishlist-analytics" to entry(WishlistAnalyticsPageMeta) { onBack, openPage, query -> WishlistAnalyticsScreen(onBack = onBack, openPage = openPage, query = query) },
-        "wishlist-detail" to entry(WishlistDetailPageMeta) { onBack, openPage, query -> WishlistDetailScreen(onBack = onBack, openPage = openPage, query = query) },
+        // t292: the curated stub shadowed the TYPED WishlistAnalyticsScreen (ui/wishlist,
+        // real wishlist stats) — fully-qualified call, t281 row pattern.
+        "wishlist-analytics" to entry(WishlistAnalyticsPageMeta) { onBack, openPage, query -> com.zylod.wholesale.ui.wishlist.WishlistAnalyticsScreen(pageId = "wishlist-analytics", onBack = onBack, openPage = openPage, query = query) },
+        // t292: the curated stub shadowed the TYPED WishlistDetailScreen (ui/wishlist,
+        // real wishlist detail rails) — fully-qualified call, t281 row pattern.
+        "wishlist-detail" to entry(WishlistDetailPageMeta) { onBack, openPage, query -> com.zylod.wholesale.ui.wishlist.WishlistDetailScreen(pageId = "wishlist-detail", onBack = onBack, openPage = openPage, query = query) },
         "wishlist-share" to entry(WishlistSharePageMeta) { onBack, openPage, query -> WishlistShareScreen(onBack = onBack, openPage = openPage, query = query) },
         "wishlist-share-page" to entry(WishlistSharePagePageMeta) { onBack, openPage, query -> WishlistSharePageScreen(onBack = onBack, openPage = openPage, query = query) },
         "wishlist-shared" to entry(WishlistSharedPageMeta) { onBack, openPage, query -> WishlistSharedScreen(onBack = onBack, openPage = openPage, query = query) },
         "withdraw" to entry(WithdrawPageMeta) { onBack, openPage, query -> WithdrawScreen(onBack = onBack, openPage = openPage, query = query) },
         "withdraw-money" to entry(WithdrawMoneyPageMeta) { onBack, openPage, query -> WithdrawMoneyScreen(onBack = onBack, openPage = openPage, query = query) },
-        "write-review" to entry(WriteReviewPageMeta) { onBack, openPage, query -> WriteReviewScreen(onBack = onBack, openPage = openPage, query = query) },
+        // t292: the curated stub shadowed the TYPED WriteReviewScreen (ui/reviews,
+        // real POST api/reviews + photo upload) — fully-qualified call, t281 pattern.
+        "write-review" to entry(WriteReviewPageMeta) { onBack, openPage, query -> com.zylod.wholesale.ui.reviews.WriteReviewScreen(pageId = "write-review", onBack = onBack, openPage = openPage, query = query) },
         "zylod-chunk-warmup-v1" to entry(ZylodChunkWarmupV1PageMeta) { onBack, openPage, query -> ZylodChunkWarmupV1Screen(onBack = onBack, openPage = openPage, query = query) },
         "all-categories" to entry(CategoriesPageMeta, tabLike = true) { onBack, openPage, _ -> com.zylod.wholesale.ui.categories.CategoriesScreen(onBack = onBack, openPage = openPage) },
         "buyer-orders" to entry(OrdersPageMeta, tabLike = true) { onBack, openPage, _ -> com.zylod.wholesale.ui.orders.OrdersScreen(onBack = onBack, openPage = openPage, openAuth = { openPage("login", "") }) },

@@ -42,17 +42,16 @@ data object MemberAreaPageMeta : NativePageMeta() {
     override val category = "Account & Profile"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Member Area — account, identity and money surfaces for the signed-in user. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Could not load loyalty points"
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the member-area pageId via RouteOwnership.",
+        "Loyalty Points",
+        "Quick Ways to Earn Points",
     )
     override val related = listOf(
-        NativePageLink("profile", "Profile"),
-        NativePageLink("buyer-orders", "Buyer Orders"),
-        NativePageLink("account-settings", "Account Settings"),
+        NativePageLink("points-history", "Points History"),
+        NativePageLink("redeem-points", "Redeem Points"),
+        NativePageLink("membership-tiers", "Membership Tiers"),
     )
 }
 

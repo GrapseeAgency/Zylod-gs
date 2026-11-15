@@ -42,17 +42,17 @@ data object RatingPagePageMeta : NativePageMeta() {
     override val category = "Shopping & Products"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Rating Page — product discovery and buying on the Zylod marketplace. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Thank you for sharing your experience. Your feedback helps other enterprise buyers source with confidence."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the rating-page pageId via RouteOwnership.",
+        "Review Submitted!",
+        "Showcase real warehouse usage and tolerances",
+        "Write a Review",
+        "Overall Quality Rating",
     )
     override val related = listOf(
-        NativePageLink("all-products", "All Products"),
-        NativePageLink("flash-deals", "Flash Deals"),
-        NativePageLink("category-browser", "Category Browser"),
+        NativePageLink("product-reviews", "Product Reviews"),
+        NativePageLink("upload-review-photos", "Upload Review Photos"),
     )
 }
 

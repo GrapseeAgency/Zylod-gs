@@ -20,17 +20,18 @@ data object InvestorRelationsPageMeta : NativePageMeta() {
     override val category = "Company & Legal"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Investor Relations — the company, content and legal pages of Zylod. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Investor relations materials — audited financials, filings, funding information — have not been released. They will appear on this page as they are published. . : ’ In the meantime, reach us through the Help Center.’}"
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the investor-relations pageId via RouteOwnership.",
+        "Investor Relations",
+        "Financial Reports, Filings & Corporate Governance",
+        "Nothing Published Yet",
+        "Investor relations materials are not published yet. Nothing is listed here because nothing has been released — reports and filings will appear on this page as they are published. with any…",
+        "Investor Resources",
+        "Recent Publications & Filings",
     )
     override val related = listOf(
-        NativePageLink("about-us", "About Us"),
-        NativePageLink("contact-us", "Contact Us"),
-        NativePageLink("careers", "Careers"),
+        NativePageLink("investor-contact", "Investor Contact"),
     )
 }
 

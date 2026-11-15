@@ -42,12 +42,14 @@ data object SellerRankingsPageMeta : NativePageMeta() {
     override val category = "Seller & Supplier"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Seller Rankings — the seller and supplier toolchain on the Zylod marketplace. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Add products and make sales — your top 10 best sellers will rank here by units sold."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the seller-rankings pageId via RouteOwnership.",
+        "Rankings",
+        "Sign in with a supplier account to see your product rankings.",
+        "Seller sign-in required",
+        "Ranked by real soldCount from recorded orders · updated live",
+        "Top product · ranked",
     )
     override val related = listOf(
         NativePageLink("seller-dashboard", "Seller Dashboard"),

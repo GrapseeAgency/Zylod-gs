@@ -42,17 +42,14 @@ data object ServerDiagnosticsPageMeta : NativePageMeta() {
     override val category = "Settings & App"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Server Diagnostics — app-level settings and device-side controls. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Direct microservice latency checks, pool status, and heap allocations"
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the server-diagnostics pageId via RouteOwnership.",
+        "Live Server Telemetry Probes",
+        "Active Service Cluster States",
     )
     override val related = listOf(
-        NativePageLink("app-settings", "App Settings"),
-        NativePageLink("display-settings", "Display Settings"),
-        NativePageLink("profile", "Profile"),
+        NativePageLink("error-500", "Error 500"),
     )
 }
 

@@ -42,17 +42,19 @@ data object OfflineSyncQueuePageMeta : NativePageMeta() {
     override val category = "Settings & App"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Offline Sync Queue — app-level settings and device-side controls. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Actions performed while disconnected, waiting for network reconnection"
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the offline-sync-queue pageId via RouteOwnership.",
+        "Offline Mutation Sync Queue",
+        "The web app performs every save, order, and RFQ as a live request the moment you act — there is no offline mutation queue on the web client.",
+        "Nothing queued on this device",
+        "The web client has no offline mutation queue — actions execute immediately against the server. The Android app maintains its own native offline queue and reconciles it through its sync…",
+        "Background auto-sync preference: minutes : ’manual only’}",
+        "Set from App &amp; System Settings — stored on this device, never sent to the server.",
     )
     override val related = listOf(
+        NativePageLink("offline-mode", "Offline Mode"),
         NativePageLink("app-settings", "App Settings"),
-        NativePageLink("display-settings", "Display Settings"),
-        NativePageLink("profile", "Profile"),
     )
 }
 

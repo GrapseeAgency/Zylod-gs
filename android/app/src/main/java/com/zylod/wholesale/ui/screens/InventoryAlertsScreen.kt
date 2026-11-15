@@ -42,12 +42,15 @@ data object InventoryAlertsPageMeta : NativePageMeta() {
     override val category = "Seller & Supplier"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Inventory Alerts — the seller and supplier toolchain on the Zylod marketplace. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "No active back-in-stock watches on your products right now. Buyers who press “Notify me when available” on an out-of-stock listing will appear here."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the inventory-alerts pageId via RouteOwnership.",
+        "Auto-pause listing when stock hits zero — not available yet.",
+        "Stock Alerts",
+        "product active back-in-stock watchers — prioritize these for restock.",
+        "Restock demand",
+        "Each product’s low-stock line is tuned separately. Leave a field empty to fall back to the platform default of . The threshold is informational — it drives the low-stock summary in your…",
+        "Low-stock thresholds",
     )
     override val related = listOf(
         NativePageLink("seller-dashboard", "Seller Dashboard"),

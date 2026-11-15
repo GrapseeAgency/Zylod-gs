@@ -42,17 +42,16 @@ data object CrashReportPageMeta : NativePageMeta() {
     override val category = "Support & Help"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Crash Report — help, policies and buyer/seller protection on Zylod. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Submit stack trace or steps to reproduce to our core infrastructure engineering team"
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the crash-report pageId via RouteOwnership.",
+        "Crash Telemetry & Bug Report",
+        "Engineering ticket generated. Thank you for making Zylod better.",
+        "Crash Trace Logged",
+        "Incident Details",
     )
     override val related = listOf(
-        NativePageLink("help-center", "Help Center"),
-        NativePageLink("support-tickets", "Support Tickets"),
-        NativePageLink("contact-us", "Contact Us"),
+        NativePageLink("error-500", "Error 500"),
     )
 }
 

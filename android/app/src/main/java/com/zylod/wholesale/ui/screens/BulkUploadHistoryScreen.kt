@@ -42,12 +42,12 @@ data object BulkUploadHistoryPageMeta : NativePageMeta() {
     override val category = "Shopping & Products"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Bulk Upload History — product discovery and buying on the Zylod marketplace. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Sign in with your seller account to see your uploads."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the bulk-upload-history pageId via RouteOwnership.",
+        "Upload History",
+        "Every upload you process is recorded here with its honest row counts.",
+        "Every row passed validation — no errors recorded.",
     )
     override val related = listOf(
         NativePageLink("all-products", "All Products"),

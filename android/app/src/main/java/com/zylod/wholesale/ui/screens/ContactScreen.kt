@@ -42,17 +42,17 @@ data object ContactPageMeta : NativePageMeta() {
     override val category = "Support & Help"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Contact — help, policies and buyer/seller protection on Zylod. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "No support email published yet — use the inquiry form below or reach us through the Help Center."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the contact pageId via RouteOwnership.",
+        "Inquiry Received",
+        "For anything urgent, use Live Chat — a support team member reviews every message.",
+        "Send an Inquiry",
+        "Thank you for contacting Zylod Wholesale. A support representative will review your message and reach out via phone or email within 24 hours.",
+        "Fill out this form and our merchant support team will respond promptly.",
     )
     override val related = listOf(
-        NativePageLink("help-center", "Help Center"),
-        NativePageLink("support-tickets", "Support Tickets"),
-        NativePageLink("contact-us", "Contact Us"),
+        NativePageLink("live-chat", "Live Chat"),
     )
 }
 

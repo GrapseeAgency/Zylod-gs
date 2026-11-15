@@ -42,12 +42,21 @@ data object ReturnClaimDetailPageMeta : NativePageMeta() {
     override val category = "Orders & Logistics"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Return Claim Detail — order, shipping and delivery operations for Zylod buyers. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Confirming receipt is what restores stock for your items on this return — the API is the source of truth. The action is only allowed when the return status is approved or refunded (goods only travel back after approval)."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the return-claim-detail pageId via RouteOwnership.",
+        "Return Inspection",
+        "The buyer attached no evidence photos to this return.",
+        "Returned Items",
+        "This return is currently — goods can only be received back after the return is approved.",
+        "Buyer Evidence",
+        "Refund approval is an admin-only action (PATCH /api/admin/returns/[id]). The seller console cannot move money or flip a return to refunded — that is the admin finance team’s job.",
+    )        "Return Inspection",
+        "The buyer attached no evidence photos to this return.",
+        "Return Inspection",
+        "Confirming receipt is what restores stock for your items on this return — the API is the source of truth. The action is only allowed when the return status is approved or refunded (goods…",
+        "Returned Items",
+        "This return is currently — goods can only be received back after the return is approved.",
     )
     override val related = listOf(
         NativePageLink("buyer-orders", "Buyer Orders"),

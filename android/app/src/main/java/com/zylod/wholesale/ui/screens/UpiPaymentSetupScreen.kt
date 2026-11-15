@@ -42,12 +42,12 @@ data object UpiPaymentSetupPageMeta : NativePageMeta() {
     override val category = "Zylod Marketplace"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "UPI Payment Setup — a Zylod marketplace surface. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Link bKash, Nagad, Upay, or Rocket accounts for automated 1-click settlements."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the upi-payment-setup pageId via RouteOwnership.",
+        "MFS &amp; Instant Settlements",
+        "Connect your bKash or Nagad wallet for 1-click order payments and refunds.",
+        "Link Mobile Account",
     )
     override val related = listOf(
         NativePageLink("home", "Home"),

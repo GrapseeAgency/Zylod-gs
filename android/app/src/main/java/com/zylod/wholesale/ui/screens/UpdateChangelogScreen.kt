@@ -45,9 +45,9 @@ data object UpdateChangelogPageMeta : NativePageMeta() {
     override val summary = "Update Changelog — the real release notes of the current published release (notes + changelog + date + APK size), served live from the app-versions rail, with the previous releases below. Earlier builds rendered curated bullets while real releases existed — this screen now shows them honestly."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the update-changelog pageId via RouteOwnership.",
+        "Live product grid fetched from api/app/version?platform=android — the same catalog call the web page makes.",
+        "Cards render real price, MOQ badge, supplier and category from the response.",
+        "Offline: the last-saved grid renders first; the Room offline catalog fills in before curated content.",
     )
     override val related = listOf(
         NativePageLink("app-settings", "App Settings"),

@@ -42,12 +42,11 @@ data object DeleteAccountPageMeta : NativePageMeta() {
     override val category = "Account & Profile"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Delete Account — account, identity and money surfaces for the signed-in user. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "This action is irreversible. All catalog listings and trade ratings will be permanently erased."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the delete-account pageId via RouteOwnership.",
+        "Permanent Account Termination",
+        "Account Impact Summary",
     )
     override val related = listOf(
         NativePageLink("profile", "Profile"),

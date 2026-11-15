@@ -26,17 +26,15 @@ data object BankAccountsPageMeta : NativePageMeta() {
     override val category = "Account & Profile"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Bank Accounts — account, identity and money surfaces for the signed-in user. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Verified commercial bank routing for high-volume wholesale settlements."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the bank-accounts pageId via RouteOwnership.",
+        "Commercial Bank Accounts",
+        "Add a corporate bank account to enable direct wholesale withdrawals.",
+        "Corporate Bank Payouts",
     )
     override val related = listOf(
-        NativePageLink("profile", "Profile"),
-        NativePageLink("buyer-orders", "Buyer Orders"),
-        NativePageLink("account-settings", "Account Settings"),
+        NativePageLink("add-bank-account", "Add Bank Account"),
     )
 }
 

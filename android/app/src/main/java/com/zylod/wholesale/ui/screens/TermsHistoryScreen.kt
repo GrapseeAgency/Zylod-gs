@@ -42,17 +42,15 @@ data object TermsHistoryPageMeta : NativePageMeta() {
     override val category = "Support & Help"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Terms History — help, policies and buyer/seller protection on Zylod. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "When Zylod publishes an actual amendment to the Terms of Service, it will be listed here with its real version number, effective date, and the actual change summary. We do not publish invented amendment entries."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the terms-history pageId via RouteOwnership.",
+        "Terms Version History",
+        "Real historical amendments only — published as versions actually ship",
+        "No version history published yet",
     )
     override val related = listOf(
-        NativePageLink("help-center", "Help Center"),
-        NativePageLink("support-tickets", "Support Tickets"),
-        NativePageLink("contact-us", "Contact Us"),
+        NativePageLink("terms-of-service", "Terms Of Service"),
     )
 }
 

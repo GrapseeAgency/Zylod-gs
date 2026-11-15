@@ -20,17 +20,16 @@ data object CheckoutSuccessPageMeta : NativePageMeta() {
     override val category = "Shopping & Products"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Checkout Success — product discovery and buying on the Zylod marketplace. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "This screen shows the details of an order you have placed. Place an order first and its real details will appear here."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the checkout-success pageId via RouteOwnership.",
+        "No order to confirm",
+        "Order # was created and sent to the supplier item : ’’}.",
+        "Order Received",
     )
     override val related = listOf(
-        NativePageLink("all-products", "All Products"),
-        NativePageLink("flash-deals", "Flash Deals"),
-        NativePageLink("category-browser", "Category Browser"),
+        NativePageLink("orders", "Orders"),
+        NativePageLink("track-order", "Track Order"),
     )
 }
 

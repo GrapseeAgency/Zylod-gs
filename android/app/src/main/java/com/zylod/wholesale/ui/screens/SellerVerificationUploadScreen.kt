@@ -42,12 +42,11 @@ data object SellerVerificationUploadPageMeta : NativePageMeta() {
     override val category = "Seller & Supplier"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Seller Verification Upload — the seller and supplier toolchain on the Zylod marketplace. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Your document is now pending review. We will notify you once it is verified."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the seller-verification-upload pageId via RouteOwnership.",
+        "Document submitted",
+        "Upload Document",
     )
     override val related = listOf(
         NativePageLink("seller-dashboard", "Seller Dashboard"),

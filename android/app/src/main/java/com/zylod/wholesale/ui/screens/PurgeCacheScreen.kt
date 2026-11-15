@@ -42,17 +42,18 @@ data object PurgeCachePageMeta : NativePageMeta() {
     override val category = "Settings & App"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Purge Cache — app-level settings and device-side controls. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Edge cache invalidation is admin-only — here is what you can do from the web client"
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the purge-cache pageId via RouteOwnership.",
+        "Targeted Cache Invalidation",
+        "The previous version of this page showed four &quot;Invalidate&quot; buttons that did nothing — they set local state and showed a success toast, but no API was called and nothing was…",
+        "Edge-cache invalidation is admin-only",
+        "If you are an admin, the cache-stats console shows real hit/miss ratios and lets you flush a tag server-side. Non-admins can clear their own browser&apos;s HTTP cache below — the next page…",
+        "Clear local HTTP cache",
     )
     override val related = listOf(
-        NativePageLink("app-settings", "App Settings"),
-        NativePageLink("display-settings", "Display Settings"),
-        NativePageLink("profile", "Profile"),
+        NativePageLink("cache-settings", "Cache Settings"),
+        NativePageLink("cache-stats", "Cache Stats"),
     )
 }
 

@@ -42,17 +42,14 @@ data object ReturnFaqPageMeta : NativePageMeta() {
     override val category = "Orders & Logistics"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Return FAQ — order, shipping and delivery operations for Zylod buyers. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Questions on Claims, Reviews & Reverse Shipping"
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the return-faq pageId via RouteOwnership.",
+        "Return & Inspection FAQ",
+        "No Return & Inspection FAQs have been published yet.",
     )
     override val related = listOf(
-        NativePageLink("buyer-orders", "Buyer Orders"),
-        NativePageLink("order-tracking", "Order Tracking"),
-        NativePageLink("shipping-info", "Shipping Info"),
+        NativePageLink("return-policy", "Return Policy"),
     )
 }
 

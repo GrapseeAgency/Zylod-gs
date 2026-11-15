@@ -42,17 +42,15 @@ data object ImageCachePageMeta : NativePageMeta() {
     override val category = "Settings & App"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Image Cache — app-level settings and device-side controls. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Control image thumbnail resolution, compression profiles, and maximum disk cap"
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the image-cache pageId via RouteOwnership.",
+        "Image Cache Configuration",
+        "Image cache rules apply only to this browser. The Zylod Android app stores its own cache settings on-device through its native settings panel.",
+        "Image Decoding &amp; Compression",
     )
     override val related = listOf(
-        NativePageLink("app-settings", "App Settings"),
-        NativePageLink("display-settings", "Display Settings"),
-        NativePageLink("profile", "Profile"),
+        NativePageLink("cache-settings", "Cache Settings"),
     )
 }
 

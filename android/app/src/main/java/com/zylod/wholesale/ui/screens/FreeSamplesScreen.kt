@@ -42,17 +42,17 @@ data object FreeSamplesPageMeta : NativePageMeta() {
     override val category = "Shopping & Products"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Free Samples — product discovery and buying on the Zylod marketplace. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Today&apos;s picks have sold out. A fresh selection drops at midnight."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the free-samples pageId via RouteOwnership.",
+        "Curated Daily Deals",
+        "Exclusive wholesale lots, available for 24 hours. h left today.}",
+        "Today&apos;s Picks",
+        "Steeper cuts, ticking clock — while stock lasts.",
     )
     override val related = listOf(
-        NativePageLink("all-products", "All Products"),
+        NativePageLink("help-center", "Help Center"),
         NativePageLink("flash-deals", "Flash Deals"),
-        NativePageLink("category-browser", "Category Browser"),
     )
 }
 

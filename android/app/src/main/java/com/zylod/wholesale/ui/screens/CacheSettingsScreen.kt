@@ -42,17 +42,20 @@ data object CacheSettingsPageMeta : NativePageMeta() {
     override val category = "Settings & App"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Cache Settings — app-level settings and device-side controls. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "HTTP caching layers, ServiceWorker pre-caching, and instant page transitions"
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the cache-settings pageId via RouteOwnership.",
+        "Cache Settings & Strategy",
+        "Preload next likely wholesale pages in background",
+        "ServiceWorker Offline Caching",
+        "5-minute stale-while-revalidate for product lists",
+        "Image Cache Optimization",
+        "Automatically purge oldest product images when cap reaches 200MB",
     )
     override val related = listOf(
-        NativePageLink("app-settings", "App Settings"),
-        NativePageLink("display-settings", "Display Settings"),
-        NativePageLink("profile", "Profile"),
+        NativePageLink("image-cache", "Image Cache"),
+        NativePageLink("cache-stats", "Cache Stats"),
+        NativePageLink("purge-cache", "Purge Cache"),
     )
 }
 

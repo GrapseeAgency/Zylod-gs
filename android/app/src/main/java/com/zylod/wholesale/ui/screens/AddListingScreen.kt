@@ -42,17 +42,15 @@ data object AddListingPageMeta : NativePageMeta() {
     override val category = "Seller & Supplier"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Add Listing — the seller and supplier toolchain on the Zylod marketplace. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "New listings go to the moderation queue — an admin approves them before buyers can see them."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the add-listing pageId via RouteOwnership.",
+        "Add New Product",
+        "Video upload/attach failed — the product STILL EXISTS:",
+        "You can attach the video from the edit page of this listing.",
     )
     override val related = listOf(
-        NativePageLink("seller-dashboard", "Seller Dashboard"),
-        NativePageLink("supplier-center", "Supplier Center"),
-        NativePageLink("product-upload", "Product Upload"),
+        NativePageLink("product-listings-manager", "Product Listings Manager"),
     )
 }
 

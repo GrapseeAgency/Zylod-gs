@@ -28,17 +28,19 @@ data object RefundToWalletPageMeta : NativePageMeta() {
     override val category = "Orders & Logistics"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Refund To Wallet — order, shipping and delivery operations for Zylod buyers. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "If something went wrong with an order, request a return from your order history. Once the platform approves and processes it, the refund — with its transaction reference — appears here."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the refund-to-wallet pageId via RouteOwnership.",
+        "How refunds reach you",
+        "When a return is approved, the platform processes your refund through the channel you arranged — bank transfer, mobile banking, or cash. Every completed refund is documented below with its…",
+        "Processed refunds",
+        "The refund path",
+        "Request a return from the order in your purchase history.",
+        "The platform reviews and approves (or rejects) the request.",
     )
     override val related = listOf(
-        NativePageLink("buyer-orders", "Buyer Orders"),
-        NativePageLink("order-tracking", "Order Tracking"),
-        NativePageLink("shipping-info", "Shipping Info"),
+        NativePageLink("my-wallet", "My Wallet"),
+        NativePageLink("purchase-history", "Purchase History"),
     )
 }
 

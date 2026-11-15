@@ -42,17 +42,16 @@ data object GiftCardPageMeta : NativePageMeta() {
     override val category = "Shopping & Products"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Gift Card — product discovery and buying on the Zylod marketplace. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Zylod does not issue or redeem gift cards yet. There are no codes to enter and no promotional balances — any message claiming otherwise did not come from Zylod."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the gift-card pageId via RouteOwnership.",
+        "Gift cards are not available yet",
+        "Gift Card Redemption",
+        "Redeem a gift card code to add credit to your wallet.",
+        "When gift cards launch, redemption will happen here and the credited amount will appear in your real wallet transaction history.",
     )
     override val related = listOf(
-        NativePageLink("all-products", "All Products"),
-        NativePageLink("flash-deals", "Flash Deals"),
-        NativePageLink("category-browser", "Category Browser"),
+        NativePageLink("wallet", "Wallet"),
     )
 }
 

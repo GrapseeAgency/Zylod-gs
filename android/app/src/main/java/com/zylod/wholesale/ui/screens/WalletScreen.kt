@@ -42,17 +42,16 @@ data object WalletPageMeta : NativePageMeta() {
     override val category = "Account & Profile"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Wallet — account, identity and money surfaces for the signed-in user. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Your wallet balance, funding claims and payouts live in your Zylod account — sign in or create one to continue."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the wallet pageId via RouteOwnership.",
+        "Funding claims",
+        "Recent Activity",
     )
     override val related = listOf(
-        NativePageLink("profile", "Profile"),
-        NativePageLink("buyer-orders", "Buyer Orders"),
-        NativePageLink("account-settings", "Account Settings"),
+        NativePageLink("transaction-history", "Transaction History"),
+        NativePageLink("add-money", "Add Money"),
+        NativePageLink("transaction-detail", "Transaction Detail"),
     )
 }
 

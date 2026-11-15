@@ -42,17 +42,20 @@ data object ProfileSettingsPageMeta : NativePageMeta() {
     override val category = "Settings & App"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Profile Settings — app-level settings and device-side controls. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Manage your credentials, alerts, privacy, and account security."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the profile-settings pageId via RouteOwnership.",
+        "Account Settings",
+        "Sign out of your active session or manage account termination.",
+        "Account Credentials",
+        "Display Theme",
+        "Account Management &amp; Sign Out",
     )
     override val related = listOf(
-        NativePageLink("app-settings", "App Settings"),
-        NativePageLink("display-settings", "Display Settings"),
         NativePageLink("profile", "Profile"),
+        NativePageLink("two-factor-auth", "Two Factor Auth"),
+        NativePageLink("edit-profile", "Edit Profile"),
+        NativePageLink("notification-preferences", "Notification Preferences"),
     )
 }
 

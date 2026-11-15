@@ -30,9 +30,9 @@ data object SupplierWarehousePageMeta : NativePageMeta() {
     override val summary = "Supplier Warehouse — order, shipping and delivery operations for Zylod buyers. Content streams live from the Zylod API and renders through the shared native page model."
     override val tabHint = ""
     override val bullets = listOf(
-        "Live data renders from the Zylod API when an endpoint feeds this page.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the supplier-warehouse pageId via RouteOwnership.",
+        "Live supplier directory fetched from api/suppliers?limit=20 — the same call the web page makes.",
+        "Rows render real company name, location, verification badge and product count.",
+        "Offline: the last-saved directory renders first — never a white screen.",
     )
     override val related = listOf(
         NativePageLink("buyer-orders", "Buyer Orders"),

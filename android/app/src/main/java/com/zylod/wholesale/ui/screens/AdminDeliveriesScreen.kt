@@ -24,12 +24,15 @@ data object AdminDeliveriesPageMeta : NativePageMeta() {
     override val category = "Dashboards & Analytics"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Admin Deliveries — operational dashboards and analytics surfaces. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Drivers + assignments — the gate that makes live GPS tracking possible."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the admin-deliveries pageId via RouteOwnership.",
+        "Delivery ops",
+        "Drivers cannot self-register. They authenticate in the driver app and push GPS pings only for sub-orders with an active assignment.",
+        "Admin sign-in required",
+        "One active driver per sub-order — assigning supersedes the previous assignment. Delivered, cancelled or returned sub-orders refuse assignment.",
+        "Create driver account",
+        "No drivers yet — create the first account above.",
     )
     override val related = listOf(
         NativePageLink("dashboard", "Dashboard"),

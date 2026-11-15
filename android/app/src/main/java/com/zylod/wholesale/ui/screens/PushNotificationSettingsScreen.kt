@@ -42,17 +42,21 @@ data object PushNotificationSettingsPageMeta : NativePageMeta() {
     override val category = "Settings & App"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Push Notification Settings — app-level settings and device-side controls. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Receive instant popups for incoming wholesale orders, factory bid responses, and courier deliveries even when Zylod is in the background."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the push-notification-settings pageId via RouteOwnership.",
+        "Push Notification Settings",
+        "Receive a consolidated 8:00 AM briefing of all wholesale movements",
+        "Browser &amp; Device Web Push",
+        "High-priority sound alerts when a factory responds to your RFQ",
+        "Category Controls",
+        "Frequency &amp; Digest Options",
     )
     override val related = listOf(
-        NativePageLink("app-settings", "App Settings"),
-        NativePageLink("display-settings", "Display Settings"),
-        NativePageLink("profile", "Profile"),
+        NativePageLink("notification-sound-settings", "Notification Sound Settings"),
+        NativePageLink("notification-quiet-hours", "Notification Quiet Hours"),
+        NativePageLink("notification-archive", "Notification Archive"),
+        NativePageLink("notification-muted", "Notification Muted"),
     )
 }
 

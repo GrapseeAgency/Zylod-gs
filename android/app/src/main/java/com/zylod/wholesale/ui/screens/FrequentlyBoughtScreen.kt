@@ -42,17 +42,20 @@ data object FrequentlyBoughtPageMeta : NativePageMeta() {
     override val category = "Zylod Marketplace"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Frequently Bought — a Zylod marketplace surface. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Open a product first — bundles are built from that product&apos;s real companion listings."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the frequently-bought pageId via RouteOwnership.",
+        "No product selected",
+        "This listing may have been removed or is no longer available, so there is no bundle to build.",
+        "Product not found",
+        "Live companion listings for — from the same supplier or the same category.",
+        "Couldn&apos;t load this bundle",
+        "Each item is fulfilled by its own supplier at that supplier&apos;s standard processing time.",
     )
     override val related = listOf(
-        NativePageLink("home", "Home"),
-        NativePageLink("category-browser", "Category Browser"),
-        NativePageLink("help-center", "Help Center"),
+        NativePageLink("cart", "Cart"),
+        NativePageLink("product-catalog", "Product Catalog"),
+        NativePageLink("notifications", "Notifications"),
     )
 }
 

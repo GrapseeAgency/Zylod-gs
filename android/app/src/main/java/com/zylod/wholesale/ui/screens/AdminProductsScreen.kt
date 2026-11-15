@@ -45,9 +45,9 @@ data object AdminProductsPageMeta : NativePageMeta() {
     override val summary = "Admin Products — operational dashboards and analytics surfaces. Content streams live from the Zylod API and renders through the shared native page model."
     override val tabHint = ""
     override val bullets = listOf(
-        "Live data renders from the Zylod API when an endpoint feeds this page.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the admin-products pageId via RouteOwnership.",
+        "Live product grid fetched from api/products?limit=20&page=1 — the same catalog call the web page makes.",
+        "Cards render real price, MOQ badge, supplier and category from the response.",
+        "Offline: the last-saved grid renders first; the Room offline catalog fills in before curated content.",
     )
     override val related = listOf(
         NativePageLink("dashboard", "Dashboard"),

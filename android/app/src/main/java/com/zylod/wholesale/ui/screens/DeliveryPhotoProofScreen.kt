@@ -42,12 +42,11 @@ data object DeliveryPhotoProofPageMeta : NativePageMeta() {
     override val category = "Orders & Logistics"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Delivery Photo Proof — order, shipping and delivery operations for Zylod buyers. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Delivery photo proof — the real proof-of-delivery photos captured by the driver for the requested sub-order."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the delivery-photo-proof pageId via RouteOwnership.",
+        "Photos stream from the order tracking data when the delivery has proof attached.",
+        "No proof for this delivery shows the honest empty state.",
     )
     override val related = listOf(
         NativePageLink("buyer-orders", "Buyer Orders"),

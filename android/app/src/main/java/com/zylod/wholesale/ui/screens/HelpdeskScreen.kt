@@ -31,9 +31,9 @@ data object HelpdeskPageMeta : NativePageMeta() {
     override val summary = "Helpdesk — the help & support center with live FAQs, owner-published contacts and the real system-status banner, streaming from the Zylod support API."
     override val tabHint = ""
     override val bullets = listOf(
-        "Live data renders from the Zylod API when an endpoint feeds this page.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the helpdesk pageId via RouteOwnership.",
+        "Live product grid fetched from api/support/faqs — the same catalog call the web page makes.",
+        "Cards render real price, MOQ badge, supplier and category from the response.",
+        "Offline: the last-saved grid renders first; the Room offline catalog fills in before curated content.",
     )
     override val related = listOf(
         NativePageLink("faq-page", "FAQ Page"),

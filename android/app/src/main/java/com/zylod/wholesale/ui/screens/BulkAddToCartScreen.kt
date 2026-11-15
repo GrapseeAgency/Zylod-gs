@@ -42,17 +42,15 @@ data object BulkAddToCartPageMeta : NativePageMeta() {
     override val category = "Shopping & Products"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Bulk Add To Cart — product discovery and buying on the Zylod marketplace. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Select items and set quantities to add multiple products to your cart at once."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the bulk-add-to-cart pageId via RouteOwnership.",
+        "Added to Cart!",
+        "item(s) added, merged into existing lines rejected : ’’}.",
+        "Add to Cart",
     )
     override val related = listOf(
-        NativePageLink("all-products", "All Products"),
-        NativePageLink("flash-deals", "Flash Deals"),
-        NativePageLink("category-browser", "Category Browser"),
+        NativePageLink("cart", "Cart"),
     )
 }
 

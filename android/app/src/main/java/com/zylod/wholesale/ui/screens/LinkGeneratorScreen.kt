@@ -42,17 +42,16 @@ data object LinkGeneratorPageMeta : NativePageMeta() {
     override val category = "Zylod Marketplace"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Link Generator — a Zylod marketplace surface. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Generate tracked Universal Links and custom scheme URLs from REAL entities on the platform."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the link-generator pageId via RouteOwnership.",
+        "Campaign Deep Link Generator",
+        "Leave blank for an untagged link. Use letters, numbers, underscores.",
+        "Link Configuration",
+        "Opens the destination right here so you can verify the link resolves before copying.",
     )
     override val related = listOf(
-        NativePageLink("home", "Home"),
-        NativePageLink("category-browser", "Category Browser"),
-        NativePageLink("help-center", "Help Center"),
+        NativePageLink("deep-link-handler", "Deep Link Handler"),
     )
 }
 

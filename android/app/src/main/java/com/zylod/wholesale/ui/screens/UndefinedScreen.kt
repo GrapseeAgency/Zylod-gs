@@ -42,12 +42,11 @@ data object UndefinedPageMeta : NativePageMeta() {
     override val category = "Zylod Marketplace"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Undefined — a Zylod marketplace surface. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Junk id preserved for cross-platform registry consistency; renders its honest on-device description only."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the undefined pageId via RouteOwnership.",
+        "Curated metadata for a page owned by a typed native screen — the screen itself renders live data.",
+        "Junk id preserved for cross-platform registry consistency; renders its honest on-device description only.",
     )
     override val related = listOf(
         NativePageLink("home", "Home"),

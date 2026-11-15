@@ -25,17 +25,21 @@ data object OrderDetailPageMeta : NativePageMeta() {
     override val category = "Orders & Logistics"
     override val kind = NativePageKind.ORDERS
     override val endpoint: String? = null
-    override val summary = "Order Detail — the buyer's real order: shipments, line items, tracking timeline, payment summary and the self-service cancel / manual-payment legs."
+    override val summary = "Paid outside the app? Send money to the seller&apos;s bKash / bank, then submit the transaction reference here. The seller verifies it before the order is marked paid."
     override val tabHint = ""
     override val bullets = listOf(
-        "Typed screen: GET api/orders/{id} renders the real order — items, payments, tracking.",
-        "Submit payment, cancel pending shipments and open the receipt — the honest money legs.",
-        "Native ownership: this Kotlin screen owns the order-detail pageId via RouteOwnership.",
+        "No order selected",
+        "Pick an order from your order history to see its details.",
+        "Sign in required",
+        "You need to be signed in to view this order.",
+        "Order not found",
+        "This order does not exist or is not visible to your account.",
     )
     override val related = listOf(
-        NativePageLink("buyer-orders", "Buyer Orders"),
-        NativePageLink("order-tracking", "Order Tracking"),
-        NativePageLink("shipping-info", "Shipping Info"),
+        NativePageLink("my-orders", "My Orders"),
+        NativePageLink("help-center", "Help Center"),
+        NativePageLink("track-order", "Track Order"),
+        NativePageLink("order-invoice", "Order Invoice"),
     )
 }
 

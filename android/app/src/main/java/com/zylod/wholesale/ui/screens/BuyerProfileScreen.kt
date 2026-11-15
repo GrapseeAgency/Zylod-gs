@@ -42,17 +42,21 @@ data object BuyerProfilePageMeta : NativePageMeta() {
     override val category = "Account & Profile"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Buyer Profile — account, identity and money surfaces for the signed-in user. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Zylod Trade Credit enables verified wholesale buyers to place bulk orders with flexible payment terms (Net-30 / Net-60) after credit verification."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the buyer-profile pageId via RouteOwnership.",
+        "Profile strength",
+        "Follow supplier stores to build your shortlist.",
+        "Procurement Quick Actions",
+        "Save products to quickly reorder or monitor wholesale price updates.",
+        "No orders found",
+        "Browse by Industry Category",
     )
     override val related = listOf(
-        NativePageLink("profile", "Profile"),
-        NativePageLink("buyer-orders", "Buyer Orders"),
+        NativePageLink("notification-preferences", "Notification Preferences"),
         NativePageLink("account-settings", "Account Settings"),
+        NativePageLink("edit-profile", "Edit Profile"),
+        NativePageLink("wholesale-catalog", "Wholesale Catalog"),
     )
 }
 

@@ -42,17 +42,19 @@ data object OfflineContentPageMeta : NativePageMeta() {
     override val category = "Settings & App"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Offline Content — app-level settings and device-side controls. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Access product specifications, verified mills, and queue drafts without internet"
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the offline-content pageId via RouteOwnership.",
+        "Offline Wholesale Engine",
+        "Inspect cached fabric thread counts, MOQ, and factory pricing",
+        "Cached Offline Snapshot",
+        "View draft RFQs and orders waiting for connectivity",
+        "Access previously downloaded receipts & waybills",
     )
     override val related = listOf(
-        NativePageLink("app-settings", "App Settings"),
-        NativePageLink("display-settings", "Display Settings"),
-        NativePageLink("profile", "Profile"),
+        NativePageLink("offline-catalogue", "Offline Catalogue"),
+        NativePageLink("offline-sync-queue", "Offline Sync Queue"),
+        NativePageLink("offline-orders", "Offline Orders"),
     )
 }
 

@@ -42,12 +42,15 @@ data object CurrencySettingsPageMeta : NativePageMeta() {
     override val category = "Settings & App"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Currency Settings — app-level settings and device-side controls. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Your interface language is saved to your account the moment you tap it."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the currency-settings pageId via RouteOwnership.",
+        "Language &amp; Currency",
+        "Language preferences are stored on your account.",
+        "Sign in to manage your saved language",
+        "Spanish, French, and Arabic were listed before but were never actually supported — they are not implemented yet and require backend support before they can be selected.",
+        "Interface Language",
+        "Currency is stored on this device only (it is not part of your account settings).",
     )
     override val related = listOf(
         NativePageLink("app-settings", "App Settings"),

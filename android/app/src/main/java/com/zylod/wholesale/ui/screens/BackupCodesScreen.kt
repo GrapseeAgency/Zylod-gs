@@ -22,17 +22,15 @@ data object BackupCodesPageMeta : NativePageMeta() {
     override val category = "Zylod Marketplace"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Backup Recovery Codes — ten single-use codes for account recovery, shown once."
+    override val summary = "Backup codes allow you to access your account if you lose your 2FA device. Each code works once and is stored only as a hash on our servers."
     override val tabHint = ""
     override val bullets = listOf(
-        "Typed native screen — live data from the account settings API family.",
-        "Honest states: loading, retry, signed-out wall — never fabricated data.",
-        "Native ownership: this Kotlin screen owns the backup-codes pageId via RouteOwnership.",
+        "Backup Codes",
+        "Keep these in a safe place. Generating new codes invalidates any unused ones from previous sets.",
+        "Secure Your Account",
     )
     override val related = listOf(
-        NativePageLink("two-factor-auth", "Two-Factor Authentication"),
-        NativePageLink("account-settings", "Account Settings"),
-        NativePageLink("profile", "Profile"),
+        NativePageLink("notifications", "Notifications"),
     )
 }
 

@@ -42,12 +42,15 @@ data object AdminAnalyticsPageMeta : NativePageMeta() {
     override val category = "Dashboards & Analytics"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Admin Analytics — operational dashboards and analytics surfaces. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Platform analytics are restricted to Zylod admins. Sign in with an admin account to view live platform counts."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the admin-analytics pageId via RouteOwnership.",
+        "Admin access required",
+        "Live counts from the real database — no estimates, no projections.",
+        "Platform Analytics",
+        "Admin actions are audit-logged and appear here as they happen.",
+        "Could not load platform analytics",
+        "Orders appear here the moment buyers check out.",
     )
     override val related = listOf(
         NativePageLink("dashboard", "Dashboard"),

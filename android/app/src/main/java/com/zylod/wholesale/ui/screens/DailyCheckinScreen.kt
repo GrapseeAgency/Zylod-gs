@@ -12,17 +12,16 @@ data object DailyCheckinPageMeta : NativePageMeta() {
     override val category = "Marketing & Rewards"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Daily Checkin — promotions, rewards and membership programs on Zylod. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Check in every consecutive day to multiply your wholesale point rewards up to 500 points on Day 7."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the daily-checkin pageId via RouteOwnership.",
+        "Daily Check-in",
+        "Points can be converted into discount vouchers or wallet funds in the Redeem center.",
+        "Days In A Row",
+        "7-Day Reward Ladder",
     )
     override val related = listOf(
-        NativePageLink("coupons", "Coupons"),
-        NativePageLink("vip-club", "VIP Club"),
-        NativePageLink("referral-program", "Referral Program"),
+        NativePageLink("checkin-streak", "Checkin Streak"),
     )
 }
 

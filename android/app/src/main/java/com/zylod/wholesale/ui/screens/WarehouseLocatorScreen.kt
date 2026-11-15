@@ -25,17 +25,16 @@ data object WarehouseLocatorPageMeta : NativePageMeta() {
     override val category = "Orders & Logistics"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Warehouse Locator — order, shipping and delivery operations for Zylod buyers. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Ship-from locations suppliers publish on Zylod — real rows, no invented distances."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the warehouse-locator pageId via RouteOwnership.",
+        "Warehouse Directory",
+        "The operators&apos; real zone book — same rates checkout charges.",
+        "Real tracking events live on each order&apos;s detail page.",
     )
     override val related = listOf(
-        NativePageLink("buyer-orders", "Buyer Orders"),
-        NativePageLink("order-tracking", "Order Tracking"),
-        NativePageLink("shipping-info", "Shipping Info"),
+        NativePageLink("shipping-calculator", "Shipping Calculator"),
+        NativePageLink("my-orders", "My Orders"),
     )
 }
 

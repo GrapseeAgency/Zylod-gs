@@ -42,17 +42,16 @@ data object PhoneVerificationPageMeta : NativePageMeta() {
     override val category = "Account & Profile"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Phone Verification — account, identity and money surfaces for the signed-in user. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "To keep your wholesale account secure and ensure accurate delivery logistics."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the phone-verification pageId via RouteOwnership.",
+        "Phone Verification",
+        "Your data is encrypted and never shared with third parties.",
+        "Verify your number",
     )
     override val related = listOf(
-        NativePageLink("profile", "Profile"),
-        NativePageLink("buyer-orders", "Buyer Orders"),
-        NativePageLink("account-settings", "Account Settings"),
+        NativePageLink("help-center", "Help Center"),
+        NativePageLink("otp-verification", "Otp Verification"),
     )
 }
 

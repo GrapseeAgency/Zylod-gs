@@ -24,12 +24,15 @@ data object AdminSettingsPageMeta : NativePageMeta() {
     override val category = "Dashboards & Analytics"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Admin Settings — operational dashboards and analytics surfaces. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Platform settings are restricted to Zylod admins. Sign in with an admin account to view and change real settings."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the admin-settings pageId via RouteOwnership.",
+        "Admin access required",
+        "Real platform settings stored in the adminSettings table. Every change is a real, audit-logged database write and takes effect for its documented consumer immediately. Nothing here is…",
+        "Admin Settings",
+        "The settings registry (src/lib/admin-settings.ts) currently defines no keys — nothing is invented here.",
+        "Could not load settings",
+        "No settings registered",
     )
     override val related = listOf(
         NativePageLink("dashboard", "Dashboard"),

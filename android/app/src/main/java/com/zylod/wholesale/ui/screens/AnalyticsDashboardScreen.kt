@@ -42,17 +42,19 @@ data object AnalyticsDashboardPageMeta : NativePageMeta() {
     override val category = "Dashboards & Analytics"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Analytics Dashboard — operational dashboards and analytics surfaces. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "No active restock watches right now — buyers watching your sold-out products will appear here."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the analytics-dashboard pageId via RouteOwnership.",
+        "% : Not available yet }",
+        "Seller Analytics",
+        "Traffic-source tracking is not available yet.",
+        "No sales yet — your top products will appear here once paid orders come in.",
+        "Restock Demand buyer waiting )}",
+    )}",
     )
     override val related = listOf(
-        NativePageLink("dashboard", "Dashboard"),
-        NativePageLink("analytics-dashboard", "Analytics Dashboard"),
-        NativePageLink("store-analytics", "Store Analytics"),
+        NativePageLink("edit-product", "Edit Product"),
+        NativePageLink("product-performance", "Product Performance"),
     )
 }
 

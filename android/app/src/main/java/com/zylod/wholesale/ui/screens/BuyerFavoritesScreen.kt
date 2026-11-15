@@ -27,17 +27,15 @@ data object BuyerFavoritesPageMeta : NativePageMeta() {
     override val category = "Shopping & Products"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Buyer Favorites — product discovery and buying on the Zylod marketplace. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Tap the Follow button on any supplier profile to add them here."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the buyer-favorites pageId via RouteOwnership.",
+        "Favorite Suppliers",
+        "No favorite suppliers yet",
     )
     override val related = listOf(
-        NativePageLink("all-products", "All Products"),
-        NativePageLink("flash-deals", "Flash Deals"),
-        NativePageLink("category-browser", "Category Browser"),
+        NativePageLink("category-list", "Category List"),
+        NativePageLink("suppliers", "Suppliers"),
     )
 }
 

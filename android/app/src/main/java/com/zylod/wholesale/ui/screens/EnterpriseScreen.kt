@@ -42,17 +42,19 @@ data object EnterprisePageMeta : NativePageMeta() {
     override val category = "Zylod Marketplace"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Enterprise — a Zylod marketplace surface. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Join Zylod to buy products at wholesale prices"
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the enterprise pageId via RouteOwnership.",
+        "Register as Buyer",
+        "We&apos;ll send a 6-digit OTP to verify your phone number",
+        "Create Buyer Account",
+        "We&apos;ll send a verification code to your email",
+        "Already have an account? navigate(’login’)}> Log In",
     )
     override val related = listOf(
-        NativePageLink("home", "Home"),
-        NativePageLink("category-browser", "Category Browser"),
-        NativePageLink("help-center", "Help Center"),
+        NativePageLink("otp-verification", "Otp Verification"),
+        NativePageLink("account-suspended", "Account Suspended"),
+        NativePageLink("two-factor-auth", "Two Factor Auth"),
     )
 }
 

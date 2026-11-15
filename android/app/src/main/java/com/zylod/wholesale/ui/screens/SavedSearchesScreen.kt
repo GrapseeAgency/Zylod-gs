@@ -27,17 +27,14 @@ data object SavedSearchesPageMeta : NativePageMeta() {
     override val category = "Search & Navigation"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Saved Searches — find anything across the Zylod wholesale marketplace. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Save a search to get notified when new products match your criteria"
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the saved-searches pageId via RouteOwnership.",
+        "Save a search to get notified when new products match your criteria",
     )
     override val related = listOf(
         NativePageLink("search-results", "Search Results"),
-        NativePageLink("category-browser", "Category Browser"),
-        NativePageLink("all-products", "All Products"),
+        NativePageLink("search-home", "Search Home"),
     )
 }
 

@@ -42,17 +42,19 @@ data object EmailPreferencesPageMeta : NativePageMeta() {
     override val category = "Settings & App"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Email Preferences — app-level settings and device-side controls. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Not saved on your account yet — this toggle resets when you leave the page."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the email-preferences pageId via RouteOwnership.",
+        "Notification Preferences",
+        "Control exactly how and when Zylod reaches you — across 14 event categories and 4 delivery channels.",
+        "Quiet Hours — Do Not Disturb",
+        "Suppress push &amp; SMS during sleep hours",
+        "Event Categories — total",
+        "During quiet hours, push and SMS notifications are silently queued and delivered at your wake time. Email and WhatsApp are not affected.",
     )
     override val related = listOf(
-        NativePageLink("app-settings", "App Settings"),
-        NativePageLink("display-settings", "Display Settings"),
         NativePageLink("profile", "Profile"),
+        NativePageLink("account-settings", "Account Settings"),
     )
 }
 

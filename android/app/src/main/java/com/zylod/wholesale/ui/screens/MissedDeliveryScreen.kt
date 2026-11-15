@@ -42,17 +42,19 @@ data object MissedDeliveryPageMeta : NativePageMeta() {
     override val category = "Orders & Logistics"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Missed Delivery — order, shipping and delivery operations for Zylod buyers. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Open an order from your order history to request a delivery reschedule."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the missed-delivery pageId via RouteOwnership.",
+        "No order selected",
+        "Only the order’s buyer can request a reschedule.",
+        "Sign in required",
+        "This order may have been removed or the link is stale.",
+        "Order not found",
+        "If the courier couldn’t reach the destination, request a new delivery window below. The seller is notified and will confirm the reschedule.",
     )
     override val related = listOf(
-        NativePageLink("buyer-orders", "Buyer Orders"),
-        NativePageLink("order-tracking", "Order Tracking"),
-        NativePageLink("shipping-info", "Shipping Info"),
+        NativePageLink("orders-history", "Orders History"),
+        NativePageLink("delivery-chat", "Delivery Chat"),
     )
 }
 

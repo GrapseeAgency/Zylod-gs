@@ -42,12 +42,15 @@ data object AdminComplaintsPageMeta : NativePageMeta() {
     override val category = "Support & Help"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Admin Complaints — help, policies and buyer/seller protection on Zylod. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "The complaints review queue is restricted to Zylod admins. Sign in with an admin account to review buyer complaints."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the admin-complaints pageId via RouteOwnership.",
+        "Admin access required",
+        "Every decision is audit-logged. Resolve or reject only with a real note — the buyer sees it verbatim.",
+        "Complaints",
+        "The complaints table currently holds zero rows — real counts, not a placeholder. When a buyer files a complaint it will appear here for review.",
+        "Could not load the complaints queue",
+        "No complaint currently has status &ldquo; &rdquo;. Switch to All to see every complaint in the database.",
     )
     override val related = listOf(
         NativePageLink("help-center", "Help Center"),

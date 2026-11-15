@@ -42,17 +42,18 @@ data object ReportViolationPageMeta : NativePageMeta() {
     override val category = "Support & Help"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Report Violation — help, policies and buyer/seller protection on Zylod. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Select the registered supplier, manufacturer, or user ID violating wholesale regulations."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the report-violation pageId via RouteOwnership.",
+        "Report Policy Violation",
+        "Your report has been saved for review by the Zylod team. If fraudulent activity or counterfeit merchandise is confirmed, the account may face restriction and, where required, referral to…",
+        "Report Saved",
+        "Reporter Anonymity Protected: The reported supplier will never see your identity. All claims are independently evaluated by Zylod Trust & Safety Compliance.",
+        "Report User, Supplier, or Storefront",
     )
     override val related = listOf(
+        NativePageLink("community-guidelines", "Community Guidelines"),
         NativePageLink("help-center", "Help Center"),
-        NativePageLink("support-tickets", "Support Tickets"),
-        NativePageLink("contact-us", "Contact Us"),
     )
 }
 

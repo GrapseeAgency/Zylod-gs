@@ -42,12 +42,12 @@ data object DataRightsPageMeta : NativePageMeta() {
     override val category = "Settings & App"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Data Rights — app-level settings and device-side controls. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Your request reference is # . In accordance with statutory guidelines, our Data Governance Desk will process your request within 30 days."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the data-rights pageId via RouteOwnership.",
+        "Your Data Rights (GDPR/PDPA)",
+        "Request Data Export, Correction, or Deletion",
+        "Request Submitted Successfully",
     )
     override val related = listOf(
         NativePageLink("app-settings", "App Settings"),

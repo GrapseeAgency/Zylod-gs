@@ -42,17 +42,20 @@ data object AppSettingsPageMeta : NativePageMeta() {
     override val category = "Settings & App"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "App Settings — app-level settings and device-side controls. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Configure client caching, synchronization, biometrics, and runtime performance"
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the app-settings pageId via RouteOwnership.",
+        "Stored preference — biometric sign-in is not available on the web app yet",
+        "App &amp; System Settings",
+        "Toggles on this page tune how this browser talks to Zylod. They are stored in your localStorage and never sent to the server. The Android app carries its own native equivalents on-device.",
+        "Diagnostic &amp; System Tools",
+        "Security &amp; Biometrics",
     )
     override val related = listOf(
-        NativePageLink("app-settings", "App Settings"),
-        NativePageLink("display-settings", "Display Settings"),
-        NativePageLink("profile", "Profile"),
+        NativePageLink("app-security-settings", "App Security Settings"),
+        NativePageLink("app-network-settings", "App Network Settings"),
+        NativePageLink("deep-link-handler", "Deep Link Handler"),
+        NativePageLink("server-diagnostics", "Server Diagnostics"),
     )
 }
 

@@ -29,17 +29,18 @@ data object AddMoneyPageMeta : NativePageMeta() {
     override val category = "Zylod Marketplace"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Add Money — a Zylod marketplace surface. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Funding claims are tied to your Zylod account — sign in or create one to submit one."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the add-money pageId via RouteOwnership.",
+        "Sign in to add funds",
+        "Send money to the Zylod company account, then submit the transaction reference here.",
+        "Add Funds to Wallet",
+        "Verification doctrine: your claim stays PENDING and your balance does NOT change until a Zylod finance admin confirms the money arrived — the same rule as order payments. Fake or duplicate…",
+        "Payment verification pending",
+        "Your claim for (ref ) is recorded and queued for the finance team. Your wallet balance is unchanged until an admin verifies the payment. You will be notified the moment it is decided.",
     )
     override val related = listOf(
-        NativePageLink("home", "Home"),
-        NativePageLink("category-browser", "Category Browser"),
-        NativePageLink("help-center", "Help Center"),
+        NativePageLink("my-wallet", "My Wallet"),
     )
 }
 

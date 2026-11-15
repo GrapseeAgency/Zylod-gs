@@ -20,17 +20,19 @@ data object NewsletterPageMeta : NativePageMeta() {
     override val category = "Company & Legal"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Newsletter — the company, content and legal pages of Zylod. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Verified manufacturers offering limited-time tiered rate discounts for bulk buyers."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the newsletter pageId via RouteOwnership.",
+        "Promotions &amp; Deals",
+        "New volume discount deals, supplier promotions, and flash sales will be announced here.",
+        "Factory Direct &amp; Volume Campaigns",
+        "Could not load promotions",
+        "No active promotions right now",
     )
     override val related = listOf(
-        NativePageLink("about-us", "About Us"),
-        NativePageLink("contact-us", "Contact Us"),
-        NativePageLink("careers", "Careers"),
+        NativePageLink("promo-preferences", "Promo Preferences"),
+        NativePageLink("category-browser", "Category Browser"),
+        NativePageLink("promo-detail", "Promo Detail"),
     )
 }
 

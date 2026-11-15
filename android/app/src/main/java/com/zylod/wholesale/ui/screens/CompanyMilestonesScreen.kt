@@ -20,17 +20,15 @@ data object CompanyMilestonesPageMeta : NativePageMeta() {
     override val category = "Company & Legal"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Company Milestones — the company, content and legal pages of Zylod. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Milestones will be posted here as the platform grows — only real, verifiable ones. Zylod does not invent dates or achievements to look established."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the company-milestones pageId via RouteOwnership.",
+        "Zylod Journey &amp; Milestones",
+        "Real Milestones, Published As They Happen",
+        "No milestones published yet",
     )
     override val related = listOf(
         NativePageLink("about-us", "About Us"),
-        NativePageLink("contact-us", "Contact Us"),
-        NativePageLink("careers", "Careers"),
     )
 }
 

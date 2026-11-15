@@ -42,17 +42,15 @@ data object CreateAccountPageMeta : NativePageMeta() {
     override val category = "Account & Profile"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Create Account — account, identity and money surfaces for the signed-in user. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Start sourcing or selling today. Let&apos;s set up your account."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the create-account pageId via RouteOwnership.",
+        "Join the Marketplace",
     )
     override val related = listOf(
-        NativePageLink("profile", "Profile"),
-        NativePageLink("buyer-orders", "Buyer Orders"),
-        NativePageLink("account-settings", "Account Settings"),
+        NativePageLink("terms", "Terms"),
+        NativePageLink("privacy", "Privacy"),
+        NativePageLink("help-center", "Help Center"),
     )
 }
 

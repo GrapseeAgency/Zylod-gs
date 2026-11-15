@@ -42,17 +42,17 @@ data object WholesaleBuyingPageMeta : NativePageMeta() {
     override val category = "Marketing & Rewards"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Wholesale Buying — promotions, rewards and membership programs on Zylod. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Every listing below is live from the marketplace — real suppliers, real prices, real stock. Nothing on this page is pre-generated."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the wholesale-buying pageId via RouteOwnership.",
+        "Wholesale Catalog",
+        "Product Catalog",
+        "Couldn&apos;t load the catalog",
     )
     override val related = listOf(
-        NativePageLink("coupons", "Coupons"),
-        NativePageLink("vip-club", "VIP Club"),
-        NativePageLink("referral-program", "Referral Program"),
+        NativePageLink("notifications", "Notifications"),
+        NativePageLink("barcode-scanner", "Barcode Scanner"),
+        NativePageLink("explore", "Explore"),
     )
 }
 

@@ -30,9 +30,9 @@ data object DocsPagePageMeta : NativePageMeta() {
     override val summary = "Docs Page — the documentation browser with the real table of contents and per-slug article detail, streaming from the Zylod support API."
     override val tabHint = ""
     override val bullets = listOf(
-        "Live data renders from the Zylod API when an endpoint feeds this page.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the docs-page pageId via RouteOwnership.",
+        "Live product grid fetched from api/support/policies — the same catalog call the web page makes.",
+        "Cards render real price, MOQ badge, supplier and category from the response.",
+        "Offline: the last-saved grid renders first; the Room offline catalog fills in before curated content.",
     )
     override val related = listOf(
         NativePageLink("helpdesk", "Help & Support Center"),

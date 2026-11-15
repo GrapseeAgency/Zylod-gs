@@ -42,17 +42,13 @@ data object PointsHistoryPageMeta : NativePageMeta() {
     override val category = "Marketing & Rewards"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Points History — promotions, rewards and membership programs on Zylod. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Earn points by making purchases or completing daily activities."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the points-history pageId via RouteOwnership.",
+        "Points Transaction Ledger",
     )
     override val related = listOf(
-        NativePageLink("coupons", "Coupons"),
-        NativePageLink("vip-club", "VIP Club"),
-        NativePageLink("referral-program", "Referral Program"),
+        NativePageLink("redeem-points", "Redeem Points"),
     )
 }
 

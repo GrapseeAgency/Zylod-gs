@@ -42,17 +42,16 @@ data object SellerVerificationGuidePageMeta : NativePageMeta() {
     override val category = "Seller & Supplier"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Seller Verification Guide — the seller and supplier toolchain on the Zylod marketplace. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Boost customer confidence, unlock high-volume wholesale orders, and rank higher in search."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the seller-verification-guide pageId via RouteOwnership.",
+        "Supplier Verification Guide",
+        "Our compliance team inspects submitted documents within 24–48 business hours. Once approved, your storefront is automatically upgraded with the Verified Supplier trust badge.",
+        "KYC & Factory Verification Standards",
+        "Review SLA & Timeline",
     )
     override val related = listOf(
-        NativePageLink("seller-dashboard", "Seller Dashboard"),
-        NativePageLink("supplier-center", "Supplier Center"),
-        NativePageLink("product-upload", "Product Upload"),
+        NativePageLink("seller-verification", "Seller Verification"),
     )
 }
 

@@ -42,17 +42,18 @@ data object ShippingCourierIntegrationPageMeta : NativePageMeta() {
     override val category = "Orders & Logistics"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Shipping Courier Integration — order, shipping and delivery operations for Zylod buyers. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Open your order queue, pick an order to fulfil, and enter the courier + tracking ID. The buyer sees it on their timeline instantly."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the shipping-courier-integration pageId via RouteOwnership.",
+        "Courier Integration",
+        "How courier handoff works on Zylod today",
+        "Per-account API keys aren&apos;t wired yet",
+        "The previous version of this page asked for a Pathao/RedX/Paperfly API key, secret and store ID, then showed a &quot;Connect&quot; button that did nothing on click — no merchant account was…",
+        "Couriers are integrated per-shipment instead: when you fulfil an order, you enter the courier name and tracking number on the order-detail page. The buyer sees the courier and tracking ID…",
+        "Need per-account API integration for high-volume fulfillment? Message Zylod support — your request will be tracked and the integration prioritised against real seller demand.",
     )
     override val related = listOf(
-        NativePageLink("buyer-orders", "Buyer Orders"),
-        NativePageLink("order-tracking", "Order Tracking"),
-        NativePageLink("shipping-info", "Shipping Info"),
+        NativePageLink("seller-order-management", "Seller Order Management"),
     )
 }
 

@@ -42,17 +42,18 @@ data object AccountSuspendedPageMeta : NativePageMeta() {
     override val category = "Account & Profile"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Account Suspended — account, identity and money surfaces for the signed-in user. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Appeal submitted — we&apos;ll reach out within 24 hours."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the account-suspended pageId via RouteOwnership.",
+        "Account Suspended",
+        "Typically resolved within 24-48 business hours.",
+        "Your account has been",
+        "Updates are sent to as the review progresses.",
     )
     override val related = listOf(
-        NativePageLink("profile", "Profile"),
-        NativePageLink("buyer-orders", "Buyer Orders"),
-        NativePageLink("account-settings", "Account Settings"),
+        NativePageLink("contact-us", "Contact Us"),
+        NativePageLink("help-center", "Help Center"),
+        NativePageLink("terms", "Terms"),
     )
 }
 

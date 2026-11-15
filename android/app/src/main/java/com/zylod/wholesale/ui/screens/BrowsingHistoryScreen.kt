@@ -42,12 +42,13 @@ data object BrowsingHistoryPageMeta : NativePageMeta() {
     override val category = "Zylod Marketplace"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Browsing History — a Zylod marketplace surface. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Recently viewed products are saved to your account, so you can pick up where you left off on any device."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the browsing-history pageId via RouteOwnership.",
+        "Recently Viewed",
+        "Products you&apos;ve checked out recently",
+        "Sign in to see your history",
+        "No recently viewed products",
     )
     override val related = listOf(
         NativePageLink("home", "Home"),

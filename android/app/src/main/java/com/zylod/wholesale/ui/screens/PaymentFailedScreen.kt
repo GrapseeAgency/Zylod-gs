@@ -26,17 +26,15 @@ data object PaymentFailedPageMeta : NativePageMeta() {
     override val category = "Zylod Marketplace"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Payment Failed — a Zylod marketplace surface. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Transactions that could not be completed by your banking gateway."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the payment-failed pageId via RouteOwnership.",
+        "Payment Authorizations Required",
+        "All wholesale gateway authorizations are operating normally.",
     )
     override val related = listOf(
-        NativePageLink("home", "Home"),
-        NativePageLink("category-browser", "Category Browser"),
-        NativePageLink("help-center", "Help Center"),
+        NativePageLink("checkout", "Checkout"),
+        NativePageLink("payment-method", "Payment Method"),
     )
 }
 

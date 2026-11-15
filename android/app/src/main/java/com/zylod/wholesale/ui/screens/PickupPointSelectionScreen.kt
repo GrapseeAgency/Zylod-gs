@@ -42,12 +42,11 @@ data object PickupPointSelectionPageMeta : NativePageMeta() {
     override val category = "Orders & Logistics"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Pickup Point Selection — order, shipping and delivery operations for Zylod buyers. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Pickup point selection for checkout — choose where your wholesale order is collected."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the pickup-point-selection pageId via RouteOwnership.",
+        "Points stream from the same pickup-point data the DeliveryMethods flow uses.",
+        "Selecting a point carries it into the checkout delivery step.",
     )
     override val related = listOf(
         NativePageLink("buyer-orders", "Buyer Orders"),

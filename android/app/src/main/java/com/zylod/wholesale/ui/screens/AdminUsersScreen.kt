@@ -42,12 +42,14 @@ data object AdminUsersPageMeta : NativePageMeta() {
     override val category = "Dashboards & Analytics"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Admin Users — operational dashboards and analytics surfaces. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "User management is restricted to Zylod admins. Sign in with an admin account."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the admin-users pageId via RouteOwnership.",
+        "Admin access required",
+        "All registered accounts with real order/review counts. Suspend, ban, or reactivate — every action is audit-logged.",
+        "User Management",
+        "Could not load users",
+        "No users found",
     )
     override val related = listOf(
         NativePageLink("dashboard", "Dashboard"),

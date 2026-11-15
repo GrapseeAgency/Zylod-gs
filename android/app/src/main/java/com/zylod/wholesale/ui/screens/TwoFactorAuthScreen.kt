@@ -22,17 +22,16 @@ data object TwoFactorAuthPageMeta : NativePageMeta() {
     override val category = "Account & Profile"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Two-Factor Authentication — protect your account with an authenticator app or SMS codes."
+    override val summary = "Use Google Authenticator or Authy for maximum security without cellular signal."
     override val tabHint = ""
     override val bullets = listOf(
-        "Typed native screen — live data from the account settings API family.",
-        "Honest states: loading, retry, signed-out wall — never fabricated data.",
-        "Native ownership: this Kotlin screen owns the two-factor-auth pageId via RouteOwnership.",
+        "Two-Factor Authentication",
+        ". : ’Enter the 6-digit code sent to your registered phone.’ : ’Enter the 6-digit code from your authenticator app to finish signing in.’ : step === ’select’ ? ’Choose a second layer of…",
     )
     override val related = listOf(
-        NativePageLink("account-settings", "Account Settings"),
+        NativePageLink("account-suspended", "Account Suspended"),
         NativePageLink("backup-codes", "Backup Codes"),
-        NativePageLink("edit-profile", "Edit Profile"),
+        NativePageLink("help-center", "Help Center"),
     )
 }
 

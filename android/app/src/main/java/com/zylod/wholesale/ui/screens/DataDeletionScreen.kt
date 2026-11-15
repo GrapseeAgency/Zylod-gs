@@ -42,12 +42,13 @@ data object DataDeletionPageMeta : NativePageMeta() {
     override val category = "Settings & App"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Data Deletion — app-level settings and device-side controls. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Your deletion request has been submitted. In accordance with statutory financial audit obligations (NBR), non-financial records will be purged within 30 days."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the data-deletion pageId via RouteOwnership.",
+        "Permanent Account & Data Deletion",
+        "Deleting your account will forfeit all active VIP membership points, reward vouchers, affiliate commissions, and saved supplier quotation history. This action cannot be reversed.",
+        "Deletion Request Initiated",
+        "Important Notice Regarding Account Deletion",
     )
     override val related = listOf(
         NativePageLink("app-settings", "App Settings"),

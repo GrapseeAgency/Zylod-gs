@@ -42,12 +42,15 @@ data object RevenueBreakdownPageMeta : NativePageMeta() {
     override val category = "Dashboards & Analytics"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Revenue Breakdown — operational dashboards and analytics surfaces. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "No revenue recorded yet — your daily breakdown will appear here once paid orders come in."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the revenue-breakdown pageId via RouteOwnership.",
+        "Revenue Breakdown",
+        "Sign in with a supplier account to see your revenue breakdown.",
+        "Seller sign-in required",
+        "Your ledger will appear here once buyers place orders on your products.",
+        "Daily Gross Revenue",
+        "Revenue Ledger",
     )
     override val related = listOf(
         NativePageLink("dashboard", "Dashboard"),

@@ -42,12 +42,11 @@ data object EarningsPageMeta : NativePageMeta() {
     override val category = "Marketing & Rewards"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Earnings — promotions, rewards and membership programs on Zylod. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Renders the typed wallet hub — earnings live in the wallet history, backed by the real API."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the earnings pageId via RouteOwnership.",
+        "Curated metadata for a page owned by a typed native screen — the screen itself renders live data.",
+        "Renders the typed wallet hub — earnings live in the wallet history, backed by the real API.",
     )
     override val related = listOf(
         NativePageLink("coupons", "Coupons"),

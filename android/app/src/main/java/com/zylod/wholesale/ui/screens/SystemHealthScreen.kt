@@ -29,9 +29,9 @@ data object SystemHealthPageMeta : NativePageMeta() {
     override val summary = "System Health — the live subsystem health probes and microservice latency metrics, streaming from the Zylod diagnostics API through the shared native status screen."
     override val tabHint = ""
     override val bullets = listOf(
-        "Live data renders from the Zylod API when an endpoint feeds this page.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the system-health pageId via RouteOwnership.",
+        "Live product grid fetched from api/app/diagnostics — the same catalog call the web page makes.",
+        "Cards render real price, MOQ badge, supplier and category from the response.",
+        "Offline: the last-saved grid renders first; the Room offline catalog fills in before curated content.",
     )
     override val related = listOf(
         NativePageLink("system-status", "System Status"),

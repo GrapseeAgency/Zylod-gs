@@ -42,17 +42,21 @@ data object SellerProfilePageMeta : NativePageMeta() {
     override val category = "Seller & Supplier"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Seller Profile — the seller and supplier toolchain on the Zylod marketplace. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Verified Wholesale Manufacturer on Zylod Platform. ISO-standard quality controls, bulk supply agreements, and direct factory distribution."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the seller-profile pageId via RouteOwnership.",
+        "Quick Edit Profile",
+        "This supplier has not listed products under this filter yet.",
+        "Business Specifications",
+        "Production facilities and warehouse storage managed according to national and international manufacturing best practices.",
+        "Quality &amp; Sourcing Standards",
+        "Trade License &amp; Government Accreditations verified through Zylod Merchant KYC.",
     )
     override val related = listOf(
-        NativePageLink("seller-dashboard", "Seller Dashboard"),
-        NativePageLink("supplier-center", "Supplier Center"),
-        NativePageLink("product-upload", "Product Upload"),
+        NativePageLink("cart", "Cart"),
+        NativePageLink("account-settings", "Account Settings"),
+        NativePageLink("add-product", "Add Product"),
+        NativePageLink("edit-profile", "Edit Profile"),
     )
 }
 

@@ -28,14 +28,11 @@ data object RecentlySearchedPageMeta : NativePageMeta() {
     override val summary = "Recently Searched — the same api/search/history rows the web's RecentlySearchedPage serves (GET api/search/history, per-row DELETE ?term=), tap → search-results, guests on the device-local fallback."
     override val tabHint = "search"
     override val bullets = listOf(
-        "Real history — the caller's own rows from the Zylod API, never fabricated.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the recently-searched pageId via RouteOwnership.",
+        "Recent Searches",
+        "Trending Searches",
     )
     override val related = listOf(
-        NativePageLink("search", "Search"),
-        NativePageLink("search-history", "Search History"),
-        NativePageLink("recently-viewed", "Recently Viewed"),
+        NativePageLink("search-results", "Search Results"),
     )
 }
 

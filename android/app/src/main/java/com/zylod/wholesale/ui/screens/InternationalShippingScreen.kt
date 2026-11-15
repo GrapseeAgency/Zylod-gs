@@ -42,17 +42,15 @@ data object InternationalShippingPageMeta : NativePageMeta() {
     override val category = "Orders & Logistics"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "International Shipping — order, shipping and delivery operations for Zylod buyers. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Direct mill export solutions connecting international apparel buying houses directly to Bangladesh garment factories with FOB and CIF terms."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the international-shipping pageId via RouteOwnership.",
+        "International Wholesale Export",
+        "Cross-Border Freight from Bangladesh Manufacturing Hubs",
+        "Global RMG & Wholesale Export",
     )
     override val related = listOf(
-        NativePageLink("buyer-orders", "Buyer Orders"),
-        NativePageLink("order-tracking", "Order Tracking"),
-        NativePageLink("shipping-info", "Shipping Info"),
+        NativePageLink("shipping-policy", "Shipping Policy"),
     )
 }
 

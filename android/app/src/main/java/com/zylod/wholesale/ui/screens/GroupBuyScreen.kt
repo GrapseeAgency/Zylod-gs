@@ -42,17 +42,14 @@ data object GroupBuyPageMeta : NativePageMeta() {
     override val category = "Marketing & Rewards"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Group Buy — promotions, rewards and membership programs on Zylod. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Reserve units in live volume pools. Once target batch quantity is reached, the factory ships at up to 35% discount."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the group-buy pageId via RouteOwnership.",
+        "Wholesale Group Buy",
+        "Combine Quantities with Other Merchants to Unlock Container Rates",
     )
     override val related = listOf(
-        NativePageLink("coupons", "Coupons"),
-        NativePageLink("vip-club", "VIP Club"),
-        NativePageLink("referral-program", "Referral Program"),
+        NativePageLink("group-buy-detail", "Group Buy Detail"),
     )
 }
 

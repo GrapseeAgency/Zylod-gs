@@ -12,17 +12,16 @@ data object VipBenefitsPageMeta : NativePageMeta() {
     override val category = "Marketing & Rewards"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "VIP Benefits — promotions, rewards and membership programs on Zylod. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "The VIP tier configuration couldn&apos;t be loaded, so we won&apos;t guess at the benefits. Please try again."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the vip-benefits pageId via RouteOwnership.",
+        "VIP Wholesale Enterprise Club",
+        "Membership tiers are based on your verified lifetime spend on Zylod.",
+        "Enterprise Procurement Privileges",
+        "+ lifetime paid spend : ’No spend requirement’}",
     )
     override val related = listOf(
-        NativePageLink("coupons", "Coupons"),
-        NativePageLink("vip-club", "VIP Club"),
-        NativePageLink("referral-program", "Referral Program"),
+        NativePageLink("exclusive-deals", "Exclusive Deals"),
     )
 }
 

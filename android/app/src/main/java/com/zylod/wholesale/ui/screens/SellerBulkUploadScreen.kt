@@ -42,17 +42,17 @@ data object SellerBulkUploadPageMeta : NativePageMeta() {
     override val category = "Seller & Supplier"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Seller Bulk Upload — the seller and supplier toolchain on the Zylod marketplace. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Created products land in the moderation queue — an admin approves them onto the marketplace. Upload id is recorded in your history."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the seller-bulk-upload pageId via RouteOwnership.",
+        "Bulk Upload",
+        "Header must be exactly name,categoryId,unit,moq,basePrice,stockQuantity — one product per row, max 100 rows. Valid rows become products in the moderation queue (isApproved=false) for your…",
+        "Bulk Upload Products",
     )
     override val related = listOf(
-        NativePageLink("seller-dashboard", "Seller Dashboard"),
-        NativePageLink("supplier-center", "Supplier Center"),
-        NativePageLink("product-upload", "Product Upload"),
+        NativePageLink("bulk-upload-history", "Bulk Upload History"),
+        NativePageLink("bulk-upload-template", "Bulk Upload Template"),
+        NativePageLink("supplier-products", "Supplier Products"),
     )
 }
 

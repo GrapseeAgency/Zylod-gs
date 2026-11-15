@@ -42,12 +42,15 @@ data object AdminReturnsPageMeta : NativePageMeta() {
     override val category = "Orders & Logistics"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Admin Returns — order, shipping and delivery operations for Zylod buyers. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "The return review queue is restricted to Zylod admins. Sign in with an admin account to review buyer return requests."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the admin-returns pageId via RouteOwnership.",
+        "Admin access required",
+        "Approve/reject is audit-logged. Record a refund only after the money really moved — every record needs the real transfer reference.",
+        "Return Requests",
+        "The returnRequests table currently holds zero rows — real counts, not a placeholder. When a buyer submits a return on a paid, delivered order it will appear here for review.",
+        "Could not load the return review queue",
+        "No return request currently has status &ldquo; &rdquo;. Switch to All to see every return request in the database.",
     )
     override val related = listOf(
         NativePageLink("buyer-orders", "Buyer Orders"),

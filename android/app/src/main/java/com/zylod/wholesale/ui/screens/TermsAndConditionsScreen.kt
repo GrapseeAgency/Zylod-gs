@@ -42,12 +42,12 @@ data object TermsAndConditionsPageMeta : NativePageMeta() {
     override val category = "Support & Help"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Terms And Conditions — help, policies and buyer/seller protection on Zylod. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Renders the published terms document from api/support/articles — the same source the web policy page reads."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the terms-and-conditions pageId via RouteOwnership.",
+        "The document body streams from the published support article, never hardcoded text.",
+        "Unknown slugs show the honest not-found state.",
+        "Related legal pages render beside the document, like the web layout.",
     )
     override val related = listOf(
         NativePageLink("help-center", "Help Center"),

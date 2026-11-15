@@ -42,12 +42,15 @@ data object CommissionHistoryPageMeta : NativePageMeta() {
     override val category = "Zylod Marketplace"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Commission History — a Zylod marketplace surface. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Commission entries recorded on fulfilled wholesale orders — amounts and rates come from your real order records."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the commission-history pageId via RouteOwnership.",
+        "No commission data was returned for your account.",
+        "Could not load your commission statements (HTTP ).",
+        "Network error while loading your commission statements. Check your connection and retry.",
+        "Your session has ended. Sign in again to view your commission statements.",
+        "Sign in to view your commission statements",
+        "Commission statements show the real platform fees deducted from your fulfilled orders. Sign in to continue.",
     )
     override val related = listOf(
         NativePageLink("home", "Home"),

@@ -45,9 +45,9 @@ data object NotificationCategoriesPageMeta : NativePageMeta() {
     override val summary = "Notification Categories — account, identity and money surfaces for the signed-in user. Content streams live from the Zylod API and renders through the shared native page model."
     override val tabHint = ""
     override val bullets = listOf(
-        "Live data renders from the Zylod API when an endpoint feeds this page.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the notification-categories pageId via RouteOwnership.",
+        "Live category tree fetched from api/categories — the same call the web page makes.",
+        "Chips render real category names and product counts.",
+        "Offline: the last-saved tree renders first — never a white screen.",
     )
     override val related = listOf(
         NativePageLink("profile", "Profile"),

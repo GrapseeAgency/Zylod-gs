@@ -42,17 +42,20 @@ data object IssueTrackerPageMeta : NativePageMeta() {
     override val category = "Orders & Logistics"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Issue Tracker — order, shipping and delivery operations for Zylod buyers. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Search Bangladesh wholesale policies, FAQs, or contact our Dhaka team"
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the issue-tracker pageId via RouteOwnership.",
+        "How can we help you?",
+        "Managed by site admins under Admin → System Settings.",
+        "Reach the Team",
+        "Browse Help Topics",
+        "Frequently Asked Questions",
     )
     override val related = listOf(
-        NativePageLink("buyer-orders", "Buyer Orders"),
-        NativePageLink("order-tracking", "Order Tracking"),
-        NativePageLink("shipping-info", "Shipping Info"),
+        NativePageLink("chatbot", "Chatbot"),
+        NativePageLink("live-chat", "Live Chat"),
+        NativePageLink("docs-browser", "Docs Browser"),
+        NativePageLink("faq", "Faq"),
     )
 }
 

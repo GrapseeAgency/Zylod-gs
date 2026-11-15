@@ -31,9 +31,9 @@ data object SharedWishlistDetailPageMeta : NativePageMeta() {
     override val summary = "Shared Wishlist Detail — product discovery and buying on the Zylod marketplace. Content streams live from the Zylod API and renders through the shared native page model."
     override val tabHint = ""
     override val bullets = listOf(
-        "Live data renders from the Zylod API when an endpoint feeds this page.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the shared-wishlist-detail pageId via RouteOwnership.",
+        "Live saved items fetched from api/wishlist?limit=50 for signed-in buyers — the same call the web page makes.",
+        "Guests see their device-local wishlist instead; nothing is fabricated.",
+        "Offline: the last-saved list renders first — never a white screen.",
     )
     override val related = listOf(
         NativePageLink("all-products", "All Products"),

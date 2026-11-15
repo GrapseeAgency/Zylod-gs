@@ -42,17 +42,18 @@ data object RevenueReportsPageMeta : NativePageMeta() {
     override val category = "Support & Help"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Revenue Reports — help, policies and buyer/seller protection on Zylod. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "When buyers place orders on your products, the platform-fee breakdown per order will appear here."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the revenue-reports pageId via RouteOwnership.",
+        "Revenue Reports",
+        "Sign in with a supplier account to view your revenue reports.",
+        "Seller sign-in required",
+        "No sales yet — your recent sales totals will appear here.",
+        "Recent Sales",
+        "Earnings are settled by the finance team. Commission is the standard B2B wholesale rate applied to gross GMV. Money only leaves your wallet when a payout is completed with a reference — a…",
     )
     override val related = listOf(
-        NativePageLink("help-center", "Help Center"),
-        NativePageLink("support-tickets", "Support Tickets"),
-        NativePageLink("contact-us", "Contact Us"),
+        NativePageLink("withdraw-money", "Withdraw Money"),
     )
 }
 

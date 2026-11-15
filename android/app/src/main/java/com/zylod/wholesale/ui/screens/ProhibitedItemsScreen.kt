@@ -42,12 +42,11 @@ data object ProhibitedItemsPageMeta : NativePageMeta() {
     override val category = "Zylod Marketplace"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Prohibited Items — a Zylod marketplace surface. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Listing or attempting to trade any of the items below violates Bangladesh Law and Zylod Terms. Violators may face account suspension or ban, and cases may be referred to the Directorate of National Consumer Rights Protection (DNCRP)."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the prohibited-items pageId via RouteOwnership.",
+        "Prohibited Wholesale Items",
+        "Strictly Restricted & Prohibited Inventory",
     )
     override val related = listOf(
         NativePageLink("home", "Home"),

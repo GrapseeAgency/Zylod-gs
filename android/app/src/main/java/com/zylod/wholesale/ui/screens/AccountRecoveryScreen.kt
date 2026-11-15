@@ -42,17 +42,19 @@ data object AccountRecoveryPageMeta : NativePageMeta() {
     override val category = "Account & Profile"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Account Recovery — account, identity and money surfaces for the signed-in user. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Lost access to your password and 2FA device? Follow the steps below to securely verify your identity and regain access."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the account-recovery pageId via RouteOwnership.",
+        "Account Recovery",
+        "This must be the email address you used to create your Zylod account.",
+        "Recover Your Account",
+        "Securely upload a photo ID (Passport or Driver&apos;s License) to confirm your identity. Fast and secure.",
+        "If you don&apos;t have access to your ID, speak with a security specialist to manually verify your business ownership.",
+        "Our security team typically reviews recovery requests within 24 hours. You will receive an update at your registered email address.",
     )
     override val related = listOf(
-        NativePageLink("profile", "Profile"),
-        NativePageLink("buyer-orders", "Buyer Orders"),
-        NativePageLink("account-settings", "Account Settings"),
+        NativePageLink("email-verification", "Email Verification"),
+        NativePageLink("notifications", "Notifications"),
     )
 }
 

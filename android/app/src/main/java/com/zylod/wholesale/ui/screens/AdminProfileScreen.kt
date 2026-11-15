@@ -42,17 +42,20 @@ data object AdminProfilePageMeta : NativePageMeta() {
     override val category = "Dashboards & Analytics"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Admin Profile — operational dashboards and analytics surfaces. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Platform stats come from the admin dashboard API. Sign in with an admin account to load live numbers."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the admin-profile pageId via RouteOwnership.",
+        "Admin access required",
+        "The only number shown here is one this page actually measured. No invented service latencies.",
+        "Could not load platform stats",
+        "Buyer complaints appear here the moment they are filed. The counts above are live from the complaints table.",
+        "Jump into the queues",
+        "Commission / settlement rates are not configured anywhere in the platform yet — no percentage is shown here because none exists to show.",
     )
     override val related = listOf(
-        NativePageLink("dashboard", "Dashboard"),
-        NativePageLink("analytics-dashboard", "Analytics Dashboard"),
-        NativePageLink("store-analytics", "Store Analytics"),
+        NativePageLink("account-settings", "Account Settings"),
+        NativePageLink("admin-complaints", "Admin Complaints"),
+        NativePageLink("admin-payments", "Admin Payments"),
     )
 }
 

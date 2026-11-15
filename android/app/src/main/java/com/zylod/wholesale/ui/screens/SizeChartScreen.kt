@@ -42,12 +42,19 @@ data object SizeChartPageMeta : NativePageMeta() {
     override val category = "Shopping & Products"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Size Chart — product discovery and buying on the Zylod marketplace. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = ") : ’’}. For exact fit, contact the supplier before placing a bulk order. : ’Reference measurements for woven garments (shirts, kameez, workwear). For knitwear, denim, or outerwear, ask the supplier for their category-specific chart.’}"
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the size-chart pageId via RouteOwnership.",
+        "Size Guide",
+        "A A B B C setUnit(’inches’)} aria-pressed= className= } > Inches setUnit(’cm’)} aria-pressed= className= } > CM Size A. Chest B. Length C. Sleeve ))} How to measure , , , ].map(m => ( :",
+        ": ’General garment size chart’}",
+        "These are reference body measurements, not garment dimensions. Suppliers may cut to their own blocks; always request a sample for bulk orders where fit is critical.",
+        "How to measure",
+    ) : ’’}. For exact fit, contact the supplier before placing a bulk order. : ’Reference measurements for woven garments (shirts, kameez, workwear). For knitwear, denim, or outerwear, ask the…",
+        "Size Guide",
+        "A A B B C setUnit(’inches’)} aria-pressed= className= } > Inches setUnit(’cm’)} aria-pressed= className= } > CM Size A. Chest B. Length C. Sleeve ))} How to measure , , , ].map(m => ( :",
+        ": ’General garment size chart’}",
+        "These are reference body measurements, not garment dimensions. Suppliers may cut to their own blocks; always request a sample for bulk orders where fit is critical.",
     )
     override val related = listOf(
         NativePageLink("all-products", "All Products"),

@@ -42,12 +42,10 @@ data object SellerNotificationsCenterPageMeta : NativePageMeta() {
     override val category = "Seller & Supplier"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Seller Notifications Center — the seller and supplier toolchain on the Zylod marketplace. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "When orders, payments, returns, deliveries, or system events happen on your account, they appear here in real time. We do not show fabricated notifications."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the seller-notifications-center pageId via RouteOwnership.",
+        "Notifications",
     )
     override val related = listOf(
         NativePageLink("seller-dashboard", "Seller Dashboard"),

@@ -42,17 +42,16 @@ data object SellerPayoutMethodsPageMeta : NativePageMeta() {
     override val category = "Seller & Supplier"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Seller Payout Methods — the seller and supplier toolchain on the Zylod marketplace. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Payout methods are the verified commercial bank accounts where the finance team settles your wallet withdrawals. A request alone never moves funds — payouts only leave your wallet when finance completes them with a reference."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the seller-payout-methods pageId via RouteOwnership.",
+        "Payout Methods",
+        "Sign in to manage the bank accounts the platform pays your withdrawals into.",
+        "Sign-in required",
+        "Add a commercial bank account so the finance team can settle your wallet withdrawals.",
     )
     override val related = listOf(
-        NativePageLink("seller-dashboard", "Seller Dashboard"),
-        NativePageLink("supplier-center", "Supplier Center"),
-        NativePageLink("product-upload", "Product Upload"),
+        NativePageLink("add-bank-account", "Add Bank Account"),
     )
 }
 

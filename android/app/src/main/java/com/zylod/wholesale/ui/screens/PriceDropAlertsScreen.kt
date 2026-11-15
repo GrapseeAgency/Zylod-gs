@@ -42,17 +42,14 @@ data object PriceDropAlertsPageMeta : NativePageMeta() {
     override val category = "Account & Profile"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Price Drop Alerts — account, identity and money surfaces for the signed-in user. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Set target prices on wholesale goods to get notified instantly when suppliers lower their rates."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the price-drop-alerts pageId via RouteOwnership.",
+        "Price Drop Alerts",
+        "Could not load price alerts",
     )
     override val related = listOf(
-        NativePageLink("profile", "Profile"),
-        NativePageLink("buyer-orders", "Buyer Orders"),
-        NativePageLink("account-settings", "Account Settings"),
+        NativePageLink("price-alert-create", "Price Alert Create"),
     )
 }
 

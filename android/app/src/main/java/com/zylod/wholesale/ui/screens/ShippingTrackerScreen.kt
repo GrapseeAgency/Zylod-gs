@@ -42,17 +42,20 @@ data object ShippingTrackerPageMeta : NativePageMeta() {
     override val category = "Orders & Logistics"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Shipping Tracker — order, shipping and delivery operations for Zylod buyers. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Open an order from your order history and choose Track shipment to see its real delivery milestones here."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the shipping-tracker pageId via RouteOwnership.",
+        "No shipment selected",
+        "Shipment milestones are visible only to the order’s buyer, its suppliers, or an admin.",
+        "Sign in to track",
+        "We couldn’t find this order. It may have been removed, or the link may be stale.",
+        "Order not found",
+        "Milestones below come from the driver app (dispatched, in-transit, delivered). Continuous live GPS is shown only inside the active delivery chat room — this view shows the verified timeline.",
     )
     override val related = listOf(
-        NativePageLink("buyer-orders", "Buyer Orders"),
-        NativePageLink("order-tracking", "Order Tracking"),
-        NativePageLink("shipping-info", "Shipping Info"),
+        NativePageLink("orders-history", "Orders History"),
+        NativePageLink("delivery-chat", "Delivery Chat"),
+        NativePageLink("order-detail", "Order Detail"),
     )
 }
 

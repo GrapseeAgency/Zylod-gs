@@ -33,21 +33,20 @@ import com.zylod.wholesale.ui.pages.NativePageViewModel
  * (src/lib/page-loader.ts registry entry, now owned by Compose — the
  * WebView is fallback-only for unregistered ids).
  *
- * No obvious SPA endpoint feeds this page — it renders its curated Kotlin metadata.
-"Best Sellers — the seller and supplier toolchain on the Zylod marketplace. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+ * "Best Sellers — the seller and supplier toolchain on the Zylod marketplace. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
  */
 data object BestSellersPageMeta : NativePageMeta() {
     override val pageId = "best-sellers"
     override val title = "Best Sellers"
     override val category = "Seller & Supplier"
-    override val kind = NativePageKind.CONTENT
-    override val endpoint: String? = null
-    override val summary = "Best Sellers — the seller and supplier toolchain on the Zylod marketplace. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val kind = NativePageKind.DEALS
+    override val endpoint: String? = "api/deals?limit=20"
+    override val summary = "Wholesale best sellers on the Zylod marketplace. — the same live catalog the web category page fetches."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the best-sellers pageId via RouteOwnership.",
+        "Best Sellers — live deals fetched from api/deals, the same call the web page makes.",
+        "Flash and daily arrays render as native product cards with real discount badges.",
+        "Offline: the last-saved deals payload renders first — never a white screen.",
     )
     override val related = listOf(
         NativePageLink("seller-dashboard", "Seller Dashboard"),

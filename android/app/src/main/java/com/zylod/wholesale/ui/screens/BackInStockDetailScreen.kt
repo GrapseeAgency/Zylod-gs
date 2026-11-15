@@ -42,12 +42,10 @@ data object BackInStockDetailPageMeta : NativePageMeta() {
     override val category = "Zylod Marketplace"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Back In Stock Detail — a Zylod marketplace surface. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Restock Notice"
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the back-in-stock-detail pageId via RouteOwnership.",
+        "Restock Notice",
     )
     override val related = listOf(
         NativePageLink("home", "Home"),

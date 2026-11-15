@@ -25,17 +25,16 @@ data object SellerTaxInvoicesPageMeta : NativePageMeta() {
     override val category = "Search & Navigation"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Seller Tax Invoices — find anything across the Zylod wholesale marketplace. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Tax invoices issued for every order you receive. Each carries a real MUSHAK-6.3 number, server-computed subtotal, VAT, shipping and grand total — ready for corporate audit filing."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the seller-tax-invoices pageId via RouteOwnership.",
+        "Tax Invoices",
+        "Sign in to view the Mushak 6.3 tax invoices issued for your orders.",
+        "Sign-in required",
+        "When buyers place orders on your products, the corresponding Mushak 6.3 invoices will appear here.",
     )
     override val related = listOf(
-        NativePageLink("search-results", "Search Results"),
-        NativePageLink("category-browser", "Category Browser"),
-        NativePageLink("all-products", "All Products"),
+        NativePageLink("order-invoice", "Order Invoice"),
     )
 }
 

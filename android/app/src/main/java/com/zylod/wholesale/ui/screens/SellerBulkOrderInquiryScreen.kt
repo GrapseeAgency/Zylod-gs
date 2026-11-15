@@ -45,9 +45,9 @@ data object SellerBulkOrderInquiryPageMeta : NativePageMeta() {
     override val summary = "Seller Bulk Order Inquiry — order, shipping and delivery operations for Zylod buyers. Content streams live from the Zylod API and renders through the shared native page model."
     override val tabHint = ""
     override val bullets = listOf(
-        "Live data renders from the Zylod API when an endpoint feeds this page.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the seller-bulk-order-inquiry pageId via RouteOwnership.",
+        "Live order list fetched from api/orders/my-orders — the same call the web page makes.",
+        "Rows render real order number, status badge, payment state and total.",
+        "Offline: the last-saved list renders first — never a white screen.",
     )
     override val related = listOf(
         NativePageLink("buyer-orders", "Buyer Orders"),

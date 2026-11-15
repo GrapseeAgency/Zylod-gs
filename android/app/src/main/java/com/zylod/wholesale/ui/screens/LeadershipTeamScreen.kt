@@ -42,17 +42,19 @@ data object LeadershipTeamPageMeta : NativePageMeta() {
     override val category = "Company & Legal"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Leadership Team — the company, content and legal pages of Zylod. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Zylod has not published its leadership or team roster. When we do, every person listed here will be a real member of the company with their actual role — no placeholder profiles. Open roles will be posted on the careers page as they become…"
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the leadership-team pageId via RouteOwnership.",
+        "Leadership Team",
+        "Zylod has not published its leadership or team roster. When we do, every person listed here will be a real member of the company with their actual role — no placeholder profiles. Open roles…",
+        "No named team members published yet",
+        "Roles will be posted on the careers page as they open.",
+        "Work With Us",
     )
     override val related = listOf(
+        NativePageLink("careers-page", "Careers Page"),
+        NativePageLink("help-center", "Help Center"),
         NativePageLink("about-us", "About Us"),
-        NativePageLink("contact-us", "Contact Us"),
-        NativePageLink("careers", "Careers"),
     )
 }
 

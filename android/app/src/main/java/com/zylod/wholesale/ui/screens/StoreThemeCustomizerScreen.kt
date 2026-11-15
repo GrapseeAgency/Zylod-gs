@@ -42,12 +42,14 @@ data object StoreThemeCustomizerPageMeta : NativePageMeta() {
     override val category = "Seller & Supplier"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Store Theme Customizer — the seller and supplier toolchain on the Zylod marketplace. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "In the meantime, the three surfaces below ARE customizable today and live on your storefront."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the store-theme-customizer pageId via RouteOwnership.",
+        "Theme Options",
+        "What you can and cannot customize on your storefront",
+        "What you can customize today",
+        "Brand color customization isn&apos;t available yet",
+        "Zylod storefronts share a single brand identity (the rose-red Zylod palette). There is no per-supplier brand-color writer rail today, so an &quot;Apply Theme&quot; button here would pretend…",
     )
     override val related = listOf(
         NativePageLink("seller-dashboard", "Seller Dashboard"),

@@ -42,17 +42,18 @@ data object MobileAppPageMeta : NativePageMeta() {
     override val category = "Zylod Marketplace"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Mobile App — a Zylod marketplace surface. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Latest published Android release — version and size come from the live app-versions rail"
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the mobile-app pageId via RouteOwnership.",
+        "Direct Android APK Download",
+        "There is no published APK in the app-versions table right now. When a real release ships, it will be listed here with its actual version number, file size and download URL — no invented…",
+        "No published Android release yet",
+        "The APK is served from Zylod&apos;s own static download directory. We do not publish a SHA-256 checksum because the app-versions schema does not store one — install verification relies on…",
+        "Production Release",
     )
     override val related = listOf(
-        NativePageLink("home", "Home"),
-        NativePageLink("category-browser", "Category Browser"),
-        NativePageLink("help-center", "Help Center"),
+        NativePageLink("app-update", "App Update"),
+        NativePageLink("version-history", "Version History"),
     )
 }
 

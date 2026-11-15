@@ -25,12 +25,14 @@ data object ShippingCalculatorPageMeta : NativePageMeta() {
     override val category = "Orders & Logistics"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Shipping Calculator — order, shipping and delivery operations for Zylod buyers. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Live quotes from the operators&apos; zone book — the same rates checkout charges."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the shipping-calculator pageId via RouteOwnership.",
+        "Freight Calculator",
+        "No active zone in the operators&apos; book reaches &ldquo; &rdquo; at this weight. Try a nearby district — or contact support to request the lane.",
+        "Shipment Details",
+        "These are the operators&apos; configured rates for this lane — the same book checkout charges against. Freight is booked by placing an order; there is no separate freight booking on this…",
+        "Live options",
     )
     override val related = listOf(
         NativePageLink("buyer-orders", "Buyer Orders"),

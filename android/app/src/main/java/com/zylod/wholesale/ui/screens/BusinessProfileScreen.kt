@@ -26,17 +26,18 @@ data object BusinessProfilePageMeta : NativePageMeta() {
     override val category = "Account & Profile"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Business Profile — your registered business identity, saved to your account."
+    override val summary = "Address fields are not implemented yet — the platform has no storage for them, so what you type here is not saved. Only the business name, trade license, and category persist."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the business-profile pageId via RouteOwnership.",
+        "Registered Business Entity",
+        "Official commercial registration and trade license credentials.",
+        "Commercial Entity Details",
+        "Trade License verified through Zylod Merchant KYC.",
+        "Registered Commercial Address",
+        "Commercial Document Archive",
     )
     override val related = listOf(
         NativePageLink("profile", "Profile"),
-        NativePageLink("buyer-orders", "Buyer Orders"),
-        NativePageLink("account-settings", "Account Settings"),
     )
 }
 

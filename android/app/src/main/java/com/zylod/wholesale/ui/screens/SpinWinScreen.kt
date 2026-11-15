@@ -12,17 +12,15 @@ data object SpinWinPageMeta : NativePageMeta() {
     override val category = "Marketing & Rewards"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Spin Win — promotions, rewards and membership programs on Zylod. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Guaranteed discount vouchers or loyalty points on every turn!"
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the spin-win pageId via RouteOwnership.",
+        "Lucky Spin &amp; Win",
+        "Reward has been deposited into your My Coupons / Points vault!",
+        "Spin the Lucky Wheel",
     )
     override val related = listOf(
-        NativePageLink("coupons", "Coupons"),
-        NativePageLink("vip-club", "VIP Club"),
-        NativePageLink("referral-program", "Referral Program"),
+        NativePageLink("spin-history", "Spin History"),
     )
 }
 

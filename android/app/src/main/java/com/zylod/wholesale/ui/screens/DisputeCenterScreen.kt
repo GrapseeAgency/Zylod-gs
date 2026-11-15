@@ -27,12 +27,15 @@ data object DisputeCenterPageMeta : NativePageMeta() {
     override val category = "Orders & Logistics"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Dispute Center — order, shipping and delivery operations for Zylod buyers. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "The dispute center needs to know who you are so your complaints stay linked to your account and you can see the real resolution."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the dispute-center pageId via RouteOwnership.",
+        "Sign in to file a complaint",
+        "File a complaint and track it for real — the reference you get is the actual record id, and every status change comes from the Zylod review team.",
+        "Dispute Center",
+        "Leave empty if not order-related. If given, the order must belong to your account.",
+        "File a complaint",
+        "Your account has no complaints on record — this list only shows real complaints you have filed.",
     )
     override val related = listOf(
         NativePageLink("buyer-orders", "Buyer Orders"),

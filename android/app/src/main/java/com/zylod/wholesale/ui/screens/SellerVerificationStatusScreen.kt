@@ -25,17 +25,20 @@ data object SellerVerificationStatusPageMeta : NativePageMeta() {
     override val category = "Seller & Supplier"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Seller Verification Status — the seller and supplier toolchain on the Zylod marketplace. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Verification status is supplier-only. Sign in with a supplier account to see your real KYC progress."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the seller-verification-status pageId via RouteOwnership.",
+        "Supplier sign-in required",
+        "You are signed in, but verification status is restricted to supplier accounts. Your current role does not have permission to view this page.",
+        "Supplier access required",
+        "of required documents verified ( %) : ’Loading progress...’}",
+        "Verification Timeline",
+        "Required documents",
     )
     override val related = listOf(
-        NativePageLink("seller-dashboard", "Seller Dashboard"),
-        NativePageLink("supplier-center", "Supplier Center"),
-        NativePageLink("product-upload", "Product Upload"),
+        NativePageLink("seller-verification", "Seller Verification"),
+        NativePageLink("seller-create-ticket", "Seller Create Ticket"),
+        NativePageLink("seller-verification-upload", "Seller Verification Upload"),
     )
 }
 

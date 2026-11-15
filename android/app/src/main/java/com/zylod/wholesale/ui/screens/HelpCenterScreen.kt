@@ -42,17 +42,20 @@ data object HelpCenterPageMeta : NativePageMeta() {
     override val category = "Support & Help"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Help Center — help, policies and buyer/seller protection on Zylod. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Search Bangladesh wholesale policies, FAQs, or contact our Dhaka team"
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the help-center pageId via RouteOwnership.",
+        "How can we help you?",
+        "Managed by site admins under Admin → System Settings.",
+        "Reach the Team",
+        "Browse Help Topics",
+        "Frequently Asked Questions",
     )
     override val related = listOf(
-        NativePageLink("help-center", "Help Center"),
-        NativePageLink("support-tickets", "Support Tickets"),
-        NativePageLink("contact-us", "Contact Us"),
+        NativePageLink("chatbot", "Chatbot"),
+        NativePageLink("live-chat", "Live Chat"),
+        NativePageLink("docs-browser", "Docs Browser"),
+        NativePageLink("faq", "Faq"),
     )
 }
 

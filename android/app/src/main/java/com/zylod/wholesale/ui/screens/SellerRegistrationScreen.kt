@@ -42,17 +42,18 @@ data object SellerRegistrationPageMeta : NativePageMeta() {
     override val category = "Seller & Supplier"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Seller Registration — the seller and supplier toolchain on the Zylod marketplace. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Your merchant application has been received. Redirecting you to the Seller Hub to upload verification credentials..."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the seller-registration pageId via RouteOwnership.",
+        "Wholesale Merchant Registration",
+        "Where couriers will collect wholesale orders",
+        "Registration Submitted!",
+        "Where wholesale sales revenue will be deposited",
+        "Company & Legal Information",
+        "Warehouse & Dispatch Address",
     )
     override val related = listOf(
         NativePageLink("seller-dashboard", "Seller Dashboard"),
-        NativePageLink("supplier-center", "Supplier Center"),
-        NativePageLink("product-upload", "Product Upload"),
     )
 }
 

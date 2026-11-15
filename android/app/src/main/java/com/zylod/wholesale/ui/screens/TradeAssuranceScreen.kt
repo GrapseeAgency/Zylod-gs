@@ -42,17 +42,16 @@ data object TradeAssurancePageMeta : NativePageMeta() {
     override val category = "Shopping & Products"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Trade Assurance — product discovery and buying on the Zylod marketplace. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Zylod does not hold funds in escrow. Our commitment: honest order status you can check at any time, payments verified before the supplier ships, and a human review of every reported problem."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the trade-assurance pageId via RouteOwnership.",
+        "Buyer Protection Policy",
+        "You can open an official support ticket or check dispute guidelines.",
+        "Have an active order with an issue?",
     )
     override val related = listOf(
-        NativePageLink("all-products", "All Products"),
-        NativePageLink("flash-deals", "Flash Deals"),
-        NativePageLink("category-browser", "Category Browser"),
+        NativePageLink("submit-ticket", "Submit Ticket"),
+        NativePageLink("dispute-resolution-guide", "Dispute Resolution Guide"),
     )
 }
 

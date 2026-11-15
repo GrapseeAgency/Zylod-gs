@@ -42,17 +42,15 @@ data object SellerLiveStudioPageMeta : NativePageMeta() {
     override val category = "Seller & Supplier"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Seller Live Studio — the seller and supplier toolchain on the Zylod marketplace. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Schedule your first live factory tour — pick the products you will feature."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the seller-live-studio pageId via RouteOwnership.",
+        "Live Studio",
+        "Schedule broadcasts and control the room",
+        "Sign in as a seller to run your Live Studio",
     )
     override val related = listOf(
-        NativePageLink("seller-dashboard", "Seller Dashboard"),
-        NativePageLink("supplier-center", "Supplier Center"),
-        NativePageLink("product-upload", "Product Upload"),
+        NativePageLink("live-shopping-detail", "Live Shopping Detail"),
     )
 }
 

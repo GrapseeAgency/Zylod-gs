@@ -20,17 +20,13 @@ data object CompanyValuesPageMeta : NativePageMeta() {
     override val category = "Company & Legal"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Company Values — the company, content and legal pages of Zylod. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Guiding Principles for South Asian B2B Trade"
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the company-values pageId via RouteOwnership.",
+        "Zylod Core Values",
     )
     override val related = listOf(
         NativePageLink("about-us", "About Us"),
-        NativePageLink("contact-us", "Contact Us"),
-        NativePageLink("careers", "Careers"),
     )
 }
 

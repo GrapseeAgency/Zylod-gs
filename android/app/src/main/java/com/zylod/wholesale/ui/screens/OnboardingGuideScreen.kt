@@ -42,12 +42,11 @@ data object OnboardingGuidePageMeta : NativePageMeta() {
     override val category = "Zylod Marketplace"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Onboarding Guide — a Zylod marketplace surface. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Browse wholesale products from suppliers on Zylod and order direct — with zero friction."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the onboarding-guide pageId via RouteOwnership.",
+        "Orders start unpaid and are only marked paid once your payment is verified — every status shown in real time.",
+        "Add items to your cart, place orders at wholesale quantities, and track each shipment until it arrives.",
     )
     override val related = listOf(
         NativePageLink("home", "Home"),

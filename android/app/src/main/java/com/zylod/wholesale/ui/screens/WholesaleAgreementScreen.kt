@@ -42,17 +42,18 @@ data object WholesaleAgreementPageMeta : NativePageMeta() {
     override val category = "Marketing & Rewards"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Wholesale Agreement — promotions, rewards and membership programs on Zylod. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "All executed purchase orders on Zylod constitute valid commercial contracts governed by the Sale of Goods Act, 1930 and the Arbitration Act, 2001."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the wholesale-agreement pageId via RouteOwnership.",
+        "Master B2B Trade Agreement",
+        "Institutional Purchase Framework & Commercial Standards",
+        "Sale of Goods Framework (Bangladesh)",
+        "1. Binding Force of Purchase Orders: A confirmed order locks product specifications, MOQ quantities, and wholesale pricing.",
+        "Key Contractual Terms",
+        "2. Warranty of Title & Merchantability: The supplier warrants that it holds unencumbered title to the goods and that the items are free from latent manufacturing defects.",
     )
     override val related = listOf(
-        NativePageLink("coupons", "Coupons"),
-        NativePageLink("vip-club", "VIP Club"),
-        NativePageLink("referral-program", "Referral Program"),
+        NativePageLink("wholesale-terms", "Wholesale Terms"),
     )
 }
 

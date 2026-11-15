@@ -42,17 +42,18 @@ data object DeliveryPolicyPageMeta : NativePageMeta() {
     override val category = "Orders & Logistics"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Delivery Policy — order, shipping and delivery operations for Zylod buyers. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Zylod ships bulk wholesale orders across all 64 districts of Bangladesh via verified courier partners."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the delivery-policy pageId via RouteOwnership.",
+        "Shipping Policy",
+        "* Rates are per shipment for standard courier. Bulk discounts available for 500+ kg.",
+        "Shipping Resources",
+        "Delivery Zones & Rates",
+        "Approved Courier Partners",
+        "Full Shipping Policy",
     )
     override val related = listOf(
-        NativePageLink("buyer-orders", "Buyer Orders"),
-        NativePageLink("order-tracking", "Order Tracking"),
-        NativePageLink("shipping-info", "Shipping Info"),
+        NativePageLink("shipping-calculator", "Shipping Calculator"),
     )
 }
 

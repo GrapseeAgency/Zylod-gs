@@ -42,12 +42,15 @@ data object AdminInventoryPageMeta : NativePageMeta() {
     override val category = "Seller & Supplier"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Admin Inventory — the seller and supplier toolchain on the Zylod marketplace. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "The cross-supplier inventory audit is restricted to Zylod admins. Sign in with an admin account to audit platform stock."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the admin-inventory pageId via RouteOwnership.",
+        "Admin access required",
+        "Read-only stock oversight across every supplier. Stock edits stay seller-side — sellers adjust quantities from their own console in real time.",
+        "Inventory Audit",
+        "No seller has created any products yet, so there is no stock anywhere on the platform. Rows appear here as soon as suppliers launch listings.",
+        "Could not load the inventory audit",
+        "” : ’No products’} in the selected stock state. Adjust the search or the stock-state filter.",
     )
     override val related = listOf(
         NativePageLink("seller-dashboard", "Seller Dashboard"),

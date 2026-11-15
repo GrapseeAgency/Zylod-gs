@@ -42,17 +42,18 @@ data object CreatePromotionPageMeta : NativePageMeta() {
     override val category = "Marketing & Rewards"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Create Promotion — promotions, rewards and membership programs on Zylod. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "The engine computes exactly these — buy-one-get-one and free-shipping are refused because nothing can prove them."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the create-promotion pageId via RouteOwnership.",
+        "Create Campaign",
+        "A percentage discount cannot exceed 100%",
+        "Only YOUR approved, visible products can be pinned — a campaign on someone else’s product is refused.",
+        "No approved products found — approve products first, then pin them here.",
+        "Live campaigns are visible on your store page and price matching orders automatically.",
+        "Sign in as a seller to create campaigns.",
     )
     override val related = listOf(
-        NativePageLink("coupons", "Coupons"),
-        NativePageLink("vip-club", "VIP Club"),
-        NativePageLink("referral-program", "Referral Program"),
+        NativePageLink("seller-promotions", "Seller Promotions"),
     )
 }
 

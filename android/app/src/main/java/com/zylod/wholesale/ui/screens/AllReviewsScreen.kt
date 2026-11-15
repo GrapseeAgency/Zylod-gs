@@ -25,17 +25,15 @@ data object AllReviewsPageMeta : NativePageMeta() {
     override val category = "Shopping & Products"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "All Reviews — product discovery and buying on the Zylod marketplace. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Be the first to share your experience with this product."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the all-reviews pageId via RouteOwnership.",
+        "Try a different filter to see more reviews.",
+        "Our team will review this submission. Thanks for keeping Zylod safe.",
     )
     override val related = listOf(
-        NativePageLink("all-products", "All Products"),
-        NativePageLink("flash-deals", "Flash Deals"),
-        NativePageLink("category-browser", "Category Browser"),
+        NativePageLink("notifications", "Notifications"),
+        NativePageLink("write-review", "Write Review"),
     )
 }
 

@@ -42,17 +42,19 @@ data object TaxGuidePageMeta : NativePageMeta() {
     override val category = "Account & Profile"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Tax Guide — account, identity and money surfaces for the signed-in user. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Lawful commercial invoicing and tax deduction standards for B2B wholesale in Bangladesh."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the tax-guide pageId via RouteOwnership.",
+        "VAT & Tax Compliance Guide",
+        "1. Mushak-6.3 (মূসক-৬.৩) Challan / Tax Invoice",
+        "Mushak-6.3 VAT Invoices & TDS",
+        "Verified VAT-registered suppliers issue official Mushak-6.3 invoices on every completed wholesale consignment, showing product HS Code, Base Value, and applicable 5%, 7.5%, or 15% VAT rate.",
+        "Commercial Invoicing Standards",
+        "Corporate buyers with a valid Withholding Tax Entity status can deduct applicable Source Tax (AIT/TDS) by providing a copy of the Mushak-6.6 Certificate during checkout.",
     )
     override val related = listOf(
-        NativePageLink("profile", "Profile"),
-        NativePageLink("buyer-orders", "Buyer Orders"),
-        NativePageLink("account-settings", "Account Settings"),
+        NativePageLink("order-invoice", "Order Invoice"),
+        NativePageLink("contact-us", "Contact Us"),
     )
 }
 

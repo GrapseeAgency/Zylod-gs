@@ -42,17 +42,18 @@ data object ImportExportTrackerPageMeta : NativePageMeta() {
     override val category = "Orders & Logistics"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Import Export Tracker — order, shipping and delivery operations for Zylod buyers. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "An import/export journey is always a real order&apos;s journey. Open one of your orders to follow it."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the import-export-tracker pageId via RouteOwnership.",
+        "Open this from an order",
+        "Import tracking is visible to the order&apos;s buyer.",
+        "Sign in required",
+        "Every shipment on this order is delivered/closed.",
+        "Order not found",
     )
     override val related = listOf(
-        NativePageLink("buyer-orders", "Buyer Orders"),
-        NativePageLink("order-tracking", "Order Tracking"),
-        NativePageLink("shipping-info", "Shipping Info"),
+        NativePageLink("my-orders", "My Orders"),
+        NativePageLink("order-detail", "Order Detail"),
     )
 }
 

@@ -42,17 +42,16 @@ data object SafepayGuidePageMeta : NativePageMeta() {
     override val category = "Zylod Marketplace"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Safepay Guide — a Zylod marketplace surface. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Orders stay UNPAID until a payment is verified by a signed notification or an admin — suppliers only fulfil verified orders."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the safepay-guide pageId via RouteOwnership.",
+        "Card payments and escrow holding are not available yet. Until a dedicated escrow service exists, never send more than the verified order total, and always pay using the exact account…",
+        "How Payments Work on Zylod",
+        "Supported Payment Channels",
     )
     override val related = listOf(
-        NativePageLink("home", "Home"),
-        NativePageLink("category-browser", "Category Browser"),
-        NativePageLink("help-center", "Help Center"),
+        NativePageLink("wallet", "Wallet"),
+        NativePageLink("faq", "Faq"),
     )
 }
 

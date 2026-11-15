@@ -25,12 +25,11 @@ data object AdminAuditLogsPageMeta : NativePageMeta() {
     override val category = "Dashboards & Analytics"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Admin Audit Logs — operational dashboards and analytics surfaces. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Every audited platform write, its actor, and its before/after evidence."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the admin-audit-logs pageId via RouteOwnership.",
+        "Audit Trail",
+        "Audited actions (product edits, payment verifications, campaign changes, replies, status flips…) write their evidence here the moment they happen.",
     )
     override val related = listOf(
         NativePageLink("dashboard", "Dashboard"),

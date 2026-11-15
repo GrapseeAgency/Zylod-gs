@@ -42,17 +42,18 @@ data object PointsDetailPageMeta : NativePageMeta() {
     override val category = "Marketing & Rewards"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Points Detail — promotions, rewards and membership programs on Zylod. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Every confirmed B2B order earns 1 Point for every ৳100 spent. Gamified check-ins and lucky wheel spins award up to 500 bonus points."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the points-detail pageId via RouteOwnership.",
+        "Points System Rules",
+        "Loyalty points remain valid for 12 months from the date of earning. Unused points expire on rolling annual cycles.",
+        "How Points Work on Zylod",
+        "Points are locked to your verified merchant account and cannot be transferred to third-party accounts.",
+        "1. Earning Formula",
+        "2. Validity &amp; Expiry",
     )
     override val related = listOf(
-        NativePageLink("coupons", "Coupons"),
-        NativePageLink("vip-club", "VIP Club"),
-        NativePageLink("referral-program", "Referral Program"),
+        NativePageLink("redeem-points", "Redeem Points"),
     )
 }
 

@@ -42,17 +42,21 @@ data object PricingPageMeta : NativePageMeta() {
     override val category = "Zylod Marketplace"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Pricing — a Zylod marketplace surface. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Select a product to see its bulk pricing — every calculator is tied to one real listing and its live tier ladder."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the pricing pageId via RouteOwnership.",
+        "No product selected",
+        "This listing may have been removed or is no longer available, so there is no bulk pricing to calculate.",
+        "Product not found",
+        "Adjust quantity to see real-time volume discounts for ) : ’’}.",
+        "Couldn&apos;t load bulk pricing",
+        "This product has no volume tiers configured — the base price applies at every quantity.",
+    ) : ’’}.",
     )
     override val related = listOf(
-        NativePageLink("home", "Home"),
-        NativePageLink("category-browser", "Category Browser"),
-        NativePageLink("help-center", "Help Center"),
+        NativePageLink("cart", "Cart"),
+        NativePageLink("product-catalog", "Product Catalog"),
+        NativePageLink("notifications", "Notifications"),
     )
 }
 

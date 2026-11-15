@@ -28,12 +28,11 @@ data object WithdrawPageMeta : NativePageMeta() {
     override val category = "Zylod Marketplace"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Withdraw — a Zylod marketplace surface. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Renders its honest on-device description and links into the live native surfaces."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the withdraw pageId via RouteOwnership.",
+        "Curated metadata for a page owned by a typed native screen — the screen itself renders live data.",
+        "Renders its honest on-device description and links into the live native surfaces.",
     )
     override val related = listOf(
         NativePageLink("home", "Home"),

@@ -42,17 +42,15 @@ data object SellerTrafficSourcesPageMeta : NativePageMeta() {
     override val category = "Seller & Supplier"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Seller Traffic Sources — the seller and supplier toolchain on the Zylod marketplace. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Zylod doesn&apos;t record storefront visits, impressions or click channels yet — so this page has no numbers, and it will never show invented percentages. When visit tracking ships, every channel below lights up with real data."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the seller-traffic-sources pageId via RouteOwnership.",
+        "Traffic sources",
+        "Your real sales numbers live in Analytics today — GMV, orders, units sold and best sellers, all from recorded order lines.",
+        "Traffic tracking isn&apos;t live yet",
     )
     override val related = listOf(
-        NativePageLink("seller-dashboard", "Seller Dashboard"),
-        NativePageLink("supplier-center", "Supplier Center"),
-        NativePageLink("product-upload", "Product Upload"),
+        NativePageLink("seller-analytics", "Seller Analytics"),
     )
 }
 

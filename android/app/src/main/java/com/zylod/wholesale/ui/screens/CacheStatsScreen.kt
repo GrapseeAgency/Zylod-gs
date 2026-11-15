@@ -42,17 +42,18 @@ data object CacheStatsPageMeta : NativePageMeta() {
     override val category = "Settings & App"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Cache Stats — app-level settings and device-side controls. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "The in-memory API cache of THIS server process — real counters, not estimates. They reset on restart."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the cache-stats pageId via RouteOwnership.",
+        "API Cache Telemetry",
+        "Cache telemetry is admin-only — sign in with an admin account.",
+        "Entries by cache family",
+        "Responses served from memory without touching the DB.",
+        "Real database round-trips (misses + background refreshes).",
+        "Stale-while-revalidate answers (kept truth during refresh/DB failure).",
     )
     override val related = listOf(
-        NativePageLink("app-settings", "App Settings"),
-        NativePageLink("display-settings", "Display Settings"),
-        NativePageLink("profile", "Profile"),
+        NativePageLink("cache-settings", "Cache Settings"),
     )
 }
 

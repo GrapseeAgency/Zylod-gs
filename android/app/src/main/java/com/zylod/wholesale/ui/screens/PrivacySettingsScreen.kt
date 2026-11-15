@@ -42,17 +42,18 @@ data object PrivacySettingsPageMeta : NativePageMeta() {
     override val category = "Support & Help"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Privacy Settings — help, policies and buyer/seller protection on Zylod. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Control who can see your business profile and contact details. Changes save to your account immediately."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the privacy-settings pageId via RouteOwnership.",
+        "Privacy &amp; Data Controls",
+        "Privacy preferences are stored on your account.",
+        "Privacy Settings",
+        "Display your email on your business profile.",
+        "Sign in to manage your privacy settings",
+        "Display your phone on your business profile.",
     )
     override val related = listOf(
-        NativePageLink("help-center", "Help Center"),
-        NativePageLink("support-tickets", "Support Tickets"),
-        NativePageLink("contact-us", "Contact Us"),
+        NativePageLink("account-settings", "Account Settings"),
     )
 }
 

@@ -42,17 +42,17 @@ data object RulesPageMeta : NativePageMeta() {
     override val category = "Support & Help"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Rules — help, policies and buyer/seller protection on Zylod. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Zylod is committed to fostering trust among manufacturers, wholesale distributors, and retail business owners across Bangladesh. By using our platform, all members agree to uphold these standards in accordance with the Digital Commerce…"
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the rules pageId via RouteOwnership.",
+        "Rules for Fair, Safe, and Professional B2B Trade",
+        "Zylod is committed to fostering trust among manufacturers, wholesale distributors, and retail business owners across Bangladesh. By using our platform, all members agree to uphold these…",
+        "Prohibited Products & Restricted Goods",
+        "Review the complete list of items banned by Bangladesh law.",
     )
     override val related = listOf(
-        NativePageLink("help-center", "Help Center"),
-        NativePageLink("support-tickets", "Support Tickets"),
-        NativePageLink("contact-us", "Contact Us"),
+        NativePageLink("docs-browser", "Docs Browser"),
+        NativePageLink("prohibited-items", "Prohibited Items"),
     )
 }
 

@@ -42,17 +42,20 @@ data object BuyNowPageMeta : NativePageMeta() {
     override val category = "Shopping & Products"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Buy Now — product discovery and buying on the Zylod marketplace. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Paid from your wallet — the supplier can confirm and start packing right away."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the buy-now pageId via RouteOwnership.",
+        "No product selected",
+        "Open a product and choose “Buy Now” to place a direct order.",
+        "Order Placed",
+        "Cash on delivery — payment is settled with the supplier on receipt. Track progress from your orders.",
+        "Checkout",
+        "The order is NOT confirmed until your payment is verified — submit your payment reference from My Orders so the seller can dispatch.",
     )
     override val related = listOf(
-        NativePageLink("all-products", "All Products"),
-        NativePageLink("flash-deals", "Flash Deals"),
-        NativePageLink("category-browser", "Category Browser"),
+        NativePageLink("explore", "Explore"),
+        NativePageLink("orders", "Orders"),
+        NativePageLink("add-address", "Add Address"),
     )
 }
 

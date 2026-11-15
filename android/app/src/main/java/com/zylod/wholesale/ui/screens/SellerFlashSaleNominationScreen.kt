@@ -42,17 +42,18 @@ data object SellerFlashSaleNominationPageMeta : NativePageMeta() {
     override val category = "Seller & Supplier"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Seller Flash Sale Nomination — the seller and supplier toolchain on the Zylod marketplace. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Flash sales are admin-curated — your products are pinned into active campaigns"
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the seller-flash-sale-nomination pageId via RouteOwnership.",
+        "Flash Sale Placement",
+        "Flash-sale and campaign slots are curated by the Zylod admin team. When a buyer-visiting campaign is built, admin pins specific supplier products into it; the discount is funded by the…",
+        "Your products currently in live campaigns",
+        "To put a product forward for a future campaign, message Zylod support with the SKU and the proposed discount. The decision is made on the admin side and the placement will appear below the…",
+        "No live campaign placements yet",
+        "None of your products are pinned into an active campaign right now. When admin places one of your SKUs into a flash sale, the campaign and discount appear here in real time.",
     )
     override val related = listOf(
-        NativePageLink("seller-dashboard", "Seller Dashboard"),
-        NativePageLink("supplier-center", "Supplier Center"),
-        NativePageLink("product-upload", "Product Upload"),
+        NativePageLink("seller-promotions", "Seller Promotions"),
     )
 }
 

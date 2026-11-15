@@ -22,17 +22,20 @@ data object AccountSettingsPageMeta : NativePageMeta() {
     override val category = "Settings & App"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Account Settings — security, notification, privacy and appearance preferences, saved to your account."
+    override val summary = "Manage your credentials, alerts, privacy, and account security."
     override val tabHint = ""
     override val bullets = listOf(
-        "Typed native screen — live data from the account settings API family.",
-        "Honest states: loading, retry, signed-out wall — never fabricated data.",
-        "Native ownership: this Kotlin screen owns the account-settings pageId via RouteOwnership.",
+        "Account Settings",
+        "Sign out of your active session or manage account termination.",
+        "Account Credentials",
+        "Display Theme",
+        "Account Management &amp; Sign Out",
     )
     override val related = listOf(
-        NativePageLink("two-factor-auth", "Two-Factor Authentication"),
-        NativePageLink("notification-preferences", "Notification Preferences"),
+        NativePageLink("profile", "Profile"),
+        NativePageLink("two-factor-auth", "Two Factor Auth"),
         NativePageLink("edit-profile", "Edit Profile"),
+        NativePageLink("notification-preferences", "Notification Preferences"),
     )
 }
 

@@ -25,17 +25,18 @@ data object LogisticsPageMeta : NativePageMeta() {
     override val category = "Orders & Logistics"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Logistics — order, shipping and delivery operations for Zylod buyers. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Nationwide freight rates, live delivery methods, and the real ship-from warehouse directory — all sourced from the platform&apos;s live logistics configuration."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the logistics pageId via RouteOwnership.",
+        "Logistics &amp; Freight",
+        "No delivery methods have been published yet. Check the shipping quote below — zone rates are configured separately and may still be available for your district.",
+        "Delivery Methods",
+        "Shipping zones are configured per district — this district has no active zone/rate combination for the given weight.",
+        "Shipping Rate Calculator",
+        "No warehouses match yet. Suppliers publish their ship-from locations as they are verified — new facilities appear here automatically.",
     )
     override val related = listOf(
-        NativePageLink("buyer-orders", "Buyer Orders"),
-        NativePageLink("order-tracking", "Order Tracking"),
-        NativePageLink("shipping-info", "Shipping Info"),
+        NativePageLink("supplier-storefront", "Supplier Storefront"),
     )
 }
 

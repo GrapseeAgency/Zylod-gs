@@ -42,17 +42,15 @@ data object SplitPaymentPageMeta : NativePageMeta() {
     override val category = "Zylod Marketplace"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Split Payment — a Zylod marketplace surface. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Orders on Zylod start UNPAID. Once your order is placed, you can pay the full amount via bank transfer or mobile wallet from the order page — payment is verified before the order is marked paid. Splitting one order across multiple payment…"
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the split-payment pageId via RouteOwnership.",
+        "Split payments are not available yet",
+        "Split Payment",
+        "Orders on Zylod start UNPAID. Once your order is placed, you can pay the full amount via bank transfer or mobile wallet from the order page — payment is verified before the order is marked…",
     )
     override val related = listOf(
-        NativePageLink("home", "Home"),
-        NativePageLink("category-browser", "Category Browser"),
-        NativePageLink("help-center", "Help Center"),
+        NativePageLink("my-orders", "My Orders"),
     )
 }
 

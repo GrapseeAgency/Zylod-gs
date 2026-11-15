@@ -45,9 +45,9 @@ data object FlashSalesPageMeta : NativePageMeta() {
     override val summary = "Flash Sales — promotions, rewards and membership programs on Zylod. Content streams live from the Zylod API and renders through the shared native page model."
     override val tabHint = ""
     override val bullets = listOf(
-        "Live data renders from the Zylod API when an endpoint feeds this page.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the flash-sales pageId via RouteOwnership.",
+        "Live deals fetched from api/deals?type=all&limit=20 — the same call the web page makes.",
+        "Flash and daily arrays render as native cards with real discount badges.",
+        "Offline: the last-saved deals payload renders first — never a white screen.",
     )
     override val related = listOf(
         NativePageLink("coupons", "Coupons"),

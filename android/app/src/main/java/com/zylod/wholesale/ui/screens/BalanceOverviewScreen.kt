@@ -31,14 +31,12 @@ data object BalanceOverviewPageMeta : NativePageMeta() {
     override val summary = "Balance Overview — the REAL balance breakdown (GET api/wallet/balance through the existing WalletApi): available liquid, escrow, inflow/outflow and the cash-flow ledger — the same data the web's BalanceOverviewPage renders, with the same guest gate."
     override val tabHint = "profile"
     override val bullets = listOf(
-        "Real money — the server's own wallet aggregate, never a fabricated ৳0.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the balance-overview pageId via RouteOwnership.",
+        "Balance Breakdown",
+        "Historical Capital Flow",
     )
     override val related = listOf(
-        NativePageLink("my-wallet", "My Wallet"),
-        NativePageLink("transaction-history", "Transaction History"),
         NativePageLink("add-money", "Add Money"),
+        NativePageLink("withdraw-money", "Withdraw Money"),
     )
 }
 

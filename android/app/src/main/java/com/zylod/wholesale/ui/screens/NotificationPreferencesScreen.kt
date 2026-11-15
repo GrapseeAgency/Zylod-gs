@@ -22,17 +22,19 @@ data object NotificationPreferencesPageMeta : NativePageMeta() {
     override val category = "Settings & App"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Notification Preferences — per-category channels and quiet hours, saved to your account."
+    override val summary = "Not saved on your account yet — this toggle resets when you leave the page."
     override val tabHint = ""
     override val bullets = listOf(
-        "Typed native screen — live data from the account settings API family.",
-        "Honest states: loading, retry, signed-out wall — never fabricated data.",
-        "Native ownership: this Kotlin screen owns the notification-preferences pageId via RouteOwnership.",
+        "Notification Preferences",
+        "Control exactly how and when Zylod reaches you — across 14 event categories and 4 delivery channels.",
+        "Quiet Hours — Do Not Disturb",
+        "Suppress push &amp; SMS during sleep hours",
+        "Event Categories — total",
+        "During quiet hours, push and SMS notifications are silently queued and delivered at your wake time. Email and WhatsApp are not affected.",
     )
     override val related = listOf(
-        NativePageLink("account-settings", "Account Settings"),
-        NativePageLink("notifications", "Notifications"),
         NativePageLink("profile", "Profile"),
+        NativePageLink("account-settings", "Account Settings"),
     )
 }
 

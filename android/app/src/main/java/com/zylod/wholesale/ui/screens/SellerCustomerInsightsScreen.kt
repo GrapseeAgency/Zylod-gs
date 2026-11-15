@@ -24,12 +24,13 @@ data object SellerCustomerInsightsPageMeta : NativePageMeta() {
     override val category = "Seller & Supplier"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Seller Customer Insights — the seller and supplier toolchain on the Zylod marketplace. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Everyone who ordered from your store — built from your real order lines, nothing modeled."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the seller-customer-insights pageId via RouteOwnership.",
+        "Customer insights",
+        "Sign in with a supplier account to see your customers.",
+        "Seller sign-in required",
+        "When a buyer orders one of your products, they appear here with their real order history.",
     )
     override val related = listOf(
         NativePageLink("seller-dashboard", "Seller Dashboard"),

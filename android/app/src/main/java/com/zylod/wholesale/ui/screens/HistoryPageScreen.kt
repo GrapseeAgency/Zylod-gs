@@ -42,12 +42,13 @@ data object HistoryPagePageMeta : NativePageMeta() {
     override val category = "Search & Navigation"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "History Page — find anything across the Zylod wholesale marketplace. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Recently viewed products are saved to your account, so you can pick up where you left off on any device."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the history-page pageId via RouteOwnership.",
+        "Recently Viewed",
+        "Products you&apos;ve checked out recently",
+        "Sign in to see your history",
+        "No recently viewed products",
     )
     override val related = listOf(
         NativePageLink("search-results", "Search Results"),

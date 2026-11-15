@@ -42,17 +42,15 @@ data object AppLanguageSettingsPageMeta : NativePageMeta() {
     override val category = "Settings & App"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "App Language Settings — app-level settings and device-side controls. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Pick the language the web client should render in — saved on this device"
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the app-language-settings pageId via RouteOwnership.",
+        "Language &amp; Regional Localization",
+        "Your language preference is persisted to localStorage on this browser. The Zylod Android app carries its own language setting through its native settings panel.",
+        "Bengali (বাংলা) is the next planned language for the Bangladesh wholesale market. The web client ships English-only today; switching to বাংলা saves your preference so the moment Bengali…",
     )
     override val related = listOf(
         NativePageLink("app-settings", "App Settings"),
-        NativePageLink("display-settings", "Display Settings"),
-        NativePageLink("profile", "Profile"),
     )
 }
 

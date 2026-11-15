@@ -25,12 +25,21 @@ data object AdminPaymentsPageMeta : NativePageMeta() {
     override val category = "Dashboards & Analytics"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Admin Payments — operational dashboards and analytics surfaces. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Every buyer payment submission across the platform — verify after confirming money arrived. Every action is audit-logged."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the admin-payments pageId via RouteOwnership.",
+        "Admin access required",
+        "&page&limit * (+ whole-table stats: the 4 real statuses + total) * POST /api/admin/payments/[id]/verify — * the admin-override decision on a pending * submission (honest partial math…",
+        "Payment Verification",
+        "Buyer submissions appear here the moment POST /api/orders/[id]/payment-submit records them. Nothing is marked paid until a seller, an admin, or the verified webhook confirms it.",
+        "Could not load the queue",
+        "This tab reflects the real payments table — counts in the strip above are platform-wide.",
+    )        "Admin access required",
+        "&page&limit * (+ whole-table stats: the 4 real statuses + total) * POST /api/admin/payments/[id]/verify — * the admin-override decision on a pending * submission (honest partial math…",
+        "Payment Verification",
+        "Every buyer payment submission across the platform — verify after confirming money arrived. Every action is audit-logged.",
+        "Could not load the queue",
+        "Buyer submissions appear here the moment POST /api/orders/[id]/payment-submit records them. Nothing is marked paid until a seller, an admin, or the verified webhook confirms it.",
     )
     override val related = listOf(
         NativePageLink("dashboard", "Dashboard"),

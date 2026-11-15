@@ -42,17 +42,16 @@ data object UpdateHistoryPageMeta : NativePageMeta() {
     override val category = "Settings & App"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Update History — app-level settings and device-side controls. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Real release notes only — every row below is a published app-versions record, served live"
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the update-history pageId via RouteOwnership.",
+        "Version History &amp; Release Archive",
+        "The archive only lists releases the server actually published.",
+        "No releases published yet",
+        "When Zylod ships a real update, it will be listed here with its actual version number, date, and change notes. We do not publish invented changelog entries.",
     )
     override val related = listOf(
-        NativePageLink("app-settings", "App Settings"),
-        NativePageLink("display-settings", "Display Settings"),
-        NativePageLink("profile", "Profile"),
+        NativePageLink("app-update", "App Update"),
     )
 }
 

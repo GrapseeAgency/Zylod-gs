@@ -42,12 +42,15 @@ data object SellerFulfillmentPageMeta : NativePageMeta() {
     override val category = "Orders & Logistics"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Seller Fulfillment — order, shipping and delivery operations for Zylod buyers. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Status is now shipped with tracking number . The buyer was notified and the tracking page updates live."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the seller-fulfillment pageId via RouteOwnership.",
+        "Supplier sign-in required",
+        "Sign in with a seller account to fulfill orders.",
+        "Fulfill Order",
+        "Confirm every item is packed and quality-checked before dispatch.",
+        "Order Dispatched",
+        "Step 1 — Pack the order",
     )
     override val related = listOf(
         NativePageLink("buyer-orders", "Buyer Orders"),

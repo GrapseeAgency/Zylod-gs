@@ -42,12 +42,15 @@ data object CookiePreferencesPageMeta : NativePageMeta() {
     override val category = "Support & Help"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Cookie Preferences — help, policies and buyer/seller protection on Zylod. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Adjust your privacy settings. Strictly necessary cookies are mandatory to maintain authentication sessions and cart persistence."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the cookie-preferences pageId via RouteOwnership.",
+        "Cookie Preferences Center",
+        "Manage Consent for Tracking Technologies",
+        "Granular Tracking Controls",
+        "Required for CSRF tokens, sign-in sessions, cart storage, and server load balancing.",
+        "Strictly Necessary Cookies",
+        "Helps us measure page load times, buyer search query performance, and user interface responsiveness.",
     )
     override val related = listOf(
         NativePageLink("help-center", "Help Center"),

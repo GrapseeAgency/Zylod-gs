@@ -42,12 +42,12 @@ data object SafetyPageMeta : NativePageMeta() {
     override val category = "Support & Help"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Safety — help, policies and buyer/seller protection on Zylod. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "How we protect buyers, manufacturers, and transactions across Bangladesh"
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the safety pageId via RouteOwnership.",
+        "Wholesale Security & Trust",
+        "Help keep the marketplace clean by reporting off-platform payment solicitations.",
+        "Safety Rules for Wholesale Buyers",
     )
     override val related = listOf(
         NativePageLink("help-center", "Help Center"),

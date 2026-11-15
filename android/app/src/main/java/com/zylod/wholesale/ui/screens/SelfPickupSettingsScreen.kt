@@ -42,12 +42,15 @@ data object SelfPickupSettingsPageMeta : NativePageMeta() {
     override val category = "Orders & Logistics"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Self Pickup Settings — order, shipping and delivery operations for Zylod buyers. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "The warehouse model saves name, address, city, district , and active flag . Pickup hours, contact person, phone, operating days, and gate-pass automation are drafts below — they are not persisted yet (no rail has shipped those fields)…"
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the self-pickup-settings pageId via RouteOwnership.",
+        "Self Pickup",
+        "The warehouse model saves name, address, city, district , and active flag . Pickup hours, contact person, phone, operating days, and gate-pass automation are drafts below — they are not…",
+        "Self Pickup Locations",
+        "Add a warehouse so buyers can self-pickup orders.",
+        "Pickup location",
+        "New pickup location",
     )
     override val related = listOf(
         NativePageLink("buyer-orders", "Buyer Orders"),

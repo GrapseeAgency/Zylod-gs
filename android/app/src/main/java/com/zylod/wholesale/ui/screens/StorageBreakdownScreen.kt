@@ -42,17 +42,19 @@ data object StorageBreakdownPageMeta : NativePageMeta() {
     override val category = "Settings & App"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Storage Breakdown — app-level settings and device-side controls. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Honest view of what this device is storing — no fabricated Android sandbox figures"
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the storage-breakdown pageId via RouteOwnership.",
+        "Storage Allocation Details",
+        "The web client cannot inspect Android sandbox storage — the Room SQLite database, Glide &amp; Coil image cache, and PDF invoice downloads live inside the Android app&apos;s private sandbox…",
+        "Storage breakdown is native to the Android app",
+        "Real bytes this domain is storing in your browser&apos;s localStorage (UTF-16)",
+        "Web client (browser) storage",
+        "Browser storage (localStorage, sessionStorage, IndexedDB, service-worker caches) is per-browser and per-device — it is not the same as the Android app&apos;s sandbox storage. The number…",
     )
     override val related = listOf(
-        NativePageLink("app-settings", "App Settings"),
-        NativePageLink("display-settings", "Display Settings"),
-        NativePageLink("profile", "Profile"),
+        NativePageLink("storage-management", "Storage Management"),
+        NativePageLink("apk-download", "Apk Download"),
     )
 }
 

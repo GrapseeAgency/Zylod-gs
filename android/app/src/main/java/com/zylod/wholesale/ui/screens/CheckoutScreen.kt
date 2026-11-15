@@ -20,17 +20,25 @@ data object CheckoutPageMeta : NativePageMeta() {
     override val category = "Shopping & Products"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Checkout — product discovery and buying on the Zylod marketplace. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "” saved you . )} saved you . )} + Shipping = )} . The order is NOT confirmed until payment is verified — submit your payment reference from My Orders. )}"
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the checkout pageId via RouteOwnership.",
+        "Order Created",
+        "You need a buyer account to check out — your cart, addresses and payment methods live in your account.",
+        "Sign in required",
+        "Nothing to check out. Browse the catalog and add products first.",
+        "Your cart is empty",
+        "A product in this shipment has no weight on file — shipping settles directly with the supplier.",
+    )} saved you . )} + Shipping = )} . The order is NOT confirmed until payment is verified — submit your payment reference from My Orders. )}",
+        "Sign in required",
+        "You need a buyer account to check out — your cart, addresses and payment methods live in your account.",
+        "Your cart is empty",
+        "Nothing to check out. Browse the catalog and add products first.",
     )
     override val related = listOf(
-        NativePageLink("all-products", "All Products"),
-        NativePageLink("flash-deals", "Flash Deals"),
-        NativePageLink("category-browser", "Category Browser"),
+        NativePageLink("orders", "Orders"),
+        NativePageLink("shipping-address", "Shipping Address"),
+        NativePageLink("add-address", "Add Address"),
     )
 }
 

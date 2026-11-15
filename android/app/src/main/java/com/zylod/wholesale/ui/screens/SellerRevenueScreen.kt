@@ -24,17 +24,18 @@ data object SellerRevenuePageMeta : NativePageMeta() {
     override val category = "Seller & Supplier"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Seller Revenue — the seller and supplier toolchain on the Zylod marketplace. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "When buyers place orders on your products, the platform-fee breakdown per order will appear here."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the seller-revenue pageId via RouteOwnership.",
+        "Revenue Reports",
+        "Sign in with a supplier account to view your revenue reports.",
+        "Seller sign-in required",
+        "No sales yet — your recent sales totals will appear here.",
+        "Recent Sales",
+        "Earnings are settled by the finance team. Commission is the standard B2B wholesale rate applied to gross GMV. Money only leaves your wallet when a payout is completed with a reference — a…",
     )
     override val related = listOf(
-        NativePageLink("seller-dashboard", "Seller Dashboard"),
-        NativePageLink("supplier-center", "Supplier Center"),
-        NativePageLink("product-upload", "Product Upload"),
+        NativePageLink("withdraw-money", "Withdraw Money"),
     )
 }
 

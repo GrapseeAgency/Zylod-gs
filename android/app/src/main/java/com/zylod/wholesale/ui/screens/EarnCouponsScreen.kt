@@ -28,17 +28,17 @@ data object EarnCouponsPageMeta : NativePageMeta() {
     override val category = "Marketing & Rewards"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Earn Coupons — the Task 111 reward rail: GET api/coupons/earn lists the active tasks with the server's own claimed flag and proof progress; POST api/coupons/earn { taskId } claims a voucher (403/409 surface the server's honest wording) — the same rail the web's EarnCouponsPage renders."
+    override val summary = "Every reward is verified against your real account activity — orders placed, reviews written, check-ins kept — before the voucher lands in your vault."
     override val tabHint = ""
     override val bullets = listOf(
-        "Real rewards — the server proves each task from the buyer's actual orders, reviews and check-ins.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the earn-coupons pageId via RouteOwnership.",
+        "Earn Free Vouchers",
+        "Check back soon — new ways to earn are added by the platform team.",
+        "Complete Business Milestones to Earn Vouchers",
+        "Available Tasks ( )",
+        "No reward tasks are live right now",
     )
     override val related = listOf(
         NativePageLink("my-coupons", "My Coupons"),
-        NativePageLink("checkin-streak", "Daily Check-in"),
-        NativePageLink("reward-points", "Reward Points"),
     )
 }
 

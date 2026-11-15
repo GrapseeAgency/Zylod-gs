@@ -42,17 +42,17 @@ data object QrDeeplinkPageMeta : NativePageMeta() {
     override val category = "Zylod Marketplace"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "QR Deeplink — a Zylod marketplace surface. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Generate a printable QR preview for factory catalog banners and trade booths."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the qr-deeplink pageId via RouteOwnership.",
+        "Printable QR Code Generator",
+        "The URL has a placeholder — no products exist yet to seed a real id.",
+        "QR Preview",
+        "Seeded with a real product id from the catalog.",
+        "Real, scannable QR code — use Print to save the page as a PDF for production artwork.",
     )
     override val related = listOf(
-        NativePageLink("home", "Home"),
-        NativePageLink("category-browser", "Category Browser"),
-        NativePageLink("help-center", "Help Center"),
+        NativePageLink("deep-link-handler", "Deep Link Handler"),
     )
 }
 

@@ -42,17 +42,17 @@ data object RedeemPointsPageMeta : NativePageMeta() {
     override val category = "Marketing & Rewards"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Redeem Points — promotions, rewards and membership programs on Zylod. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Any amount from 100 points — ৳1 per 10 points, min order 3× the voucher value"
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the redeem-points pageId via RouteOwnership.",
+        "Could not load your points",
+        "Convert your points into checkout discount vouchers.",
+        "Redeem Points",
+        "Exchange Points for Real Savings",
+        "Redemption Rewards",
     )
     override val related = listOf(
-        NativePageLink("coupons", "Coupons"),
-        NativePageLink("vip-club", "VIP Club"),
-        NativePageLink("referral-program", "Referral Program"),
+        NativePageLink("my-coupons", "My Coupons"),
     )
 }
 

@@ -42,17 +42,15 @@ data object LinkAnalyticsPageMeta : NativePageMeta() {
     override val category = "Dashboards & Analytics"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Link Analytics — operational dashboards and analytics surfaces. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "When real deep-link campaigns run, their click and conversion counts will be listed here straight from the tracking data. Zylod does not display invented analytics figures."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the link-analytics pageId via RouteOwnership.",
+        "Deep Link Click Telemetry & Attribution",
+        "Click attribution will be published here once tracking data exists",
+        "No link telemetry recorded yet",
     )
     override val related = listOf(
-        NativePageLink("dashboard", "Dashboard"),
-        NativePageLink("analytics-dashboard", "Analytics Dashboard"),
-        NativePageLink("store-analytics", "Store Analytics"),
+        NativePageLink("deep-link-handler", "Deep Link Handler"),
     )
 }
 

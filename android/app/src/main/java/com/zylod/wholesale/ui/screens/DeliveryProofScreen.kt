@@ -42,17 +42,18 @@ data object DeliveryProofPageMeta : NativePageMeta() {
     override val category = "Orders & Logistics"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Delivery Proof — order, shipping and delivery operations for Zylod buyers. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Open one of your orders and choose the delivery proof action there — this screen shows delivery evidence for a specific order."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the delivery-proof pageId via RouteOwnership.",
+        "No order selected",
+        "This order doesn&apos;t exist or the link you followed is incorrect.",
+        "Proof of Delivery",
+        "This order has no confirmed deliveries yet",
+        "Sign in required",
+        "Delivery evidence appears here once a supplier marks your shipment delivered.",
     )
     override val related = listOf(
-        NativePageLink("buyer-orders", "Buyer Orders"),
-        NativePageLink("order-tracking", "Order Tracking"),
-        NativePageLink("shipping-info", "Shipping Info"),
+        NativePageLink("my-orders", "My Orders"),
     )
 }
 

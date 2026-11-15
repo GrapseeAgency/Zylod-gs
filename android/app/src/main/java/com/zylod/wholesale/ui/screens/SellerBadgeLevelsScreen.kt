@@ -42,17 +42,19 @@ data object SellerBadgeLevelsPageMeta : NativePageMeta() {
     override val category = "Seller & Supplier"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Seller Badge Levels — the seller and supplier toolchain on the Zylod marketplace. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Earned by passing real KYC + trade-license verification — the badge buyers see on your storefront. Not a level, not a score: it is a verified fact."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the seller-badge-levels pageId via RouteOwnership.",
+        "Badge levels",
+        "Bronze-to-diamond style level badges need a real award engine — none exists yet, so none are shown. When badge levels launch, they will be earned from measured store history, never granted…",
+        "Level badges aren&apos;t live yet",
+        "Your navigate(’seller-rankings’)}>product rankings already show real sales standings.",
+        "Your navigate(’seller-sales-funnel’)}>fulfillment rate is the metric future badges will read.",
     )
     override val related = listOf(
-        NativePageLink("seller-dashboard", "Seller Dashboard"),
-        NativePageLink("supplier-center", "Supplier Center"),
-        NativePageLink("product-upload", "Product Upload"),
+        NativePageLink("seller-verification", "Seller Verification"),
+        NativePageLink("seller-rankings", "Seller Rankings"),
+        NativePageLink("seller-sales-funnel", "Seller Sales Funnel"),
     )
 }
 

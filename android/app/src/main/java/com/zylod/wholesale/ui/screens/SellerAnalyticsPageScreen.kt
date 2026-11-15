@@ -42,17 +42,19 @@ data object SellerAnalyticsPagePageMeta : NativePageMeta() {
     override val category = "Seller & Supplier"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Seller Analytics Page — the seller and supplier toolchain on the Zylod marketplace. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "No active restock watches right now — buyers watching your sold-out products will appear here."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the seller-analytics-page pageId via RouteOwnership.",
+        "% : Not available yet }",
+        "Seller Analytics",
+        "Traffic-source tracking is not available yet.",
+        "No sales yet — your top products will appear here once paid orders come in.",
+        "Restock Demand buyer waiting )}",
+    )}",
     )
     override val related = listOf(
-        NativePageLink("seller-dashboard", "Seller Dashboard"),
-        NativePageLink("supplier-center", "Supplier Center"),
-        NativePageLink("product-upload", "Product Upload"),
+        NativePageLink("edit-product", "Edit Product"),
+        NativePageLink("product-performance", "Product Performance"),
     )
 }
 

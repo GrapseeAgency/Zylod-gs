@@ -42,17 +42,15 @@ data object OtpVerificationPageMeta : NativePageMeta() {
     override val category = "Account & Profile"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Otp Verification — account, identity and money surfaces for the signed-in user. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Zylod will never ask for your account password or other sensitive details via SMS or email."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the otp-verification pageId via RouteOwnership.",
+        "Verify Your Identity",
+        "We&apos;ve sent a code to . Please enter the 6-digit code below to continue.",
     )
     override val related = listOf(
-        NativePageLink("profile", "Profile"),
-        NativePageLink("buyer-orders", "Buyer Orders"),
-        NativePageLink("account-settings", "Account Settings"),
+        NativePageLink("email-verification", "Email Verification"),
+        NativePageLink("help-center", "Help Center"),
     )
 }
 

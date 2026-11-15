@@ -27,17 +27,16 @@ data object PayoutsPageMeta : NativePageMeta() {
     override val category = "Seller & Supplier"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Payouts — the web serves this id with the SAME seller-payouts-page component as \"seller-payouts\" (chunk-seller.ts), so the native row delegates to the same typed surface: the REAL payouts list from SellerOpsApi with honest loading/not-seller/offline/empty states."
+    override val summary = "Payouts are settled by the finance team. Money only leaves your wallet when a payout is completed with a reference — a request alone never moves funds."
     override val tabHint = ""
     override val bullets = listOf(
-        "Real payouts — the seller's own rows from the Zylod API, never fabricated.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the payouts pageId via RouteOwnership.",
+        "Seller sign-in required",
+        "Sign in with a supplier account to see your payouts.",
+        "Payout history",
+        "When the finance team settles a payout for your store, it will appear here with its reference.",
     )
     override val related = listOf(
-        NativePageLink("seller-payouts", "Seller Payouts"),
-        NativePageLink("seller-dashboard", "Seller Dashboard"),
-        NativePageLink("earnings-dashboard", "Earnings Dashboard"),
+        NativePageLink("withdraw-money", "Withdraw Money"),
     )
 }
 

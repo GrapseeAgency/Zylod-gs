@@ -42,12 +42,15 @@ data object LinkedAccountsPageMeta : NativePageMeta() {
     override val category = "Account & Profile"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Linked Accounts — account, identity and money surfaces for the signed-in user. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Save the WhatsApp number, Facebook page, or Instagram handle buyers can reach you on. Saved to your account instantly."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the linked-accounts pageId via RouteOwnership.",
+        "These are contact handles displayed for buyer outreach. Zylod does not offer OAuth sign-in through them, and payment-settlement integrations (bKash / Nagad) do not exist yet — they will…",
+        "Linked Contact Handles",
+        "Linked contact handles are stored on your account.",
+        "Sign in to manage your linked accounts",
+        "Add a WhatsApp number or a social handle above so buyers know how to reach your business.",
+        "Link a contact handle",
     )
     override val related = listOf(
         NativePageLink("profile", "Profile"),

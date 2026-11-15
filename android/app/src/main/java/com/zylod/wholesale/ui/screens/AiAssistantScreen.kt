@@ -25,12 +25,10 @@ data object AiAssistantPageMeta : NativePageMeta() {
     override val category = "Zylod Marketplace"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "AI Assistant — a Zylod marketplace surface. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Searches our published help articles & FAQs"
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the ai-assistant pageId via RouteOwnership.",
+        "Zylod Help Assistant",
     )
     override val related = listOf(
         NativePageLink("home", "Home"),

@@ -42,12 +42,13 @@ data object InventoryRestockPageMeta : NativePageMeta() {
     override val category = "Seller & Supplier"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Inventory Restock — the seller and supplier toolchain on the Zylod marketplace. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "The rail writes the quantity delta to stock and notifies back-in-stock watchers."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the inventory-restock pageId via RouteOwnership.",
+        "Restock Intake",
+        "The restock rail writes the quantity received to real stock (and triggers back-in-stock notifications). PO Number, Supplier Source, and Batch Expiry are draft metadata — the inventory…",
+        "Pick a product to restock",
+        "Intake details",
     )
     override val related = listOf(
         NativePageLink("seller-dashboard", "Seller Dashboard"),

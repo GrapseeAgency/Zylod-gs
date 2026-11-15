@@ -42,12 +42,12 @@ data object SellerSalesFunnelPageMeta : NativePageMeta() {
     override val category = "Seller & Supplier"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Seller Sales Funnel — the seller and supplier toolchain on the Zylod marketplace. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Sign in with a supplier account to see your funnel."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the seller-sales-funnel pageId via RouteOwnership.",
+        "Sales funnel",
+        "Stock and fulfillment alerts for your store will surface here.",
+        "Seller sign-in required",
     )
     override val related = listOf(
         NativePageLink("seller-dashboard", "Seller Dashboard"),

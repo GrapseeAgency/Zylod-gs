@@ -42,12 +42,10 @@ data object PriceDropDetailPageMeta : NativePageMeta() {
     override val category = "Shopping & Products"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Price Drop Detail — product discovery and buying on the Zylod marketplace. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Alert Summary"
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the price-drop-detail pageId via RouteOwnership.",
+        "Alert Summary",
     )
     override val related = listOf(
         NativePageLink("all-products", "All Products"),

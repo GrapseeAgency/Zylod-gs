@@ -42,12 +42,10 @@ data object BulkPriceUpdatePageMeta : NativePageMeta() {
     override val category = "Settings & App"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Bulk Price Update — app-level settings and device-side controls. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Each save writes the full product back. A product referenced by active carts or orders may be blocked (409) — hide the listing instead."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the bulk-price-update pageId via RouteOwnership.",
+        "Bulk Price Update",
     )
     override val related = listOf(
         NativePageLink("app-settings", "App Settings"),

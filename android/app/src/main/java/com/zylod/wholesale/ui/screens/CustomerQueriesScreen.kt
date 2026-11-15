@@ -42,17 +42,14 @@ data object CustomerQueriesPageMeta : NativePageMeta() {
     override val category = "Zylod Marketplace"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Customer Queries — a Zylod marketplace surface. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Direct buyer queries — pre-order asks, custom requests, complaints — will land here. Today most buyer questions arrive through product Q&amp;A, the RFQ inbox, and chat."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the customer-queries pageId via RouteOwnership.",
+        "Customer Queries",
+        "No customer queries yet",
     )
     override val related = listOf(
-        NativePageLink("home", "Home"),
-        NativePageLink("category-browser", "Category Browser"),
-        NativePageLink("help-center", "Help Center"),
+        NativePageLink("customer-query-detail", "Customer Query Detail"),
     )
 }
 

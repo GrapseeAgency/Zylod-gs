@@ -20,17 +20,19 @@ data object PressMediaPageMeta : NativePageMeta() {
     override val category = "Company & Legal"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Press Media — the company, content and legal pages of Zylod. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Stay updated with corporate milestones, funding announcements, product innovations, and strategic logistics partnerships across Bangladesh."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the press-media pageId via RouteOwnership.",
+        "Press & Media Hub",
+        "Official News, Announcements & Media Assets",
+        "Press &amp; Media Hub",
+        "Official News, Announcements &amp; Media Assets",
+        "Latest Headlines & Industry Breakthroughs",
     )
     override val related = listOf(
-        NativePageLink("about-us", "About Us"),
-        NativePageLink("contact-us", "Contact Us"),
-        NativePageLink("careers", "Careers"),
+        NativePageLink("media-kit", "Media Kit"),
+        NativePageLink("investor-relations", "Investor Relations"),
+        NativePageLink("press-release-detail", "Press Release Detail"),
     )
 }
 

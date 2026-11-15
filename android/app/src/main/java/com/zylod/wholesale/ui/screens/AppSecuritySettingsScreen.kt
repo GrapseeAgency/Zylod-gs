@@ -42,17 +42,17 @@ data object AppSecuritySettingsPageMeta : NativePageMeta() {
     override val category = "Settings & App"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "App Security Settings — app-level settings and device-side controls. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Biometric authentication, screen-capture shielding, and quick-PIN locking are not available on the Zylod web app yet. Nothing on this page changes your account security today — we will not pretend to save settings that do nothing."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the app-security-settings pageId via RouteOwnership.",
+        "Not Available Yet",
+        "Security & Biometrics",
+        "Device-level security for the Zylod web app",
+        "Fingerprint / Face ID sign-in — planned, not available yet",
+        "Screen-capture protection on payment screens — planned, not available yet",
     )
     override val related = listOf(
         NativePageLink("app-settings", "App Settings"),
-        NativePageLink("display-settings", "Display Settings"),
-        NativePageLink("profile", "Profile"),
     )
 }
 

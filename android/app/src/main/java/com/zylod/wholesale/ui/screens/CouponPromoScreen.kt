@@ -27,17 +27,16 @@ data object CouponPromoPageMeta : NativePageMeta() {
     override val category = "Marketing & Rewards"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Coupon Promo — collect vouchers to the vault: the typed-code box (POST api/coupons/claim { code }) and the live campaign rail (GET api/coupons?limit=30) — the same surface the web's CouponPromoPage renders, with the server's own refusal wording on every dead code."
+    override val summary = "The server checks the code against the live database — expired, exhausted, foreign, or unknown codes are refused with the real reason. Application to an order happens at checkout from your vault."
     override val tabHint = ""
     override val bullets = listOf(
-        "Real claims — every code is checked against the live database, never fabricated.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the coupon-promo pageId via RouteOwnership.",
+        "Coupons &amp; Promo Codes",
+        "Collect vouchers to your vault — codes are applied at checkout.",
+        "Available B2B Offers",
+        "New offers appear here the moment the platform publishes them — nothing is faked.",
     )
     override val related = listOf(
-        NativePageLink("my-coupons", "My Coupons"),
-        NativePageLink("coupons", "Coupons"),
-        NativePageLink("cart", "Cart"),
+        NativePageLink("search-home", "Search Home"),
     )
 }
 

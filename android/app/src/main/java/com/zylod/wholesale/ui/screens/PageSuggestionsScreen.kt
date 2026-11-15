@@ -42,17 +42,16 @@ data object PageSuggestionsPageMeta : NativePageMeta() {
     override val category = "Zylod Marketplace"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Page Suggestions — a Zylod marketplace surface. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Live category directory — product and supplier counts come straight from the catalog"
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the page-suggestions pageId via RouteOwnership.",
+        "Suggested Wholesale Catalogs",
+        "When Zylod suppliers list products under catalog categories, those categories will appear here with their real product and supplier counts. We never publish invented catalog totals.",
+        "No categories published yet",
     )
     override val related = listOf(
-        NativePageLink("home", "Home"),
+        NativePageLink("error-404", "Error 404"),
         NativePageLink("category-browser", "Category Browser"),
-        NativePageLink("help-center", "Help Center"),
     )
 }
 

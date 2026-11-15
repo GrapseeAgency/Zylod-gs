@@ -42,12 +42,11 @@ data object CollectionSharedPageMeta : NativePageMeta() {
     override val category = "Shopping & Products"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Collection Shared — product discovery and buying on the Zylod marketplace. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "The link is wrong, or the collection is no longer shared. Ask the sender for a fresh link."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the collection-shared pageId via RouteOwnership.",
+        "This link does not open a collection",
+        "This shared collection has no products yet.",
     )
     override val related = listOf(
         NativePageLink("all-products", "All Products"),

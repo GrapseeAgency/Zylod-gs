@@ -42,17 +42,19 @@ data object AppUpdatePageMeta : NativePageMeta() {
     override val category = "Settings & App"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "App Update — app-level settings and device-side controls. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "There is no published Android release in the app-versions table. When Zylod ships a real update, it will be listed here with its actual version number, size and changelog."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the app-update pageId via RouteOwnership.",
+        "App Updates &amp; Release Channels",
+        "Latest published Android release and changelog",
+        "No published releases yet",
+        "Zylod Wholesale v",
+        "What&apos;s New in v",
     )
     override val related = listOf(
-        NativePageLink("app-settings", "App Settings"),
-        NativePageLink("display-settings", "Display Settings"),
-        NativePageLink("profile", "Profile"),
+        NativePageLink("update-changelog", "Update Changelog"),
+        NativePageLink("version-history", "Version History"),
+        NativePageLink("apk-download", "Apk Download"),
     )
 }
 

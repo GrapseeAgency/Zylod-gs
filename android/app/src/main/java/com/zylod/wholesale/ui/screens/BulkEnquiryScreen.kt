@@ -42,17 +42,18 @@ data object BulkEnquiryPageMeta : NativePageMeta() {
     override val category = "Shopping & Products"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Bulk Enquiry — product discovery and buying on the Zylod marketplace. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Mix products into one wholesale order — every line shows unit, MOQ, and volume-tier savings. Decimals allowed for kg lines."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the bulk-enquiry pageId via RouteOwnership.",
+        "Bulk Order Builder",
+        "The bulk cart API answered: &ldquo; &rdquo; — cart persistence requires a buyer account.",
+        "Your Bulk Order",
+        "Merged into your existing cart line — → : ’’}",
+        "Search above and press &ldquo;Add&rdquo; to start building a multi-product wholesale order.",
+        "Variant price: / (volume tiers don&apos;t apply to variants).",
     )
     override val related = listOf(
-        NativePageLink("all-products", "All Products"),
-        NativePageLink("flash-deals", "Flash Deals"),
-        NativePageLink("category-browser", "Category Browser"),
+        NativePageLink("cart", "Cart"),
     )
 }
 

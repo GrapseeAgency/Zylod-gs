@@ -42,17 +42,18 @@ data object NetworkSettingsPageMeta : NativePageMeta() {
     override val category = "Settings & App"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Network Settings — app-level settings and device-side controls. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Configure network timeouts, data saver limits, and CDN failover routes"
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the network-settings pageId via RouteOwnership.",
+        "Network &amp; Latency Rules",
+        "Network behavior rules are client-side preferences. They tune how this browser fetches from Zylod and live in localStorage. The Android app carries its own network rules.",
+        "Connection Resilience",
+        "Standard timeout before triggering offline fallback mode (default: 15000 ms)",
+        "Compress catalog thumbnails for 2G/3G connectivity in remote production zones",
+        "Enforce DNS query encryption for enterprise supplier transactions",
     )
     override val related = listOf(
         NativePageLink("app-settings", "App Settings"),
-        NativePageLink("display-settings", "Display Settings"),
-        NativePageLink("profile", "Profile"),
     )
 }
 

@@ -28,17 +28,16 @@ data object ShippingAddressPageMeta : NativePageMeta() {
     override val category = "Orders & Logistics"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Shipping Address — your saved delivery addresses, selectable for checkout."
+    override val summary = "Shipping Address"
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the shipping-address pageId via RouteOwnership.",
+        "Shipping Address",
+        "Select Address",
     )
     override val related = listOf(
-        NativePageLink("buyer-orders", "Buyer Orders"),
-        NativePageLink("order-tracking", "Order Tracking"),
-        NativePageLink("shipping-info", "Shipping Info"),
+        NativePageLink("add-address", "Add Address"),
+        NativePageLink("edit-address", "Edit Address"),
+        NativePageLink("delivery-method", "Delivery Method"),
     )
 }
 

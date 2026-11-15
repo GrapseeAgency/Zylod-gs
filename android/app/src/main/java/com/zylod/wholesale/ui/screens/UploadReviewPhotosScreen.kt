@@ -42,17 +42,17 @@ data object UploadReviewPhotosPageMeta : NativePageMeta() {
     override val category = "Shopping & Products"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Upload Review Photos — product discovery and buying on the Zylod marketplace. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Help other buyers make informed decisions. Upload high-quality images of the product you received."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the upload-review-photos pageId via RouteOwnership.",
+        "Upload Media",
+        "No media selected. Upload real photos or videos of the product you received — nothing is pre-filled or faked.",
+        "Add Photos or Videos",
+        "Click or drag files here to upload",
+        "Selected Media ( )",
     )
     override val related = listOf(
-        NativePageLink("all-products", "All Products"),
-        NativePageLink("flash-deals", "Flash Deals"),
-        NativePageLink("category-browser", "Category Browser"),
+        NativePageLink("write-review", "Write Review"),
     )
 }
 

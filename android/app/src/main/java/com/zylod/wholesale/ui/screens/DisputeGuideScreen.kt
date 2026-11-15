@@ -28,17 +28,16 @@ data object DisputeGuidePageMeta : NativePageMeta() {
     override val category = "Orders & Logistics"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Dispute Guide — order, shipping and delivery operations for Zylod buyers. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Zylod has no escrow system and makes no automatic-protection guarantee. What we do promise: every dispute is reviewed by a real person on the Zylod team, and the outcome is documented on your ticket."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the dispute-guide pageId via RouteOwnership.",
+        "How Zylod Handles Order Disputes",
+        "Continuous video showing sealed shipping label and opening parcel.",
+        "Evidence That Helps Your Case",
+        "Close-ups of broken parts, missing units, or incorrect color/specs.",
     )
     override val related = listOf(
-        NativePageLink("buyer-orders", "Buyer Orders"),
-        NativePageLink("order-tracking", "Order Tracking"),
-        NativePageLink("shipping-info", "Shipping Info"),
+        NativePageLink("submit-ticket", "Submit Ticket"),
     )
 }
 

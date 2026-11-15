@@ -42,17 +42,18 @@ data object RfqListPageMeta : NativePageMeta() {
     override val category = "Seller & Supplier"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "RFQ List — the seller and supplier toolchain on the Zylod marketplace. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Start a new RFQ, or open any product and tap &ldquo;Request Quote&rdquo;."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the rfq-list pageId via RouteOwnership.",
+        "My Quote Requests",
+        "Your RFQ history and supplier quotes are tied to your account.",
+        "Track RFQs and supplier responses in one place.",
+        "No quotes yet — sellers see this RFQ in their inbox.",
+        "The accepted quote became a real order — track it in your orders.",
+        "This request is not linked to a marketplace product, so its accepted quote cannot be converted into an order.",
     )
     override val related = listOf(
-        NativePageLink("seller-dashboard", "Seller Dashboard"),
-        NativePageLink("supplier-center", "Supplier Center"),
-        NativePageLink("product-upload", "Product Upload"),
+        NativePageLink("help-center", "Help Center"),
     )
 }
 

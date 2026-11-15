@@ -22,16 +22,14 @@ data object ProfilePhotoPageMeta : NativePageMeta() {
     override val category = "Account & Profile"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Profile Photo — upload, preview and remove the avatar on your account."
+    override val summary = "A clear profile photo helps build trust with buyers and suppliers on Zylod."
     override val tabHint = ""
     override val bullets = listOf(
-        "Typed native screen — live data from the account settings API family.",
-        "Honest states: loading, retry, signed-out wall — never fabricated data.",
-        "Native ownership: this Kotlin screen owns the profile-photo pageId via RouteOwnership.",
+        "Profile Photo Management",
+        "Max file size: 10MB. Formats: JPG, PNG, WebP.",
     )
     override val related = listOf(
         NativePageLink("profile", "Profile"),
-        NativePageLink("edit-profile", "Edit Profile"),
         NativePageLink("account-settings", "Account Settings"),
     )
 }

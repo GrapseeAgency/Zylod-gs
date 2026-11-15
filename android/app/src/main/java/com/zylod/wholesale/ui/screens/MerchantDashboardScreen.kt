@@ -42,17 +42,21 @@ data object MerchantDashboardPageMeta : NativePageMeta() {
     override val category = "Seller & Supplier"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Merchant Dashboard — the seller and supplier toolchain on the Zylod marketplace. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "No active restock watches right now. Buyers who tap “Notify me” on a sold-out product appear here instantly."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the merchant-dashboard pageId via RouteOwnership.",
+        "Seller Hub",
+        "Sign in with a supplier account to see your live dashboard.",
+        "Supplier sign-in required",
+        "No revenue yet — your sales will chart here",
+        "Recent Orders",
+        "You are always paid the full line value — the platform funds the discount.",
     )
     override val related = listOf(
-        NativePageLink("seller-dashboard", "Seller Dashboard"),
-        NativePageLink("supplier-center", "Supplier Center"),
-        NativePageLink("product-upload", "Product Upload"),
+        NativePageLink("seller-verification", "Seller Verification"),
+        NativePageLink("inventory-management", "Inventory Management"),
+        NativePageLink("seller-orders", "Seller Orders"),
+        NativePageLink("seller-add-product", "Seller Add Product"),
     )
 }
 

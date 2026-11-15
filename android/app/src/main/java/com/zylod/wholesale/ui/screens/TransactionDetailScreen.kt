@@ -26,17 +26,15 @@ data object TransactionDetailPageMeta : NativePageMeta() {
     override val category = "Zylod Marketplace"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Transaction Detail — a Zylod marketplace surface. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Could not load this transaction. Please try again later."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the transaction-detail pageId via RouteOwnership.",
+        "Your session has expired. Sign in again to view this transaction.",
+        "Transaction receipts show real movements from your Zylod wallet. Sign in to continue.",
+        "This transaction could not be found in your wallet history.",
     )
     override val related = listOf(
-        NativePageLink("home", "Home"),
-        NativePageLink("category-browser", "Category Browser"),
-        NativePageLink("help-center", "Help Center"),
+        NativePageLink("transaction-history", "Transaction History"),
     )
 }
 

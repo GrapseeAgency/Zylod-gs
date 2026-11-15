@@ -27,17 +27,17 @@ data object CouponsPageMeta : NativePageMeta() {
     override val category = "Marketing & Rewards"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Coupons — the native My Coupons surface: the public campaign claim rail (GET api/coupons + POST api/coupons/claim), the buyer's voucher vault (GET api/coupons/my) and the loyalty-points rail (GET api/rewards) — the same data the web's CouponsPage renders."
+    override val summary = "Apply these codes at checkout to reduce unit prices or get free cargo transit across Bangladesh."
     override val tabHint = ""
     override val bullets = listOf(
-        "Real coupons — vault, campaigns and points stream from the Zylod API, never fabricated.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the coupons pageId via RouteOwnership.",
+        "Wholesale Coupons",
+        "Check back soon or earn vouchers by completing tasks.",
+        "Collect Discounts for Your Purchase Orders",
+        "or more : ’Valid on all wholesale purchases’}",
     )
     override val related = listOf(
-        NativePageLink("my-coupons", "My Coupons"),
         NativePageLink("earn-coupons", "Earn Coupons"),
-        NativePageLink("coupon-promo", "Coupons & Promo Codes"),
+        NativePageLink("my-coupons", "My Coupons"),
     )
 }
 

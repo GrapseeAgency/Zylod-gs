@@ -42,12 +42,12 @@ data object FeedbackPageMeta : NativePageMeta() {
     override val category = "Support & Help"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Feedback — help, policies and buyer/seller protection on Zylod. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Suggest features, new payment options, logistics integrations, or report workflow bottlenecks."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the feedback pageId via RouteOwnership.",
+        "Have an idea to improve Zylod?",
+        "Be the first to share an idea with our product team!",
+        "Share Feedback & Ideas",
     )
     override val related = listOf(
         NativePageLink("help-center", "Help Center"),

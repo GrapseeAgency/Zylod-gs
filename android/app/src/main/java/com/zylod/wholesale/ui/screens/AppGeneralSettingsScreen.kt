@@ -42,17 +42,18 @@ data object AppGeneralSettingsPageMeta : NativePageMeta() {
     override val category = "Settings & App"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "App General Settings — app-level settings and device-side controls. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Platform wholesale thresholds are admin-only configuration. Sign in with an admin account to edit the default minimum order value."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the app-general-settings pageId via RouteOwnership.",
+        "Admin sign-in required",
+        "You are signed in, but platform configuration is restricted to admin accounts. Your current role does not have permission to edit wholesale thresholds.",
+        "Admin access required",
+        "Platform wholesale thresholds, default currency units, and display parameters",
+        "General App Preferences",
+        "Default minimum B2B order value across supplier catalogues. Individual suppliers may raise their own floor above this baseline.",
     )
     override val related = listOf(
         NativePageLink("app-settings", "App Settings"),
-        NativePageLink("display-settings", "Display Settings"),
-        NativePageLink("profile", "Profile"),
     )
 }
 

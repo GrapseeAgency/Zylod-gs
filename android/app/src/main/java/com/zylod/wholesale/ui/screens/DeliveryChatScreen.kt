@@ -25,17 +25,17 @@ data object DeliveryChatPageMeta : NativePageMeta() {
     override val category = "Orders & Logistics"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Delivery Chat — order, shipping and delivery operations for Zylod buyers. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Live delivery chat requires a messaging backend, which is not available yet."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the delivery-chat pageId via RouteOwnership.",
+        "Delivery Chat",
+        "Not connected to a delivery conversation",
+        "No messages yet",
+        "This conversation has no messages. Live chat with your delivery partner will appear here once a shipment with real-time tracking is active.",
     )
     override val related = listOf(
-        NativePageLink("buyer-orders", "Buyer Orders"),
-        NativePageLink("order-tracking", "Order Tracking"),
-        NativePageLink("shipping-info", "Shipping Info"),
+        NativePageLink("notifications", "Notifications"),
+        NativePageLink("shipping-tracker", "Shipping Tracker"),
     )
 }
 

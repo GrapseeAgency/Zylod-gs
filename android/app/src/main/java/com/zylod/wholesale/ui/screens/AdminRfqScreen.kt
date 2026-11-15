@@ -42,12 +42,15 @@ data object AdminRfqPageMeta : NativePageMeta() {
     override val category = "Seller & Supplier"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Admin RFQ — the seller and supplier toolchain on the Zylod marketplace. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "RFQ oversight is restricted to Zylod admins. Sign in with an admin account to audit quote requests across the platform."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the admin-rfq pageId via RouteOwnership.",
+        "Admin access required",
+        "Every RFQ on the platform with its real quotes. Closing is the only admin write — it is audit-logged and broadcast to the RFQ&apos;s room.",
+        "Quote Requests — RFQ Oversight",
+        "No request for quotes currently has status &ldquo; &rdquo;. Switch to All to see every RFQ in the database.",
+        "Could not load RFQs",
+        "The rfqRequests table currently holds zero rows — real counts, not a placeholder. When a buyer requests a quote it will appear here for oversight.",
     )
     override val related = listOf(
         NativePageLink("seller-dashboard", "Seller Dashboard"),

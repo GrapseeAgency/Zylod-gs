@@ -28,12 +28,15 @@ data object WithdrawMoneyPageMeta : NativePageMeta() {
     override val category = "Zylod Marketplace"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Withdraw Money — a Zylod marketplace surface. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Every request is held until an admin verifies the settlement — the same rule that protects buyer payments. Rejected requests release the hold instantly."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the withdraw-money pageId via RouteOwnership.",
+        "Your session expired — sign in again to view your withdrawals.",
+        "Withdrawal amount exceeds the available balance (balance minus requests already pending verification)",
+        "Please enter account number and beneficiary name",
+        "Withdrawal request for ৳ submitted — an admin verifies it before any money leaves.",
+        "Withdrawal failed. Please check details.",
+        "No withdrawal requests yet — the money in your wallet is all available.",
     )
     override val related = listOf(
         NativePageLink("home", "Home"),

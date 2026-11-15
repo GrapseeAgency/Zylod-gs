@@ -42,17 +42,16 @@ data object JobApplyPageMeta : NativePageMeta() {
     override val category = "Company & Legal"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Job Apply — the company, content and legal pages of Zylod. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Thank you for applying. Your application tracking code is . Our Talent Acquisition team will contact you within 5 business days."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the job-apply pageId via RouteOwnership.",
+        "Apply for Position",
+        "Application Submitted!",
+        "Your Details",
+        "Links & Experience",
     )
     override val related = listOf(
-        NativePageLink("about-us", "About Us"),
-        NativePageLink("contact-us", "Contact Us"),
-        NativePageLink("careers", "Careers"),
+        NativePageLink("careers-page", "Careers Page"),
     )
 }
 

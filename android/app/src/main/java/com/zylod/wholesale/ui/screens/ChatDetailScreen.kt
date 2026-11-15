@@ -32,14 +32,17 @@ data object ChatDetailPageMeta : NativePageMeta() {
             "(create-or-reuse on entry, optimistic send, read receipts)."
     override val tabHint = "profile"
     override val bullets = listOf(
-        "Buyer↔supplier DMs — the same backend the web chat rides.",
-        "Entry query: conversationId=… (from the list) or supplierUserId=… (Contact Supplier).",
-        "Offline-safe: the last-saved thread renders first — never a white screen.",
+        "Account preferences are not available yet",
+        "Your return requests",
+        "No suppliers found matching your criteria",
+        "Returns are submitted per order. Open the order in your order history and choose the items to return — the request goes to the Zylod team for review.",
+        "Buyer levels are not available yet",
     )
     override val related = listOf(
-        NativePageLink("chat-list", "Messages"),
-        NativePageLink("suppliers", "Browse Suppliers"),
-        NativePageLink("live-chat", "Zylod Live Support"),
+        NativePageLink("supplier-profile", "Supplier Profile"),
+        NativePageLink("buyer-orders", "Buyer Orders"),
+        NativePageLink("wishlist", "Wishlist"),
+        NativePageLink("suppliers", "Suppliers"),
     )
 }
 

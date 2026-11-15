@@ -42,17 +42,18 @@ data object WarehouseManagementPageMeta : NativePageMeta() {
     override val category = "Orders & Logistics"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Warehouse Management — order, shipping and delivery operations for Zylod buyers. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Your stock levels appear here once you create products. Publish your first listing to get started."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the warehouse-management pageId via RouteOwnership.",
+        "Inventory Management",
+        "Sign in as a supplier to manage your inventory.",
+        "Stock Levels",
+        "Every quick edit above is verified against your own catalog server-side and written in one transaction. ”Alert” sets this product’s own low-stock line — variants inherit it, and the product…",
     )
     override val related = listOf(
-        NativePageLink("buyer-orders", "Buyer Orders"),
-        NativePageLink("order-tracking", "Order Tracking"),
-        NativePageLink("shipping-info", "Shipping Info"),
+        NativePageLink("seller-add-product", "Seller Add Product"),
+        NativePageLink("inventory-restock", "Inventory Restock"),
+        NativePageLink("inventory-audit-log", "Inventory Audit Log"),
     )
 }
 

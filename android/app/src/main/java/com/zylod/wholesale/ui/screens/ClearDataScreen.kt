@@ -42,17 +42,18 @@ data object ClearDataPageMeta : NativePageMeta() {
     override val category = "Zylod Marketplace"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Clear Data — a Zylod marketplace surface. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Wipe the HTTP cache and localStorage on this device — your account is preserved"
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the clear-data pageId via RouteOwnership.",
+        "Clear Browser Storage",
+        "Only this browser&apos;s storage is affected. The Zylod Android app carries its own cache on-device through its native settings panel.",
+        "What will be cleared",
+        "Cached JS/CSS/image responses. Re-fetched from the server on next load.",
+        "Device prefs, navigation history, cart drafts. Your auth token is preserved.",
+        "Android-app only — the web client does not keep one.",
     )
     override val related = listOf(
-        NativePageLink("home", "Home"),
-        NativePageLink("category-browser", "Category Browser"),
-        NativePageLink("help-center", "Help Center"),
+        NativePageLink("storage-management", "Storage Management"),
     )
 }
 

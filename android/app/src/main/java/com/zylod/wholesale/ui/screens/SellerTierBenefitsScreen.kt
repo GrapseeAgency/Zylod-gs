@@ -42,12 +42,11 @@ data object SellerTierBenefitsPageMeta : NativePageMeta() {
     override val category = "Seller & Supplier"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Seller Tier Benefits — the seller and supplier toolchain on the Zylod marketplace. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Zylod hasn&apos;t launched supplier tiers, so there are no tier benefits to claim — and this page will never describe invented tiers. Here is what your store can actually use today:"
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the seller-tier-benefits pageId via RouteOwnership.",
+        "Tier benefits",
+        "The tier program isn&apos;t live yet",
     )
     override val related = listOf(
         NativePageLink("seller-dashboard", "Seller Dashboard"),

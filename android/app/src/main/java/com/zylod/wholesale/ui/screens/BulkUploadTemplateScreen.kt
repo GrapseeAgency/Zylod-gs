@@ -42,17 +42,17 @@ data object BulkUploadTemplatePageMeta : NativePageMeta() {
     override val category = "Shopping & Products"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Bulk Upload Template — product discovery and buying on the Zylod marketplace. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "The server expects the header — exactly these columns, one product per row, max 100 rows per upload. The template below carries your LIVE category ids, so the categoryId column is valid on the first try."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the bulk-upload-template pageId via RouteOwnership.",
+        "Bulk Upload Template",
+        "Download template CSV navigate(’bulk-upload-products’)} className=”flex-1 h-11 rounded-2xl text-xs font-bold border-gray-200 dark:border-gray-800”> Go to upload {loading && ( Loading your…",
+    )        "Bulk Upload Template",
+        "The server expects the header — exactly these columns, one product per row, max 100 rows per upload. The template below carries your LIVE category ids, so the categoryId column is valid on…",
+        "Download template CSV navigate(’bulk-upload-products’)} className=”flex-1 h-11 rounded-2xl text-xs font-bold border-gray-200 dark:border-gray-800”> Go to upload loading && ( Loading your…",
     )
     override val related = listOf(
-        NativePageLink("all-products", "All Products"),
-        NativePageLink("flash-deals", "Flash Deals"),
-        NativePageLink("category-browser", "Category Browser"),
+        NativePageLink("bulk-upload-products", "Bulk Upload Products"),
     )
 }
 

@@ -42,17 +42,20 @@ data object ExchangeRequestPageMeta : NativePageMeta() {
     override val category = "Orders & Logistics"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Exchange Request — order, shipping and delivery operations for Zylod buyers. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+    override val summary = "Exchanges are started from a specific item in one of your orders. Open the order and choose “Exchange” on the item."
     override val tabHint = ""
     override val bullets = listOf(
-        "Curated native content — no fabricated server data, ever.",
-        "Offline-safe: the last-saved payload renders first — never a white screen.",
-        "Native ownership: this Kotlin screen owns the exchange-request pageId via RouteOwnership.",
+        "Exchange Request Submitted",
+        "The selected item doesn&apos;t belong to this order anymore.",
+        "Exchange Request",
+        "Live variants of this product — stock and prices are real.",
+        "No order item selected",
+        "This product has no variants configured to exchange to. Contact the supplier or request a return instead.",
     )
     override val related = listOf(
-        NativePageLink("buyer-orders", "Buyer Orders"),
-        NativePageLink("order-tracking", "Order Tracking"),
-        NativePageLink("shipping-info", "Shipping Info"),
+        NativePageLink("my-orders", "My Orders"),
+        NativePageLink("help-center", "Help Center"),
+        NativePageLink("return-request", "Return Request"),
     )
 }
 
