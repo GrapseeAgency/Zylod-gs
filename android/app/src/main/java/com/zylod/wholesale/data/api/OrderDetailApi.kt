@@ -236,6 +236,8 @@ data class OrderDetailCancelled(
 data class OrderDetailCancelEnvelope(
     val success: Boolean = false,
     val data: OrderDetailCancelled? = null,
+    /** The verbatim 409/window guard line the web toast renders. */
+    val error: String? = null,
 )
 
 /* ─── Manual payment submission (Task 56-b) ─────────────────────────────── */
