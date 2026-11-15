@@ -724,11 +724,15 @@ object NativePageRegistry {
         "referral-program" to entry(ReferralProgramPageMeta) { onBack, openPage, query -> ReferralProgramScreen(onBack = onBack, openPage = openPage, query = query) },
         "referral-program-page" to entry(ReferralProgramPagePageMeta) { onBack, openPage, query -> ReferralProgramPageScreen(onBack = onBack, openPage = openPage, query = query) },
         "refund" to entry(RefundPageMeta) { onBack, openPage, query -> com.zylod.wholesale.ui.wallet.WalletScreen(onBack = onBack, openPage = openPage, query = query) },
-        // t281 5-b: the "refund-detail" row REMOVED — refund tracking landed
-        // on bullets; WebScreen → the SPA's real refund detail page.
+        // t305 RESTORES the removed row on the typed surface — the web page
+        // is an honest ALIAS of refund-status, so the row delegates to the
+        // same ui/returns RefundStatusScreen (GET api/returns/[id]).
+        "refund-detail" to entry(RefundDetailPageMeta) { onBack, openPage, query -> RefundDetailScreen(onBack = onBack, openPage = openPage, query = query) },
         "refund-policy" to entry(RefundPolicyPageMeta) { onBack, openPage, query -> RefundPolicyScreen(onBack = onBack, openPage = openPage, query = query) },
-        // t281 5-b: the "refund-status" row REMOVED — refund tracking landed
-        // on bullets; WebScreen → the SPA's real refund status page.
+        // t305 RESTORES the removed row on the typed surface —
+        // ui/returns/RefundStatusScreen (GET api/returns/[id]: the real
+        // refunds ledger + receipts + derived timeline), WebView hop retired.
+        "refund-status" to entry(RefundStatusPageMeta) { onBack, openPage, query -> RefundStatusScreen(onBack = onBack, openPage = openPage, query = query) },
         "refund-to-wallet" to entry(RefundToWalletPageMeta) { onBack, openPage, query -> RefundToWalletScreen(onBack = onBack, openPage = openPage, query = query) },
         "register-seller" to entry(RegisterSellerPageMeta) { onBack, openPage, query -> RegisterSellerScreen(onBack = onBack, openPage = openPage, query = query) },
         "reorder" to entry(ReorderPageMeta) { onBack, openPage, query -> ReorderScreen(onBack = onBack, openPage = openPage, query = query) },
@@ -749,9 +753,10 @@ object NativePageRegistry {
         "restricted-items" to entry(RestrictedItemsPageMeta) { onBack, openPage, query -> RestrictedItemsScreen(onBack = onBack, openPage = openPage, query = query) },
         // t281 5-b: the "return-claim-detail" row REMOVED — seller claim
         // views landed on bullets; WebScreen → the SPA's real claim detail.
-        // t280 4-b#2: the "return-detail" row REMOVED — ReturnRequestScreen's
-        // post-submit success hop (orderId=<id>) landed on bullets. WebScreen →
-        // the SPA's real return-detail page (reads orderId/returnId).
+        // t305 RESTORES the removed row on the typed surface —
+        // ui/returns/ReturnDetailScreen (GET api/returns?orderId= with the
+        // real items/reasons; returnId narrows), WebView hop retired.
+        "return-detail" to entry(ReturnDetailPageMeta) { onBack, openPage, query -> ReturnDetailScreen(onBack = onBack, openPage = openPage, query = query) },
         "return-faq" to entry(ReturnFaqPageMeta) { onBack, openPage, query -> ReturnFaqScreen(onBack = onBack, openPage = openPage, query = query) },
         "return-management" to entry(ReturnManagementPageMeta) { onBack, openPage, query -> ReturnManagementScreen(onBack = onBack, openPage = openPage, query = query) },
         "return-page" to entry(ReturnPagePageMeta) { onBack, openPage, query -> ReturnPageScreen(onBack = onBack, openPage = openPage, query = query) },

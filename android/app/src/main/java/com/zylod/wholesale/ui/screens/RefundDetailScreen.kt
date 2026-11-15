@@ -1,115 +1,46 @@
 package com.zylod.wholesale.ui.screens
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.ArrowBack
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.sp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.zylod.wholesale.ui.pages.NativePageBody
 import com.zylod.wholesale.ui.pages.NativePageKind
 import com.zylod.wholesale.ui.pages.NativePageLink
 import com.zylod.wholesale.ui.pages.NativePageMeta
-import com.zylod.wholesale.ui.pages.NativePageViewModel
+import com.zylod.wholesale.ui.returns.RefundStatusScreen as TypedRefundDetailScreen
 
 /**
- * t233 — NATIVE Kotlin screen for the SPA pageId "refund-detail"
- * (src/lib/page-loader.ts registry entry, now owned by Compose — the
- * WebView is fallback-only for unregistered ids).
+ * t233 — NATIVE Kotlin screen for the SPA pageId "refund-detail".
  *
- * No obvious SPA endpoint feeds this page — it renders its curated Kotlin metadata.
-"Refund Detail — order, shipping and delivery operations for Zylod buyers. This long-tail page renders its honest on-device content and links into the live native surfaces around it."
+ * t305 — the t281 WebScreen forward is RETIRED: this pageId is now owned by
+ * the typed ui/returns implementation (GET api/returns). The body is a thin
+ * delegation — the REAL wire the web page renders, with the same honesty
+ * contract. The meta keeps its registry identity; the registry signature is
+ * unchanged.
  */
-data object RefundDetailPageMeta : NativePageMeta() {
+data object RefundDetailPageMeta : NativePageMeta() {{
     override val pageId = "refund-detail"
     override val title = "Refund Detail"
     override val category = "Orders & Logistics"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Renders its honest on-device description and links into the live native surfaces."
-    override val tabHint = ""
+    override val summary = "Refund Detail — the honest alias of the refund status page: GET api/returns/[id] with the real refunds ledger and receipts. The old hardcoded credit-note page is gone on the web; the native row never brings it back."
+    override val tabHint = "profile"
     override val bullets = listOf(
-        "Curated metadata for a page owned by a typed native screen — the screen itself renders live data.",
-        "Renders its honest on-device description and links into the live native surfaces.",
+        "Real wire — GET api/returns, rendered natively.",
+        "Honest states: sign-in gates, verbatim server errors, never fabricated data.",
+        "Native ownership: this Kotlin screen owns the refund-detail pageId via RouteOwnership.",
     )
     override val related = listOf(
-        NativePageLink("buyer-orders", "Buyer Orders"),
-        NativePageLink("order-tracking", "Order Tracking"),
-        NativePageLink("shipping-info", "Shipping Info"),
+        NativePageLink("refund-status", "Refund Status"),
+        NativePageLink("buyer-orders", "My Orders"),
+        NativePageLink("return-detail", "Return Details"),
     )
-}
+}}
 
-/**
- * Real themed Compose screen: native top bar (back arrow pops the back
- * stack toward Home), sections driven by the shared [NativePageData] model
- * through [NativePageBody] — live data when the endpoint feeds it, the
- * device-saved cache offline, curated Kotlin metadata otherwise, with a
- * working retry state. Stable keys inside the shared renderer.
- */
-@OptIn(ExperimentalMaterial3Api::class)
+/** Delegation only — the shared typed screen owns the rendering and the wire. */
 @Composable
 fun RefundDetailScreen(
     onBack: (() -> Unit)?,
     openPage: (pageId: String, query: String) -> Unit,
     query: String,
-) {
-    val context = LocalContext.current
-    val vm: NativePageViewModel = viewModel(key = "native-page-refund-detail") {
-        NativePageViewModel(context.applicationContext, RefundDetailPageMeta)
-    }
-    val state by vm.state.collectAsStateWithLifecycle()
-    LaunchedEffect(Unit) { vm.refresh(query) }
-
-    Scaffold(
-        containerColor = MaterialTheme.colorScheme.background,
-        topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        "Refund Detail",
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Black,
-                        color = MaterialTheme.colorScheme.primary,
-                    )
-                },
-                navigationIcon = {
-                    if (onBack != null) {
-                        IconButton(onClick = onBack) {
-                            Icon(
-                                Icons.AutoMirrored.Outlined.ArrowBack,
-                                "Go back",
-                                tint = MaterialTheme.colorScheme.onSurface,
-                            )
-                        }
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background),
-            )
-        },
-    ) { padding ->
-        Box(Modifier.fillMaxSize().padding(padding)) {
-            NativePageBody(
-                meta = RefundDetailPageMeta,
-                state = state,
-                onRetry = { vm.refresh() },
-                openPage = openPage,
-            )
-        }
-    }
-}
+) {{
+    com.zylod.wholesale.ui.returns.RefundStatusScreen(onBack = onBack, openPage = openPage, query = query)
+}}

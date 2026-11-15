@@ -66,7 +66,99 @@ interface ReturnsApi {
         @Path("orderId") orderId: String,
         @Body body: ReturnSubmitBody,
     ): Response<ReturnSubmitEnvelope>
+
+    /**
+     * t305 — GET api/returns?orderId= (returns/route.ts, Bearer-authenticated,
+     * rate limit 60/min): the signed-in buyer's returnRequests rows (newest
+     * first, take 50), optionally narrowed to one order, each with its real
+     * returnRequestItems[] rows. 401 when the session is gone.
+     */
+    @GET("api/returns")
+    suspend fun returnsByOrder(@retrofit2.http.Query("orderId") orderId: String?): Response<ReturnListEnvelope>
+
+    /**
+     * t305 — GET api/returns/{id} (returns/[id]/route.ts, buyer-or-admin only):
+     * one return request with its real items, refunds[] ledger (Task 47),
+     * seller receipts[] (Task 60-a) and evidence photo metadata. 404 for a
+     * foreign/phantom id, 403 for a non-owner buyer.
+     */
+    @GET("api/returns/{id}")
+    suspend fun returnById(@Path("id") id: String): Response<ReturnDetailEnvelope>
 }
+
+/* ─── return reads (t305 — GET api/returns[?orderId=] + /{id}) ───────────── */
+
+/** One returnRequests row as the list/detail pages consume it. */
+@Immutable
+@Serializable
+data class ReturnRequestRow(
+    val id: String,
+    val returnNumber: String? = null,
+    val orderId: String? = null,
+    val orderNumber: String? = null,
+    val orderPaymentStatus: String? = null,
+    val status: String? = null,
+    val shippingMethod: String? = null,
+    val estimatedRefund: Double? = null,
+    val resolutionNote: String? = null,
+    val resolvedAt: String? = null,
+    val createdAt: String? = null,
+    val updatedAt: String? = null,
+    val items: List<ReturnRequestItemRow> = emptyList(),
+    val refunds: List<ReturnRefundRow> = emptyList(),
+    val receipts: List<ReturnReceiptRow> = emptyList(),
+    val supplierCount: Int = 0,
+)
+
+@Immutable
+@Serializable
+data class ReturnRequestItemRow(
+    val id: String? = null,
+    val orderItemId: String? = null,
+    val reason: String? = null,
+    val quantity: Double = 0.0,
+    val comments: String? = null,
+)
+
+/** One refunds[] ledger row — money that actually moved (Task 47). */
+@Immutable
+@Serializable
+data class ReturnRefundRow(
+    val id: String? = null,
+    val amount: Double = 0.0,
+    val method: String? = null,
+    val reference: String? = null,
+    val status: String? = null,
+    val processedAt: String? = null,
+    val note: String? = null,
+)
+
+/** One seller receipt of the returned goods (Task 60-a). */
+@Immutable
+@Serializable
+data class ReturnReceiptRow(
+    val supplierId: String? = null,
+    val itemsRestored: Int = 0,
+    val restoredValue: Double = 0.0,
+    val note: String? = null,
+    val receivedAt: String? = null,
+)
+
+@Immutable
+@Serializable
+data class ReturnListEnvelope(
+    val success: Boolean = false,
+    val data: List<ReturnRequestRow> = emptyList(),
+    val error: String? = null,
+)
+
+@Immutable
+@Serializable
+data class ReturnDetailEnvelope(
+    val success: Boolean = false,
+    val data: ReturnRequestRow? = null,
+    val error: String? = null,
+)
 
 /* ─── order for return (GET api/orders/{orderId}) ────────────────────────── */
 
