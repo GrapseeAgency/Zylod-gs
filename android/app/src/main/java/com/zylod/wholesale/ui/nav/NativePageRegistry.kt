@@ -490,10 +490,10 @@ object NativePageRegistry {
         "issue-tracker" to entry(IssueTrackerPageMeta) { onBack, openPage, query -> IssueTrackerScreen(onBack = onBack, openPage = openPage, query = query) },
         "jewelry" to entry(JewelryPageMeta) { onBack, openPage, query -> JewelryScreen(onBack = onBack, openPage = openPage, query = query) },
         "job-apply" to entry(JobApplyPageMeta) { onBack, openPage, query -> JobApplyScreen(onBack = onBack, openPage = openPage, query = query) },
-        // t280 4-b#2: the "job-detail" row REMOVED — it rendered curated bullets
-        // while a real job tap (CareersScreen.kt:304, id=<lookupKey>) needs the
-        // LIVE posting the web renders (job-detail-page, reads id/slug). The id
-        // now falls through to WebScreen → the SPA's real job detail.
+        // t306 RESTORES the removed row on the typed surface —
+        // ui/careers/JobDetailScreen (GET api/careers/[id] through the existing
+        // CareersInvestorApi), WebView hop retired.
+        "job-detail" to entry(JobDetailPageMeta) { onBack, openPage, query -> JobDetailScreen(onBack = onBack, openPage = openPage, query = query) },
         "job-listings" to entry(JobListingsPageMeta) { onBack, openPage, query -> JobListingsScreen(onBack = onBack, openPage = openPage, query = query) },
         "join-seller" to entry(JoinSellerPageMeta) { onBack, openPage, query -> JoinSellerScreen(onBack = onBack, openPage = openPage, query = query) },
         "kyc-guide" to entry(KycGuidePageMeta) { onBack, openPage, query -> KycGuideScreen(onBack = onBack, openPage = openPage, query = query) },
@@ -553,9 +553,10 @@ object NativePageRegistry {
         "non-returnable" to entry(NonReturnablePageMeta) { onBack, openPage, query -> NonReturnableScreen(onBack = onBack, openPage = openPage, query = query) },
         "notification-archive" to entry(NotificationArchivePageMeta) { onBack, openPage, query -> NotificationArchiveScreen(onBack = onBack, openPage = openPage, query = query) },
         "notification-categories" to entry(NotificationCategoriesPageMeta) { onBack, openPage, query -> NotificationCategoriesScreen(onBack = onBack, openPage = openPage, query = query) },
-        // t280 4-b#2: the "notification-detail" row REMOVED — the default
-        // notification tap landed on bullets. WebScreen → the SPA's real
-        // notification detail page (reads id; GET api/notifications/{id}).
+        // t306 RESTORES the removed row on the typed surface —
+        // ui/notifications/NotificationDetailScreen (GET/DELETE
+        // api/notifications/[id], read-on-open, real target routing).
+        "notification-detail" to entry(NotificationDetailPageMeta) { onBack, openPage, query -> NotificationDetailScreen(onBack = onBack, openPage = openPage, query = query) },
         "notification-filter" to entry(NotificationFilterPageMeta) { onBack, openPage, query -> NotificationFilterScreen(onBack = onBack, openPage = openPage, query = query) },
         "notification-muted" to entry(NotificationMutedPageMeta) { onBack, openPage, query -> NotificationMutedScreen(onBack = onBack, openPage = openPage, query = query) },
         "notification-preferences" to entry(NotificationPreferencesPageMeta) { onBack, openPage, query -> NotificationPreferencesScreen(onBack = onBack, openPage = openPage, query = query) },
