@@ -23,7 +23,7 @@ data object TaxInformationPageMeta : NativePageMeta() {
     override val category = "Settings & App"
     override val kind = NativePageKind.CONTENT
     override val endpoint: String? = null
-    override val summary = "Tax Information — GET/PATCH api/profile/tax with the web honesty contract: guests get the account gate, "Not Set"/"N/A" sentinels render as empty fields, and the buyer 501 surfaces as not-implemented, never a fake success."
+    override val summary = "Tax Information — GET/PATCH api/profile/tax with the web honesty contract: guests get the account gate, ‘Not Set’/‘N/A’ sentinels render as empty fields, and the buyer 501 surfaces as not-implemented, never a fake success."
     override val tabHint = "profile"
     override val bullets = listOf(
         "Real wire — the same endpoints the web page calls, rendered natively.",
