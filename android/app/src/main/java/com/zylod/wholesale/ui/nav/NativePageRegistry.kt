@@ -217,9 +217,10 @@ object NativePageRegistry {
         "buyer-terms" to entry(BuyerTermsPageMeta) { onBack, openPage, query -> BuyerTermsScreen(onBack = onBack, openPage = openPage, query = query) },
         "cache-settings" to entry(CacheSettingsPageMeta) { onBack, openPage, query -> CacheSettingsScreen(onBack = onBack, openPage = openPage, query = query) },
         "cache-stats" to entry(CacheStatsPageMeta) { onBack, openPage, query -> CacheStatsScreen(onBack = onBack, openPage = openPage, query = query) },
-        // t281 5-b: the "cancel-order" row REMOVED — the generic-live ORDERS
-        // renderer dropped the orderId query (self-service cancel lives in the
-        // typed OrderDetailScreen); WebScreen forwards it to the SPA's page.
+        // t304 RESTORES the removed row on the typed surface —
+        // ui/orderdetail/CancelOrderScreen (GET api/orders/[id] + POST cancel
+        // with the real selected shipment ids), WebView hop retired.
+        "cancel-order" to entry(CancelOrderPageMeta) { onBack, openPage, query -> CancelOrderScreen(onBack = onBack, openPage = openPage, query = query) },
         "card" to entry(CardPageMeta) { onBack, openPage, query -> com.zylod.wholesale.ui.wallet.WalletScreen(onBack = onBack, openPage = openPage, query = query) },
         "career-benefits" to entry(CareerBenefitsPageMeta) { onBack, openPage, query -> CareerBenefitsScreen(onBack = onBack, openPage = openPage, query = query) },
         "career-culture" to entry(CareerCulturePageMeta) { onBack, openPage, query -> CareerCultureScreen(onBack = onBack, openPage = openPage, query = query) },
@@ -574,9 +575,10 @@ object NativePageRegistry {
         // t281 5-b: the "open-ticket" row REMOVED — ticket views land on
         // bullets; WebScreen → the SPA's real ticket detail (id forwarded).
         "order-bulk-actions" to entry(OrderBulkActionsPageMeta) { onBack, openPage, _ -> com.zylod.wholesale.ui.orders.OrdersScreen(onBack = onBack, openPage = openPage, openAuth = { openPage("login", "") }) },
-        // t281 5-b: the "order-confirmation" row REMOVED — the generic-live
-        // ORDERS renderer dropped the orderId query; WebScreen forwards it and
-        // the SPA renders the real per-order confirmation.
+        // t304 RESTORES the removed row on the typed surface — the TYPED
+        // CheckoutSuccessScreen keyed to "order-confirmation" (the web page
+        // IS the success rail: GET api/orders/[id] as the Order Received view).
+        "order-confirmation" to entry(OrderConfirmationPageMeta) { onBack, openPage, query -> OrderConfirmationScreen(onBack = onBack, openPage = openPage, query = query) },
         // t292: the registry row rendered the ui.screens ORDER-DETAIL STUB for
         // direct navigation (web-bridge taps, deep links) while the TYPED
         // OrderDetailScreen (ui/orderdetail, real GET api/orders/[id] + the
@@ -588,16 +590,19 @@ object NativePageRegistry {
         "order-invoice" to entry(OrderInvoicePageMeta) { onBack, openPage, query -> OrderInvoiceScreen(onBack = onBack, openPage = openPage, query = query) },
         "order-invoice-download" to entry(OrderInvoiceDownloadPageMeta) { onBack, openPage, query -> OrderInvoiceDownloadScreen(onBack = onBack, openPage = openPage, query = query) },
         "order-management-page" to entry(OrderManagementPagePageMeta) { onBack, openPage, _ -> com.zylod.wholesale.ui.orders.OrdersScreen(onBack = onBack, openPage = openPage, openAuth = { openPage("login", "") }) },
-        // t281 5-b: the "order-receipt" row REMOVED — the generic-live ORDERS
-        // renderer dropped the orderId query; WebScreen forwards it and the
-        // SPA renders the real per-order receipt.
+        // t304 RESTORES the removed row on the typed surface —
+        // ui/orderdetail/OrderReceiptScreen (GET api/orders/[id]/receipt, the
+        // money-moved snapshot), WebView hop retired.
+        "order-receipt" to entry(OrderReceiptPageMeta) { onBack, openPage, query -> OrderReceiptScreen(onBack = onBack, openPage = openPage, query = query) },
         "order-status-subscriptions" to entry(OrderStatusSubscriptionsPageMeta) { onBack, openPage, query -> OrderStatusSubscriptionsScreen(onBack = onBack, openPage = openPage, query = query) },
-        // t281 5-b: the "order-summary" row REMOVED — the generic-live ORDERS
-        // renderer dropped the orderId query; WebScreen forwards it and the
-        // SPA renders the real per-order summary.
-        // t280 4-b#2: the "order-timeline" row REMOVED — TrackOrderScreen's
-        // timeline hop (orderId=<id>) landed on bullets. WebScreen → the SPA's
-        // real order-timeline page (reads orderId).
+        // t304 RESTORES the removed row on the typed surface — the TYPED
+        // CheckoutScreen keyed to "order-summary" (the web page IS the
+        // checkout rail: addresses + delivery options + POST api/orders).
+        "order-summary" to entry(OrderSummaryPageMeta) { onBack, openPage, query -> OrderSummaryScreen(onBack = onBack, openPage = openPage, query = query) },
+        // t304 RESTORES the removed row on the typed surface —
+        // ui/orderdetail/OrderTimelineScreen (GET api/orders/[id], the real
+        // orderTracking rows as the timeline), WebView hop retired.
+        "order-timeline" to entry(OrderTimelinePageMeta) { onBack, openPage, query -> OrderTimelineScreen(onBack = onBack, openPage = openPage, query = query) },
         "order-tracking" to entry(OrderTrackingPageMeta) { onBack, openPage, query -> OrderTrackingScreen(onBack = onBack, openPage = openPage, query = query) },
         "order-update-detail" to entry(OrderUpdateDetailPageMeta) { onBack, openPage, query -> OrderUpdateDetailScreen(onBack = onBack, openPage = openPage, query = query) },
         "order-updates" to entry(OrderUpdatesPageMeta) { onBack, openPage, query -> OrderUpdatesScreen(onBack = onBack, openPage = openPage, query = query) },
